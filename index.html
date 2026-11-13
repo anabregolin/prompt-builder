@@ -24,6 +24,7 @@
   }
 }
 *{box-sizing:border-box}
+[hidden]{display:none !important}
 body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
 main{max-width:1400px;margin:0 auto;padding:28px 24px 60px}
 @media (max-width:600px){main{padding:20px 16px 48px}}
@@ -192,12 +193,19 @@ ul.have li{margin:2px 0}
 .vague .ctx{font-size:12px;color:var(--muted);margin:4px 0 0}
 .trwarn{background:var(--warn-soft);color:var(--text);border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .trwarn b{color:var(--warn)}
+/* celular: abas numa linha só, deslizando para o lado */
+@media (max-width:700px){
+  .tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{flex:none}
+  #boxConf .panel{height:75vh}
+}
 </style>
 </head>
 <body>
 <main>
   <h1>Prompt Builder</h1>
-  <p class="sub">Escreva do seu jeito, em português. A página divide o texto em categorias, aponta o que falta, palavras vagas e erros de digitação, e monta o prompt em inglês. Funciona com regras simples, no seu navegador: não tem nenhuma IA respondendo.</p>
+  <p class="sub">Escreva do seu jeito, em português. A página divide o texto em categorias, aponta o que falta, palavras vagas e erros de digitação, e monta o prompt em inglês ou português. Funciona com regras simples, no seu navegador: não tem nenhuma IA respondendo.</p>
 
   <details class="how">
     <summary>Como funciona?</summary>
@@ -645,7 +653,8 @@ function splitSentences(text){
     for (const part of byAnd){
       const pieces = part.split(/,\s+/);
       const startsGoal = p => new RegExp(`^(?:${verbAlt})\\b`).test(unslang(norm(p.trim())));
-      const big = p => p.trim().split(/\s+/).length >= 3 || startsGoal(p);
+      const ownCat = p => { const h = classify(p.replace(/\u0000\d+\u0000/g, "")).hits; h.delete("context"); return h.size > 0; };
+      const big = p => p.trim().split(/\s+/).length >= 3 || startsGoal(p) || ownCat(p);
       const merged = [];
       for (const p of pieces){ if (!merged.length || big(p)) merged.push(p); else merged[merged.length-1] += ", " + p; }
       if (merged.length > 1 && !big(merged[0])) merged.splice(0, 2, merged[0] + ", " + merged[1]);
@@ -1351,6 +1360,7 @@ document.querySelectorAll("#confTabs .tab").forEach(b => b.onclick = () => showC
 function showConf(id){
   CONF_TABS.forEach(([pid]) => { $(pid).hidden = pid !== id; });
   document.querySelectorAll("#confTabs .tab").forEach(b => { const on = b.dataset.panel === id; b.classList.toggle("active", on); b.setAttribute("aria-selected", on); });
+  const act = document.querySelector("#confTabs .tab.active"); if (act){ const bar = act.parentElement; if (act.offsetLeft < bar.scrollLeft || act.offsetLeft + act.offsetWidth > bar.scrollLeft + bar.clientWidth) bar.scrollLeft = act.offsetLeft - 16; }
 }
 function setCount(id, n, kind = "warn"){ const el = $("count-"+id); if (el){ el.textContent = n ? String(n) : ""; el.className = "tag " + kind; } }
 
