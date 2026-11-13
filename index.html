@@ -195,8 +195,14 @@ details.more summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--m
 
       <div class="panel" id="p-miss" hidden>
         <div class="panel-head"><h3>O que falta</h3><span class="tag warn">recomendado</span></div>
-        <p class="panel-desc">Categorias que não apareceram no seu texto, mais outros avisos. Clique numa opção pronta ou escreva a sua.</p>
+        <p class="panel-desc">Categorias que não apareceram no seu texto: primeiro as recomendadas, depois as opcionais. Clique numa opção pronta ou escreva a sua.</p>
         <div id="missBox"></div>
+      </div>
+
+      <div class="panel" id="p-warn" hidden>
+        <div class="panel-head"><h3>Avisos</h3><span class="tag warn">recomendado</span></div>
+        <p class="panel-desc">Coisas no texto que podem confundir a IA: referências soltas, formato sem tamanho, citações quebradas.</p>
+        <div id="warnBox"></div>
       </div>
 
       <div class="panel" id="p-spell" hidden>
@@ -617,8 +623,9 @@ function looseRefs(){
 
 function catBox(c, isMissing){
   const chosen = new Set((extra[c]||"").split(/\s*,\s*/).filter(Boolean));
-  const tag = OPTIONAL.has(c) ? `<span class="tag">opcional</span>` : (isMissing ? `<span class="tag warn">recomendado</span>` : `<span class="tag ok">já tem no texto</span>`);
-  return `<div class="box ${isMissing ? "miss" : "done"}">
+  const opt = OPTIONAL.has(c);
+  const tag = !isMissing ? `<span class="tag ok">já tem no texto</span>` : opt ? `<span class="tag">opcional</span>` : `<span class="tag warn">recomendado</span>`;
+  return `<div class="box ${isMissing && !opt ? "miss" : "done"}">
     <div class="boxhead"><b style="color:var(--c-${c})">${CATS[c].pt}</b>${tag}</div>
     <p>${isMissing ? MISSING_HELP[c] : "Quer acrescentar algo?"}</p>
     <div class="picks">${(BASES[c]||[]).map(b => `<button class="pick ${chosen.has(b)?"on":""}" data-base="${c}" data-val="${esc(b)}">${esc(b)}</button>`).join("")}</div>
@@ -628,9 +635,10 @@ function catBox(c, isMissing){
 
 function renderImprove(){
   const hasText = items.length > 0;
+  const startMsg = '<p class="empty">Comece a escrever em “Meu Texto”.</p>';
   // palavras vagas
   const vague = hasText ? vagueFound() : [];
-  $("vagueBox").innerHTML = !hasText ? '<p class="empty">Comece a escrever em “Meu Texto”.</p>' :
+  $("vagueBox").innerHTML = !hasText ? startMsg :
     vague.length ? vague.map(k => `<div class="box vague"><div class="pair">
         <b>“${esc(k)}”</b>
         <input type="text" data-vague="${esc(k)}" placeholder="${esc(VAGUE[k])}" value="${esc(meanings[k]||"")}">
@@ -638,39 +646,52 @@ function renderImprove(){
       </div></div>`).join("") : `<div class="good">Nenhuma palavra vaga.</div>`;
   setCount("p-vague", vague.filter(k => !(meanings[k]||"").trim()).length);
 
-  // o que falta + avisos
-  let html = "";
+  // o que falta: recomendadas em cima, opcionais embaixo
   const cats = ORDER.filter(c => c !== "role");
   const missing = hasText ? cats.filter(c => !covered(c) || (extra[c] && !items.some(it=>it.cat===c||it.hits.has(c)))) : [];
+  const missReq = missing.filter(c => !OPTIONAL.has(c));
+  const missOpt = missing.filter(c => OPTIONAL.has(c));
   const rest = cats.filter(c => !missing.includes(c));
-  const warns = [];
-  if (hasText){
-    if (!roleChosen() && !items.some(it=>it.cat==="role"))
-      warns.push(`Nenhum papel definido para a IA. Escolha um na aba “Papel da IA” <span class="tag">opcional</span>`);
-    const all = norm(items.map(i=>i.text).join(" "));
-    if (items.some(it=>it.cat==="format") && !/\d/.test(all) && !/(curto|longo|breve|detalhad)/.test(all))
-      warns.push("Formato sem tamanho: diga quantas palavras, linhas ou itens.");
-    for (const r of looseRefs())
-      warns.push(`Referência solta: “${esc(r.word)}” em “${esc(r.text)}”. Quem lê o prompt não sabe do que você está falando. Diga o nome da coisa.`);
-    if (all.split(/\s+/).length < 12) warns.push("Mensagem muito curta. Prompts melhores costumam ter contexto e detalhes.");
-    if (images.some(im=>!im.note.trim())) warns.push("Há imagem sem explicação. Diga na aba “Imagens” o que ela mostra e por que você anexou.");
-    if (window._markIssues) warns.push(`Há ${plural(window._markIssues,"problema","problemas")} com citações ou marcadores. Veja os avisos em vermelho abaixo da sua mensagem.`);
-  }
-  if (!hasText) html = '<p class="empty">Comece a escrever em “Meu Texto”.</p>';
+  const noRole = hasText && !roleChosen() && !items.some(it=>it.cat==="role");
+  let html = "";
+  if (!hasText) html = startMsg;
   else {
-    html += missing.length ? missing.map(c => catBox(c, true)).join("") : `<div class="good">Nenhuma categoria importante faltando.</div>`;
-    if (warns.length) html += `<h4 style="margin:16px 0 6px">Outros avisos</h4>` + warns.map(w=>`<div class="box vague">${w}</div>`).join("");
-    if (rest.length) html += `<details class="more"><summary>Completar as outras categorias (${rest.length})</summary>${rest.map(c => catBox(c, false)).join("")}</details>`;
+    html += `<h4 style="margin:0 0 6px">Recomendadas</h4>`;
+    html += missReq.length ? missReq.map(c => catBox(c, true)).join("") : `<div class="good">Nenhuma categoria recomendada faltando.</div>`;
+    if (missOpt.length || noRole){
+      html += `<h4 style="margin:18px 0 6px">Opcionais</h4>`;
+      if (noRole) html += `<div class="box done"><div class="boxhead"><b style="color:var(--c-role)">Papel da IA</b><span class="tag">opcional</span></div><p>Quem a IA deve ser: professor, designer, revisor…</p><button class="ghost" data-goto="p-role">Escolher na aba “Papel da IA”</button></div>`;
+      html += missOpt.map(c => catBox(c, true)).join("");
+    }
+    if (rest.length) html += `<details class="more"><summary>Já tem no texto: acrescentar algo (${rest.length})</summary>${rest.map(c => catBox(c, false)).join("")}</details>`;
   }
   const keepOpen = document.querySelector("#missBox details.more")?.open;
   $("missBox").innerHTML = html;
   if (keepOpen) document.querySelector("#missBox details.more").open = true;
-  setCount("p-miss", missing.filter(c=>!OPTIONAL.has(c)).length + warns.filter(w=>!w.includes("opcional")).length);
+  setCount("p-miss", missReq.length);
+
+  // avisos (aba própria)
+  const warns = [];
+  if (hasText){
+    const all = norm(items.map(i=>i.text).join(" "));
+    if (window._markIssues) warns.push(["Citações", `Há ${plural(window._markIssues,"problema","problemas")} com citações ou marcadores. Veja os avisos em vermelho logo abaixo da sua mensagem.`]);
+    for (const r of looseRefs())
+      warns.push(["Referência solta", `“${esc(r.word)}” em “${esc(r.text)}”. Quem lê o prompt não sabe do que você está falando. Diga o nome da coisa.`]);
+    if (items.some(it=>it.cat==="format") && !/\d/.test(all) && !/(curto|longo|breve|detalhad)/.test(all))
+      warns.push(["Formato sem tamanho", "Diga quantas palavras, linhas ou itens."]);
+    if (all.split(/\s+/).length < 12) warns.push(["Mensagem curta", "Prompts melhores costumam ter contexto e detalhes."]);
+    if (images.some(im=>!im.note.trim())) warns.push(["Imagem sem explicação", "Diga na aba “Imagens” o que ela mostra e por que você anexou."]);
+  }
+  $("warnBox").innerHTML = !hasText ? startMsg : warns.length
+    ? warns.map(([t,w]) => `<div class="box vague"><b>${t}</b><div>${w}</div></div>`).join("")
+    : `<div class="good">Nenhum aviso.</div>`;
+  setCount("p-warn", warns.length);
 
   refreshSpell();
   bindImprove();
 }
 function bindImprove(){
+  document.querySelectorAll("button[data-goto]").forEach(b => b.onclick = () => showConf(b.dataset.goto));
   document.querySelectorAll("input[data-vague]").forEach(inp => inp.oninput = () => { meanings[inp.dataset.vague] = inp.value; setCount("p-vague", vagueFound().filter(k => !(meanings[k]||"").trim()).length); changed(); });
   document.querySelectorAll("button[data-ignore]").forEach(b => b.onclick = () => { ignoredVague.add(b.dataset.ignore); delete meanings[b.dataset.ignore]; renderImprove(); changed(); });
   document.querySelectorAll("input[data-c]").forEach(inp => inp.oninput = () => { extra[inp.dataset.c] = inp.value; renderOrganized(); updateScore(); changed(); });
@@ -964,7 +985,7 @@ function showTab(which){
   $("tab-out").classList.toggle("active", out); $("tab-msg").classList.toggle("active", !out);
   $("tab-out").setAttribute("aria-selected", out); $("tab-msg").setAttribute("aria-selected", !out);
 }
-const CONF_TABS = [["p-org","Divisão"],["p-vague","Palavras vagas"],["p-miss","O que falta"],["p-spell","Ortografia"],["p-role","Papel da IA"],["p-img","Imagens"],["p-marks","Citações"]];
+const CONF_TABS = [["p-org","Divisão"],["p-vague","Palavras vagas"],["p-miss","O que falta"],["p-warn","Avisos"],["p-spell","Ortografia"],["p-role","Papel da IA"],["p-img","Imagens"],["p-marks","Citações"]];
 $("confTabs").innerHTML = CONF_TABS.map(([id,label],i) => `<button role="tab" class="tab ${i?"":"active"}" data-panel="${id}" aria-selected="${!i}">${label} <span class="tag warn" id="count-${id}"></span></button>`).join("");
 document.querySelectorAll("#confTabs .tab").forEach(b => b.onclick = () => showConf(b.dataset.panel));
 function showConf(id){
