@@ -41,6 +41,7 @@ h1{font-size:24px;margin:0 0 4px}
 .tab{background:transparent;color:var(--muted);border-radius:8px 8px 0 0;padding:8px 14px;font-weight:600;border:0;border-bottom:2px solid transparent;margin-bottom:-1px;display:inline-flex;align-items:center;gap:6px}
 .tab:hover{color:var(--text)}
 .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.subtabs{margin-bottom:12px} .subtabs .tab{font-size:13px;padding:6px 12px}
 
 /* etiquetas: um único padrão para tudo */
 .tag{display:inline-block;font-size:11px;font-weight:600;line-height:18px;padding:0 8px;border-radius:99px;background:var(--line);color:var(--muted);text-transform:none;letter-spacing:0;white-space:nowrap}
@@ -119,8 +120,6 @@ details.how ol{padding-left:20px;margin:10px 0}
 details.how dl{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;margin:8px 0 4px;font-size:14px}
 details.how dt{font-weight:600}
 details.how dd{margin:0;color:var(--muted)}
-details.more{margin-top:12px}
-details.more summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--muted)}
 .markers-list{display:flex;flex-direction:column;gap:6px}
 .markers-list label{font-size:14px}
 </style>
@@ -195,7 +194,7 @@ details.more summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--m
 
       <div class="panel" id="p-miss" hidden>
         <div class="panel-head"><h3>O que falta</h3><span class="tag warn">recomendado</span></div>
-        <p class="panel-desc">Categorias que não apareceram no seu texto: primeiro as recomendadas, depois as opcionais. Clique numa opção pronta ou escreva a sua.</p>
+        <p class="panel-desc">Categorias que não apareceram no seu texto, separadas em recomendadas e opcionais. Clique numa opção pronta ou escreva a sua.</p>
         <div id="missBox"></div>
       </div>
 
@@ -621,6 +620,7 @@ function looseRefs(){
   return out;
 }
 
+let missSub = "req";   // sub-aba aberta em “O que falta”
 function catBox(c, isMissing){
   const chosen = new Set((extra[c]||"").split(/\s*,\s*/).filter(Boolean));
   const opt = OPTIONAL.has(c);
@@ -656,18 +656,20 @@ function renderImprove(){
   let html = "";
   if (!hasText) html = startMsg;
   else {
-    html += `<h4 style="margin:0 0 6px">Recomendadas</h4>`;
-    html += missReq.length ? missReq.map(c => catBox(c, true)).join("") : `<div class="good">Nenhuma categoria recomendada faltando.</div>`;
-    if (missOpt.length || noRole){
-      html += `<h4 style="margin:18px 0 6px">Opcionais</h4>`;
-      if (noRole) html += `<div class="box done"><div class="boxhead"><b style="color:var(--c-role)">Papel da IA</b><span class="tag">opcional</span></div><p>Quem a IA deve ser: professor, designer, revisor…</p><button class="ghost" data-goto="p-role">Escolher na aba “Papel da IA”</button></div>`;
-      html += missOpt.map(c => catBox(c, true)).join("");
-    }
-    if (rest.length) html += `<details class="more"><summary>Já tem no texto: acrescentar algo (${rest.length})</summary>${rest.map(c => catBox(c, false)).join("")}</details>`;
+    const subs = [
+      ["req", "Recomendadas", missReq.length, "warn", missReq.length ? missReq.map(c => catBox(c, true)).join("") : `<div class="good">Nenhuma categoria recomendada faltando.</div>`],
+      ["opt", "Opcionais", missOpt.length + (noRole?1:0), "", (noRole ? `<div class="box done"><div class="boxhead"><b style="color:var(--c-role)">Papel da IA</b><span class="tag">opcional</span></div><p>Quem a IA deve ser: professor, designer, revisor…</p><button class="ghost" data-goto="p-role">Escolher na aba “Papel da IA”</button></div>` : "") + missOpt.map(c => catBox(c, true)).join("") || `<div class="good">Nenhuma opcional faltando.</div>`],
+      ["have", "Já tem no texto", rest.length, "ok", rest.length ? `<p class="note" style="margin:0 0 8px">Quer acrescentar algo nessas?</p>` + rest.map(c => catBox(c, false)).join("") : `<p class="empty">Nenhuma ainda.</p>`],
+    ];
+    html = `<div class="tabs subtabs">${subs.map(([k,l,n,kind]) => `<button class="tab ${missSub===k?"active":""}" data-sub="${k}">${l} <span class="tag ${kind}">${n||""}</span></button>`).join("")}</div>` +
+      subs.map(([k,,,,body]) => `<div data-subpanel="${k}" ${missSub===k?"":"hidden"}>${body}</div>`).join("");
   }
-  const keepOpen = document.querySelector("#missBox details.more")?.open;
   $("missBox").innerHTML = html;
-  if (keepOpen) document.querySelector("#missBox details.more").open = true;
+  $("missBox").querySelectorAll("[data-sub]").forEach(t => t.onclick = () => {
+    missSub = t.dataset.sub;
+    $("missBox").querySelectorAll("[data-sub]").forEach(x => x.classList.toggle("active", x === t));
+    $("missBox").querySelectorAll("[data-subpanel]").forEach(p => p.hidden = p.dataset.subpanel !== missSub);
+  });
   setCount("p-miss", missReq.length);
 
   // avisos (aba própria)
