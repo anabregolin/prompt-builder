@@ -448,7 +448,7 @@ const KW = {
   role: ["aja como","atue como","voce e um","voce e uma","seja um","seja uma","finja ser","faca o papel","papel de","como se fosse um","como se fosse uma"],
   goal: GOAL_VERBS,
   context: ["sou","trabalho","estou","tenho","temos","meu","minha","meus","minhas","nosso","nossa","projeto","empresa","porque","pois","situacao","cenario","atualmente","hoje","historico","ja tentei","contexto","area","negocio","curso","faculdade","site","app","aplicativo","sistema","ferramenta","pagina"],
-  problems: ["nao gostei","nao gosto","estranho","estranha","ruim","errado","errada","erro","bug","nao funciona","problema","quebrado","quebrada","feio","feia","confuso","confusa","nao entendeu","nao entende","nao aparece","travou","trava","lento","bagunca","incomoda","nao parece","parece que","bugado","bugada","bugando","bugou","bugs","esquisito","esquisita","misturado","misturada","misturando","quebrou","sumiu","sumindo","nao rola","nao da","nao consigo","nao deu","falha","falhando","travando","nao considerou","nao considera","mas apareceu","apareceu como","errou","nao mostra","nao abre","nao carrega","cortado","cortada"],
+  problems: ["nao gostei","nao gosto","estranho","estranha","ruim","errado","errada","erro","bug","nao funciona","problema","quebrado","quebrada","feio","feia","confuso","confusa","nao entendeu","nao entende","nao aparece","travou","trava","lento","bagunca","incomoda","nao parece","parece que","bugado","bugada","bugando","bugou","bugs","esquisito","esquisita","misturado","misturada","misturando","quebrou","sumiu","sumindo","nao rola","nao da","nao consigo","nao deu","falha","falhando","travando","nao considerou","nao considera","mas apareceu","apareceu como","errou","nao mostra","nao responde","nao respondeu","nao entendo","nao sei usar","atrasado","atrasada","atrasadas","atrasados","demora","demorando","nao abre","nao carrega","cortado","cortada"],
   audience: ["publico","leitor","leitores","cliente","clientes","iniciante","iniciantes","leigo","leigos","criancas","alunos","equipe","time","chefe","gestor","diretoria","usuarios","seguidores","investidores","recrutador","professor","especialistas","destinado"],
   format: ["formato","tabela","lista","bullets","topicos","paragrafo","paragrafos","json","markdown","codigo","e-mail","email","slides","passo a passo","resumo","palavras","paginas","linhas","caracteres","titulo","titulos","secoes","estrutura","csv","roteiro","post","artigo"],
   tone: ["tom","formal","informal","descontraido","profissional","tecnico","amigavel","direto","criativo","estilo","serio","divertido","humor","empatico","persuasivo","didatico","educado","simpatico","linguagem","casual","elegante"],
@@ -494,7 +494,7 @@ const VAGUE = {
 const LOOSE_START = ["isso","isto","esse","essa","este","esta","ele","ela","eles","elas","aquilo","aquele","aquela"];
 const LOOSE_ANY = ["dele","dela","deles","delas","la embaixo","aqui embaixo","ali embaixo","la em cima","aqui em cima","ali"];
 const IMG_WORDS = ["imagem","imagens","print","prints","screenshot","foto","fotos","anexo","anexa","anexei","captura","tela","figura"];
-const SPELL_IGNORE = new Set(["prompt","prompts","site","sites","app","apps","print","prints","screenshot","upload","download","bullet","bullets","token","tokens","email","e-mail","link","links","ok","online","offline","chat","layout","design","feedback","post","posts","login","web","bug","bugs","dark","mode","ia","ai","json","csv","markdown","pdf","github","google","claude","chatgpt","ctrl","tipo","tag","tags","tab","tabs"]);
+const SPELL_IGNORE = new Set(["oq","q","n","pq","vc","vcs","tb","tbm","ta","pra","msm","mt","mto","td","tds","qnd","qdo","cmg","hj","dps","agr","ngm","nd","blz","obg","nn","prompt","prompts","site","sites","app","apps","print","prints","screenshot","upload","download","bullet","bullets","token","tokens","email","e-mail","link","links","ok","online","offline","chat","layout","design","feedback","post","posts","login","web","bug","bugs","dark","mode","ia","ai","json","csv","markdown","pdf","github","google","claude","chatgpt","ctrl","tipo","tag","tags","tab","tabs"]);
 try{ for (const w of JSON.parse(localStorage.getItem("pb.spellok")) || []) SPELL_IGNORE.add(w); }catch{}
 
 /* ================= utilidades ================= */
@@ -549,6 +549,8 @@ function markerIssues(text){
     return (a>0?"…":"") + esc(text.slice(a,i)) + "<mark>" + esc(text.slice(i,i+len)) + "</mark>" + esc(text.slice(i+len,b)) + (b<text.length?"…":"");
   };
   const add = (title, how, i, len) => issues.push({title, how, where: snippet(i, len)});
+  const urls = [...text.matchAll(/\b(?:https?:\/\/|www\.)\S+/g)].map(u => [u.index, u.index + u[0].length]);
+  const inUrl = i => urls.some(([a,b]) => i >= a && i < b);
   for (const m of activeMarkers()){
     if (m.open === m.close){
       // posições exatas do marcador (sem pegar pedaços de uma sequência maior)
@@ -558,8 +560,9 @@ function markerIssues(text){
         const runRe = new RegExp(`${reEsc(ch)}+`, "g"); let r;
         while ((r = runRe.exec(text))){
           const len = r[0].length;
+          if (inUrl(r.index)) continue;
           if (len === m.open.length) pos.push(r.index);
-          else if (len >= 2 && !(ch === "/" && text[r.index-1] === ":"))   // ignora https://
+          else if (len >= 2)   // ignora https://
             add(len < m.open.length ? "Marcador incompleto?" : "Marcador com sobra?",
                 `Você escreveu <code>${esc(r[0])}</code> (${many(len,ch)}). O marcador de citação é <code>${esc(m.open)}</code> (${many(m.open.length,ch)}). Se era para marcar uma citação, ${len < m.open.length ? "acrescente mais" : "tire"} ${Math.abs(m.open.length-len) === 1 ? "1 " + (CH_NAME[ch] ? CH_NAME[ch].replace(/s( de .*)?$/, "$1") : "caractere") : many(Math.abs(m.open.length-len), ch)}. Se não era, pode ignorar.`,
                 r.index, len);
@@ -622,7 +625,7 @@ function addMarker(){
 /* ================= quebra em tópicos ================= */
 function cleanBullet(s){
   s = s.trim()
-    .replace(/^[-–—•*\d.)\s]+/,"")
+    .replace(/^\s*(?:[-–—•*]+\s*|\d+[.)]\s+|\d+\s*[-–—]\s+)/,"")
     .replace(/^(e|e tambem|também|tambem|alem disso|além disso|ah|entao|então|ou)\s+/i,"")
     .replace(/[.;!]+$/,"").trim();
   const open = (s.match(/\(/g)||[]).length, close = (s.match(/\)/g)||[]).length;   // remove parênteses sem par
@@ -641,8 +644,12 @@ function splitSentences(text){
     const byAnd = s.split(new RegExp(`\\s+(?:e|e também|e tambem|além disso|alem disso)\\s+(?=(?:${verbAlt})\\b)`, "i"));
     for (const part of byAnd){
       const pieces = part.split(/,\s+/);
-      if (pieces.length > 1 && pieces.every(p => p.trim().split(/\s+/).length >= 3)) out.push(...pieces);
-      else out.push(part);
+      const startsGoal = p => new RegExp(`^(?:${verbAlt})\\b`).test(unslang(norm(p.trim())));
+      const big = p => p.trim().split(/\s+/).length >= 3 || startsGoal(p);
+      const merged = [];
+      for (const p of pieces){ if (!merged.length || big(p)) merged.push(p); else merged[merged.length-1] += ", " + p; }
+      if (merged.length > 1 && !big(merged[0])) merged.splice(0, 2, merged[0] + ", " + merged[1]);
+      out.push(...merged);
     }
   }
   return out.map(restore).map(cleanBullet).filter(s => s.replace(/[^\p{L}\p{N}]/gu,"").length > 2);
@@ -831,7 +838,8 @@ async function roleSentence(lang = "en"){
   if (!r) return "";
   const area = $("roleArea").value.trim();
   if (lang === "pt"){
-    let t = `Você é ${r.name}${role.level === "expert" ? ", referência na área" : ""}.`;
+    const nm = /^[A-ZÀ-Ú][a-zà-ú]/.test(r.name) ? r.name[0].toLowerCase() + r.name.slice(1) : r.name;
+    let t = `Você é ${nm}${role.level === "expert" ? ", referência na área" : ""}.`;
     if (role.level === "experienced") t += " Você tem mais de 10 anos de experiência.";
     if (area) t += ` Sua especialidade é ${area}.`;
     return t;
@@ -850,7 +858,9 @@ async function roleSentence(lang = "en"){
 function analyze(){
   const raw = $("input").value;
   const text = applyMarkers(raw);
-  items = splitSentences(text).map(t => { const r = classify(t); return {text:t, cat: overrides[t] || r.cat, hits:r.hits}; });
+  const seen = new Set();
+  items = splitSentences(text).filter(t => { const k = norm(t); if (seen.has(k)) return false; seen.add(k); return true; })
+    .map(t => { const r = classify(t); return {text:t, cat: overrides[t] || r.cat, hits:r.hits}; });
   renderMarkWarn(raw);
   renderOrganized(); renderImprove(); updateScore(); changed();
 }
@@ -979,7 +989,11 @@ function renderImprove(){
     if (window._markIssues) warns.push(["Citações", `Há ${plural(window._markIssues,"problema","problemas")} com citações ou marcadores. Veja os avisos em vermelho logo abaixo da sua mensagem.`]);
     if (items.some(it=>it.cat==="format") && !/\d/.test(all) && !/(curto|longo|breve|detalhad)/.test(all))
       warns.push(["Formato sem tamanho", "Diga quantas palavras, linhas ou itens."]);
-    if (all.split(/\s+/).length < 12) warns.push(["Mensagem curta", "Prompts melhores costumam ter contexto e detalhes."]);
+    const words = all.split(/\s+/).filter(Boolean);
+    const EN_WORDS = new Set(["the","and","to","of","for","my","is","with","make","please","i","you","it","this","that","in","on","an","be","can","should","want","need","write","create","your","me","our","we","from","about","by","are","not","what","how","like","use","help","new","website","page","style","max","sections","make","some","more"]);
+    if (words.length >= 4 && words.filter(w => EN_WORDS.has(w.replace(/[^a-z]/g,""))).length / words.length >= .2)
+      warns.push(["Texto em inglês?", "A página entende só português. Em inglês, a divisão em categorias e os avisos podem sair errados. Escreva em português: o prompt pode sair em inglês mesmo assim."]);
+    if (words.length < 12) warns.push(["Mensagem curta", "Prompts melhores costumam ter contexto e detalhes."]);
     if (images.some(im=>!im.note.trim())) warns.push(["Imagem sem explicação", "Diga na aba “Imagens” o que ela mostra e por que você anexou."]);
   }
   $("warnBox").innerHTML = !hasText ? startMsg : warns.length
@@ -1205,8 +1219,17 @@ function setStatus(){
 }
 
 /* ================= geração do prompt ================= */
+const SLANG_OUT = {n:"não",nn:"não",q:"que",oq:"o que",pq:"porque",vc:"você",vcs:"vocês",tb:"também",tbm:"também",ta:"está",to:"estou",pra:"para",msm:"mesmo",mt:"muito",mto:"muito",td:"tudo",tds:"todos",qnd:"quando",qdo:"quando",cmg:"comigo",hj:"hoje",dps:"depois",agr:"agora",ngm:"ninguém",nd:"nada",blz:"beleza",obg:"obrigado"};
+// escreve por extenso as abreviações (fora das citações), para a IA e o tradutor entenderem
+function expandSlang(text){
+  const keep = [];
+  const masked = text.replace(QUOTE_RE, m => { keep.push(m); return `\u0002${keep.length-1}\u0002`; });
+  const re = new RegExp(`(^|[^\\p{L}\\p{N}])(${Object.keys(SLANG_OUT).join("|")})(?=[^\\p{L}\\p{N}]|$)`, "giu");
+  return masked.replace(re, (m, p, w) => { const x = SLANG_OUT[w.toLowerCase()]; return p + (w[0] === w[0].toUpperCase() && w[0] !== w[0].toLowerCase() ? x[0].toUpperCase() + x.slice(1) : x); })
+               .replace(/\u0002(\d+)\u0002/g, (_, i) => keep[+i]);
+}
 function annotate(text){
-  let t = text;
+  let t = expandSlang(text);
   for (const [k,v] of Object.entries(meanings)){
     if (!v || !v.trim() || ignoredVague.has(k)) continue;
     const re = new RegExp(`(^|[^\\p{L}])(${reEsc(k).replace(/a/g,"[aáàâã]").replace(/e/g,"[eéê]").replace(/i/g,"[ií]").replace(/o/g,"[oóôõ]").replace(/u/g,"[uú]").replace(/c/g,"[cç]")})(?=[^\\p{L}]|$)`, "giu");
