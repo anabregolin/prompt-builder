@@ -169,7 +169,8 @@ footer.site .bottom{margin-top:20px;padding-top:14px;border-top:1px solid var(--
 .chosen{font-size:13px;color:var(--muted);display:flex;gap:6px;align-items:center}
 .pick .x{margin-left:6px;opacity:.6}
 .pick .x:hover{opacity:1}
-.addbox{border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-top:16px;background:var(--bg)}
+.addbox{border:1px solid var(--line);border-radius:10px;padding:4px 14px 12px;margin-top:12px;background:var(--bg)}
+.addbox .field{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-top:12px}
 .addbox h4{margin:0;font-size:14px}
 .addgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0 12px}
 .addgrid select{width:100%;margin-top:4px;font-size:14px;padding:6px 8px}
@@ -249,19 +250,46 @@ button.chip:hover{background:var(--ok);color:#fff}
 /* menus */
 select.nice{appearance:none;-webkit-appearance:none;border:1px solid var(--line);border-radius:8px;background:var(--card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23888' stroke-width='1.6'/%3E%3C/svg%3E") no-repeat right 12px center;padding:7px 34px 7px 12px;font-size:14px;color:var(--text);cursor:pointer;min-width:220px}
 select.nice:hover{border-color:var(--muted)}
-.areas{display:inline-flex;gap:2px;flex-wrap:wrap;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:3px;margin:4px 0 10px}
+.areas{display:flex;gap:2px;flex-wrap:wrap;margin:0 0 10px;padding:0 0 8px;border-bottom:1px dashed var(--line)}
 button.area{background:none;border:0;border-radius:7px;color:var(--muted);font-weight:500;font-size:13px;padding:5px 10px}
+button.area:first-child{margin-left:-10px}
 button.area span{font-size:11px;opacity:.7;margin-left:2px}
 button.area:hover{color:var(--text)}
-button.area.on{color:var(--text);background:var(--card);box-shadow:0 0 0 1px var(--muted)}
+button.area.on{color:var(--text);background:var(--bg);font-weight:600}
 .rolepicks button.pick{padding:6px 14px;font-size:14px}
 .tab .dot{width:7px;height:7px;border-radius:50%;background:var(--ok);display:inline-block}
 .opt.maxed:not(.on){opacity:.45}
-.role-says{margin:0 0 10px;padding:8px 12px;border-left:3px solid var(--c-role);background:color-mix(in srgb,var(--c-role) 10%,transparent);border-radius:0 8px 8px 0;font-size:14px;line-height:1.45}
-.role-says small{display:block;font-size:11px;color:var(--muted);margin-bottom:2px}
+/* papel da IA */
+.role-says{position:sticky;top:0;z-index:2;box-shadow:0 6px 10px -6px rgba(0,0,0,.35);display:flex;gap:12px;align-items:flex-start;margin:0 0 4px;padding:12px 14px;border:1px solid color-mix(in srgb,var(--c-role) 35%,var(--line));background:color-mix(in srgb,var(--c-role) 8%,var(--card));border-radius:10px}
+.role-says .rs-body{flex:1;min-width:0}
+.role-says small{display:block;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--c-role);margin-bottom:3px}
+.role-says p{margin:0;font-size:15px;line-height:1.5}
+.role-says p em{font-style:normal;font-weight:600;color:var(--c-role)}
+.role-says.empty p{color:var(--muted);font-size:14px}
+.role-says .rs-clear{flex:none;background:none;border:1px solid var(--line);color:var(--muted);font-size:12px;font-weight:500;padding:3px 10px}
+.role-says .rs-clear:hover{color:var(--text);border-color:var(--muted)}
+.rsec{padding:16px 0 4px}
+.rsec + .rsec{border-top:1px solid var(--line);margin-top:12px}
+.rsec-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:0 0 10px}
+.rsec-head h4{margin:0;font-size:14px;font-weight:700}
+.rsec-note{font-size:12px;color:var(--muted)}
+.rsec-help{font-size:13px;color:var(--muted);margin:8px 0 0;min-height:1.4em}
+.seg{display:inline-flex;flex-wrap:wrap;gap:2px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:3px}
+.seg button{background:none;border:0;border-radius:7px;color:var(--muted);font-weight:500;font-size:13px;padding:6px 14px}
+.seg button:hover{color:var(--text)}
+.seg button.on{background:var(--accent);color:#fff}
+.rolepicks{margin:0}
+button.pick.add{border:1px dashed var(--muted);color:var(--muted)}
+button.pick.add:hover{color:var(--text);border-color:var(--muted)}
+.sugg{margin-top:10px}
+.sugg button.pick{font-size:12px;color:var(--muted);padding:3px 9px}
+.sugg button.pick.on{color:#fff}
+#roleArea{max-width:460px}
+.subtabs .tab .tag{margin-left:4px}
 .steps-hint{font-size:13px;color:var(--muted);margin:0 0 8px}
 .steps-hint b{color:var(--text)}
 @media (max-width:700px){ .edhint{display:none} .edbtn{padding:5px 8px;font-size:12px} }
+@media (max-width:700px){ .role-says{padding:8px 10px;gap:8px} .role-says p{font-size:13.5px;line-height:1.4} .role-says small{font-size:10px} .areas{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none} .areas::-webkit-scrollbar{display:none} button.area{white-space:nowrap} }
 </style>
 </head>
 <body>
@@ -367,62 +395,57 @@ button.area.on{color:var(--text);background:var(--card);box-shadow:0 0 0 1px var
 
       <div class="panel" id="p-role" hidden>
         <div class="panel-head"><h3>Papel da IA</h3><span class="tag">opcional</span></div>
-        <p class="panel-desc">Quem a IA deve ser e como deve responder. Muda o foco, o vocabulário e a profundidade da resposta. Tudo aqui é opcional.</p>
-        <p class="role-says" id="rolePreview" hidden></p>
+        <p class="panel-desc">Dizer quem a IA é muda o vocabulário, o foco e a profundidade da resposta.</p>
         <div class="tabs subtabs" id="roleTabs">
-          <button class="tab active" data-rsub="who">Quem a IA é <span class="dot" id="rt-who" hidden></span></button>
-          <button class="tab" data-rsub="area">Especialidade <span class="dot" id="rt-area" hidden></span></button>
-          <button class="tab" data-rsub="lvl">Experiência <span class="dot" id="rt-lvl" hidden></span></button>
-          <button class="tab" data-rsub="how">Como responder <span class="dot" id="rt-how" hidden></span></button>
-          <button class="tab" data-rsub="lang">Idioma da resposta <span class="dot" id="rt-lang" hidden></span></button>
+          <button class="tab active" data-rsub="who">Quem a IA é <span class="tag ok" id="rt-who" hidden>✓</span></button>
+          <button class="tab" data-rsub="how">Como ela responde <span class="tag" id="rt-how"></span></button>
         </div>
 
         <div data-rpanel="who" class="fill">
-          <div class="role-bar"><span class="chosen" id="roleChosenLine"></span></div>
-          <div class="areas" id="roleTag" role="tablist" aria-label="Área"></div>
-          <div class="picks rolepicks" id="roleChips"></div>
-          <p class="steps-hint">Clique num papel para escolher. Clique de novo para tirar.</p>
-          <div class="addbox">
-            <h4>Não achou? Adicione um papel</h4>
-            <div class="addgrid">
-              <label class="field">Nome do papel
-                <input type="text" id="newRoleName" placeholder="ex.: professora de história do ensino médio">
-              </label>
-              <label class="field">Tag
-                <span class="picks" id="newRoleTagBtns" style="margin:4px 0 0"></span><input type="hidden" id="newRoleTag">
-              </label>
-              <label class="field" id="newTagWrap" hidden>Nome da nova tag
-                <input type="text" id="newTagName" placeholder="ex.: Saúde">
-              </label>
+          <div class="role-says" id="rolePreview"></div>
+          <section class="rsec">
+            <div class="rsec-head"><h4>Papel</h4><span class="rsec-note" id="roleChosenLine"></span></div>
+            <div class="areas" id="roleTag" role="tablist" aria-label="Área"></div>
+            <div class="picks rolepicks" id="roleChips"></div>
+            <div class="addbox" id="addBox" hidden>
+              <div class="addgrid">
+                <label class="field">Nome do papel
+                  <input type="text" id="newRoleName" placeholder="ex.: professora de história do ensino médio">
+                </label>
+                <div class="field">Guardar na área
+                  <span class="picks" id="newRoleTagBtns" style="margin:6px 0 0"></span><input type="hidden" id="newRoleTag">
+                </div>
+                <label class="field" id="newTagWrap" hidden>Nome da nova área
+                  <input type="text" id="newTagName" placeholder="ex.: Saúde">
+                </label>
+              </div>
+              <div class="row" style="margin-top:12px"><button id="addRole">Criar e escolher</button><button class="ghost" id="addCancel">Cancelar</button><span class="err-text" id="roleErr"></span></div>
+              <p class="note" style="margin:8px 0 0">Fica salvo só neste navegador.</p>
             </div>
-            <div class="row"><button id="addRole">Adicionar e escolher</button><span class="err-text" id="roleErr"></span></div>
-            <p class="note">Os papéis que você adicionar ficam salvos neste navegador.</p>
-          </div>
-        </div>
-
-        <div data-rpanel="area" class="fill" hidden>
-          <p class="note" style="margin:0 0 4px">Um assunto específico dentro do papel. Ex.: um designer especializado em acessibilidade.</p>
-          <label class="field">Especialidade
+          </section>
+          <section class="rsec">
+            <div class="rsec-head"><h4>Experiência</h4></div>
+            <div class="seg" id="levels" role="radiogroup" aria-label="Experiência"></div>
+            <p class="rsec-help" id="lvlHelp"></p>
+          </section>
+          <section class="rsec">
+            <div class="rsec-head"><h4>Especialidade</h4><span class="rsec-note">um assunto dentro do papel</span></div>
             <input type="text" id="roleArea" placeholder="ex.: acessibilidade web, direito trabalhista, confeitaria…">
-          </label>
-          <div class="group-title" style="margin-top:16px">Sugestões</div>
-          <div class="picks" id="areaChips"></div>
-        </div>
-
-        <div data-rpanel="lvl" class="fill" hidden>
-          <p class="note" style="margin:0 0 10px">Quanto a IA deve saber sobre o assunto. Quanto mais experiente, mais técnica e aprofundada tende a ser a resposta.</p>
-          <div class="opt-grid" id="levels"></div>
+            <div class="picks sugg" id="areaChips"></div>
+          </section>
         </div>
 
         <div data-rpanel="how" class="fill" hidden>
-          <p class="note" style="margin:0 0 4px" id="behCount"></p>
-          <p class="limit-note" id="behNote"></p>
-          <div id="behaviors"></div>
-        </div>
-
-        <div data-rpanel="lang" class="fill" hidden>
-          <div class="opt-grid" id="langs"></div>
-          <p class="note">Se o prompt sair em inglês, a IA tende a responder em inglês. Escolher a língua aqui evita isso.</p>
+          <section class="rsec">
+            <div class="rsec-head"><h4>Comportamento</h4><span class="rsec-note" id="behCount"></span></div>
+            <p class="limit-note" id="behNote"></p>
+            <div id="behaviors"></div>
+          </section>
+          <section class="rsec">
+            <div class="rsec-head"><h4>Idioma da resposta</h4></div>
+            <div class="seg" id="langs" role="radiogroup" aria-label="Idioma da resposta"></div>
+            <p class="rsec-help">Se o prompt sair em inglês, a IA tende a responder em inglês. Escolher aqui evita isso.</p>
+          </section>
         </div>
       </div>
 
@@ -477,7 +500,7 @@ button.area.on{color:var(--text);background:var(--card);box-shadow:0 0 0 1px var
   <div class="cols">
     <div>
       <h4>Prompt Builder</h4>
-      <p>Organiza o que você quer pedir para uma IA em um prompt claro, em inglês. Funciona com regras simples: nenhuma IA lê ou responde o seu texto aqui.</p>
+      <p>Organiza o que você quer pedir para uma IA em um prompt claro, em português ou inglês. Funciona com regras simples: nenhuma IA lê ou responde o seu texto aqui.</p>
     </div>
     <div>
       <h4>Privacidade</h4>
@@ -874,8 +897,11 @@ function renderRoleChips(){
   document.querySelectorAll("[data-ntag]").forEach(b => b.onclick = () => { $("newRoleTag").value = b.dataset.ntag; renderRoleChips(); if (b.dataset.ntag === "__new") $("newTagName").focus(); });
   $("newTagWrap").hidden = $("newRoleTag").value !== "__new";
   $("roleChips").innerHTML = allRoles().filter(r => r.tag === roleTagSel).map(r =>
-    `<button class="pick ${role.pick===r.name?"on":""}" data-role="${esc(r.name)}">${esc(r.name)}${r.custom ? `<span class="x" data-delrole="${esc(r.name)}" title="Apagar este papel">✕</span>` : ""}</button>`).join("");
-  $("roleChosenLine").innerHTML = role.pick ? `Escolhido: <button class="pick on" data-unpick>${esc(role.pick)} <span class="x">✕</span></button>` : "Nenhum papel escolhido";
+    `<button class="pick ${role.pick===r.name?"on":""}" data-role="${esc(r.name)}" aria-pressed="${role.pick===r.name}">${esc(r.name)}${r.custom ? `<span class="x" data-delrole="${esc(r.name)}" title="Apagar este papel">✕</span>` : ""}</button>`).join("") +
+    `<button class="pick add" id="addOpen" aria-expanded="${!$("addBox").hidden}">+ Criar papel</button>`;
+  $("addOpen").onclick = () => { $("addBox").hidden = !$("addBox").hidden; renderRoleChips(); if (!$("addBox").hidden) $("newRoleName").focus(); };
+  const other = role.pick && !allRoles().some(r => r.name === role.pick && r.tag === roleTagSel);
+  $("roleChosenLine").textContent = other ? `escolhido: ${role.pick} (em outra área)` : role.pick ? "clique de novo para tirar" : "escolha a área e depois o papel";
   document.querySelectorAll("[data-role]").forEach(b => b.onclick = e => {
     const del = e.target.closest("[data-delrole]");
     if (del){ customRoles = customRoles.filter(r => r.name !== del.dataset.delrole); store.set("pb.roles", customRoles); if (role.pick === del.dataset.delrole) role.pick = null; }
@@ -894,7 +920,7 @@ function addRole(){
   if (allRoles().some(r => r.name.toLowerCase() === name.toLowerCase())) return $("roleErr").textContent = "Esse papel já existe.";
   customRoles.push({name, tag}); store.set("pb.roles", customRoles);
   role.pick = name; roleTagSel = tag;
-  $("newRoleName").value = ""; $("newTagName").value = ""; $("roleErr").textContent = "";
+  $("newRoleName").value = ""; $("newTagName").value = ""; $("roleErr").textContent = ""; $("addBox").hidden = true;
   $("newRoleTag").value = tag;
   renderRoleChips(); renderImprove(); changed();
 }
@@ -907,7 +933,8 @@ function renderAreas(){
   });
 }
 function renderLevels(){
-  $("levels").innerHTML = LEVELS.map(([k,t,d]) => optBtn(`data-lvl="${k}"`, role.level===k, t, d, true)).join("");
+  $("levels").innerHTML = LEVELS.map(([k,t]) => `<button role="radio" aria-checked="${role.level===k}" class="${role.level===k?"on":""}" data-lvl="${k}">${t}</button>`).join("");
+  $("lvlHelp").textContent = LEVELS.find(l => l[0] === role.level)[2];
   document.querySelectorAll("[data-lvl]").forEach(b => b.onclick = () => { role.level = b.dataset.lvl; renderLevels(); changed(); });
   roleTabTags();
 }
@@ -916,7 +943,7 @@ function renderBehaviors(){
   const groups = [...new Set(BEHAVIORS.map(b=>b[5]))];
   $("behaviors").innerHTML = groups.map(g => `<div class="group-title">${g}</div><div class="opt-grid">${
     BEHAVIORS.filter(b=>b[5]===g).map(b => optBtn(`data-beh="${b[0]}"`, prefs.behaviors[b[0]], b[1], b[2]).replace('class="opt', `class="opt ${on.length >= LIMITS.how.max ? "maxed" : ""}`)).join("")}</div>`).join("");
-  $("behCount").textContent = `Escolha até ${LIMITS.how.max}. Escolhidas agora: ${on.length}.`;
+  $("behCount").textContent = `${on.length} de ${LIMITS.how.max} escolhidas`;
   document.querySelectorAll("[data-beh]").forEach(b => b.onclick = () => {
     const r = toggleLimited(BEHAVIORS.filter(x => prefs.behaviors[x[0]]).map(x => x[0]), b.dataset.beh, LIMITS.how, k => BEHAVIORS.find(x => x[0] === k)[1]);
     for (const x of BEHAVIORS) prefs.behaviors[x[0]] = r.list.includes(x[0]);
@@ -925,17 +952,15 @@ function renderBehaviors(){
   roleTabTags();
 }
 function renderLangs(){
-  $("langs").innerHTML = LANGS.map(([k,t]) => optBtn(`data-lang="${k}"`, prefs.lang===k, t, "", true)).join("");
+  $("langs").innerHTML = LANGS.map(([k,t]) => `<button role="radio" aria-checked="${prefs.lang===k}" class="${prefs.lang===k?"on":""}" data-lang="${k}">${t}</button>`).join("");
   document.querySelectorAll("[data-lang]").forEach(b => b.onclick = () => { prefs.lang = b.dataset.lang; savePrefs(); renderLangs(); changed(); });
   roleTabTags();
 }
 function roleTabTags(){
   if (!$("rt-who")) return;
   $("rt-who").hidden = !roleChosen();
-  $("rt-lvl").hidden = !role.level;
-  $("rt-area").hidden = !$("roleArea").value.trim();
-  $("rt-how").hidden = !BEHAVIORS.some(b => prefs.behaviors[b[0]]);
-  $("rt-lang").hidden = !prefs.lang;
+  const n = BEHAVIORS.filter(b => prefs.behaviors[b[0]]).length;
+  $("rt-how").textContent = `${n}/${LIMITS.how.max}`; $("rt-how").className = "tag" + (n ? " ok" : "");
   renderRolePreview();
 }
 document.querySelectorAll("[data-rsub]").forEach(t => t.onclick = () => {
@@ -947,8 +972,14 @@ async function renderRolePreview(){
   const el = $("rolePreview"); if (!el) return;
   // mostra só a frase que a IA vai ler sobre quem ela é; o resto já aparece nas próprias sub-abas
   const rs = await roleSentence("pt");
-  el.hidden = !rs;
-  el.innerHTML = rs ? `<small>A IA vai ler:</small>“${esc(rs)}”` : "";
+  el.classList.toggle("empty", !rs);
+  if (!rs){ el.innerHTML = `<div class="rs-body"><small>No prompt</small><p>Escolha um papel abaixo e a frase aparece aqui.</p></div>`; return; }
+  // destaca o papel dentro da frase
+  const r = allRoles().find(x => x.name === role.pick), nm = r ? (/^[A-ZÀ-Ú][a-zà-ú]/.test(r.name) ? r.name[0].toLowerCase() + r.name.slice(1) : r.name) : "";
+  let h = esc(rs); if (nm) h = h.replace(esc(nm), `<em>${esc(nm)}</em>`);
+  const area = $("roleArea").value.trim(); if (area) h = h.replace(esc(area) + ".", `<em>${esc(area)}</em>.`);
+  el.innerHTML = `<div class="rs-body"><small>No prompt, a IA vai ler</small><p>${h}</p></div><button class="rs-clear" id="rsClear" title="Tira o papel, a experiência e a especialidade">Limpar</button>`;
+  $("rsClear").onclick = () => { role.pick = null; role.level = ""; $("roleArea").value = ""; renderRoleChips(); renderLevels(); renderAreas(); renderImprove(); changed(); };
 }
 async function roleSentence(lang = "en"){
   if (!roleChosen()) return "";
@@ -1772,6 +1803,7 @@ drop.ondrop = e => { e.preventDefault(); drop.classList.remove("over"); addFiles
 document.addEventListener("paste", e => { const f = [...(e.clipboardData?.files||[])]; if (f.length){ e.preventDefault(); addFiles(f); } });
 $("roleArea").oninput = () => { renderAreas(); roleTabTags(); changed(); };
 $("addRole").onclick = addRole;
+$("addCancel").onclick = () => { $("addBox").hidden = true; $("roleErr").textContent = ""; renderRoleChips(); };
 $("newRoleName").onkeydown = $("newTagName").onkeydown = e => { if (e.key === "Enter") addRole(); };
 $("addMarker").onclick = addMarker;
 // Enter em qualquer campo de texto confirma (mostra que salvou)
