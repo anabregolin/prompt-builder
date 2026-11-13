@@ -140,6 +140,27 @@ details.how dd{margin:0;color:var(--muted)}
 #boxConf .panel{height:clamp(380px,60vh,680px);overflow-y:auto;overscroll-behavior:contain;padding-right:6px;scrollbar-gutter:stable}
 #panel-msg,#panel-out{min-height:430px}
 #output{max-height:min(55vh,560px);overflow-y:auto}
+#boxConf .panel{display:flex;flex-direction:column}
+#boxConf .panel[hidden],.fill[hidden]{display:none}
+.fill{flex:1;display:flex;flex-direction:column;min-height:0}
+.empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px;color:var(--muted);border:1.5px dashed var(--line);border-radius:10px;padding:24px;font-size:14px;min-height:160px}
+.empty-state .ico{font-size:34px;line-height:1;margin-bottom:4px}
+.empty-state b{color:var(--text);font-size:15px}
+.empty-state span{max-width:440px}
+.empty-state.good-state{border-style:solid;border-color:color-mix(in srgb,var(--ok) 35%,transparent);background:var(--ok-soft)}
+.empty-state.good-state b{color:var(--ok)}
+#drop.big{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:15px}
+#drop.big::before{content:"🖼️";font-size:38px}
+footer.site{max-width:1400px;margin:0 auto;padding:28px 24px 40px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+footer.site .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px 32px}
+footer.site h4{color:var(--text);font-size:13px;margin:0 0 6px}
+footer.site p,footer.site ul{margin:0}
+footer.site ul{padding-left:16px}
+footer.site li{margin:2px 0}
+footer.site a{color:var(--accent)}
+footer.site kbd{font-family:var(--mono);font-size:12px;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 5px;background:var(--card);color:var(--text)}
+footer.site .bottom{margin-top:20px;padding-top:14px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+@media (max-width:600px){footer.site{padding:24px 16px 32px}}
 </style>
 </head>
 <body>
@@ -201,31 +222,31 @@ details.how dd{margin:0;color:var(--muted)}
       <div class="panel" id="p-org">
         <div class="panel-head"><h3 id="orgTitle">Divisão</h3><span class="tag info">automático</span></div>
         <p class="panel-desc">Cada frase do seu texto vira um tópico, numa caixa com a cor da categoria. Se algum cair no lugar errado, troque no menu ao lado.</p>
-        <div id="organized"></div>
+        <div id="organized" class="fill"></div>
       </div>
 
       <div class="panel" id="p-vague" hidden>
         <div class="panel-head"><h3>Palavras vagas</h3><span class="tag warn">recomendado</span></div>
         <p class="panel-desc">Palavras que podem significar muita coisa. Explique o que você quis dizer: a explicação entra no prompt ao lado da palavra. Se for uma citação, use aspas ou um marcador.</p>
-        <div id="vagueBox"></div>
+        <div id="vagueBox" class="fill"></div>
       </div>
 
       <div class="panel" id="p-miss" hidden>
         <div class="panel-head"><h3>O que falta</h3><span class="tag warn">recomendado</span></div>
         <p class="panel-desc">Categorias que não apareceram no seu texto, separadas em recomendadas e opcionais. Clique numa opção pronta ou escreva a sua.</p>
-        <div id="missBox"></div>
+        <div id="missBox" class="fill"></div>
       </div>
 
       <div class="panel" id="p-warn" hidden>
         <div class="panel-head"><h3>Avisos</h3><span class="tag warn">recomendado</span></div>
         <p class="panel-desc">Coisas no texto que podem confundir a IA: referências soltas, formato sem tamanho, citações quebradas.</p>
-        <div id="warnBox"></div>
+        <div id="warnBox" class="fill"></div>
       </div>
 
       <div class="panel" id="p-spell" hidden>
         <div class="panel-head"><h3>Ortografia</h3><span class="tag warn">recomendado</span></div>
         <p class="panel-desc">Palavras que não estão entre as 50 mil mais usadas do português do Brasil. Pode ser erro, ou só uma palavra rara: clique em “está certo” para ela não aparecer mais.</p>
-        <div id="spellBox"></div>
+        <div id="spellBox" class="fill"></div>
       </div>
 
       <div class="panel" id="p-role" hidden>
@@ -284,6 +305,43 @@ details.how dd{margin:0;color:var(--muted)}
     </section>
   </div>
 </main>
+<footer class="site">
+  <div class="cols">
+    <div>
+      <h4>Prompt Builder</h4>
+      <p>Organiza o que você quer pedir para uma IA em um prompt claro, em inglês. Funciona com regras simples: nenhuma IA lê ou responde o seu texto aqui.</p>
+    </div>
+    <div>
+      <h4>Privacidade</h4>
+      <ul>
+        <li>O texto fica no seu navegador.</li>
+        <li>Só sai do computador se você ligar a tradução online (MyMemory).</li>
+        <li>Imagens nunca são enviadas.</li>
+        <li>Preferências ficam salvas só neste navegador.</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Atalhos</h4>
+      <ul>
+        <li><kbd>Ctrl</kbd> + <kbd>Enter</kbd> gera o prompt</li>
+        <li><kbd>Ctrl</kbd> + <kbd>V</kbd> cola um print</li>
+        <li><code>///assim///</code> marca uma citação</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Dicas para um bom prompt</h4>
+      <ul>
+        <li>Comece com um verbo: escreva, crie, corrija…</li>
+        <li>Diga para quem é e em que formato.</li>
+        <li>Dê um exemplo do que você quer.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="bottom">
+    <span>Código aberto no <a href="https://github.com/anabregolin/prompt-builder" target="_blank" rel="noopener">GitHub</a></span>
+    <span>Tradução: tradutor do Chrome ou MyMemory · Leitura de imagens: Tesseract.js · Ortografia: lista de frequência do português (FrequencyWords)</span>
+  </div>
+</footer>
 
 <script>
 /* ================= categorias ================= */
@@ -364,6 +422,8 @@ const hasWord = (text, kw) => new RegExp("(^|[^a-z0-9])"+reEsc(kw)+"([^a-z0-9]|$
 // aspas duplas (retas ou curvas) e aspas simples usadas como citação. Parênteses NÃO contam.
 const QUOTE_RE = /["“”]([^"“”]{1,200})["“”]|(^|\s)['‘’]([^'‘’]{1,80})['‘’](?=[\s.,;:!?)]|$)/g;
 const stripQuotes = s => s.replace(QUOTE_RE, (m,a,pre) => (pre||"")+" ");
+const EMPTY = (ico, title, hint = "", good = false) => `<div class="empty-state ${good?"good-state":""}"><div class="ico">${ico}</div><b>${title}</b>${hint?`<span>${hint}</span>`:""}</div>`;
+const START = EMPTY("✍️", "Nada por aqui ainda", "Comece a escrever na caixa “Meu Texto”, lá em cima. Esta aba se preenche sozinha enquanto você digita.");
 const plural = (n, one, many) => `${n} ${n===1?one:many}`;
 const store = { get(k, d){ try{ const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); }catch{ return d; } },
                 set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch{} } };
@@ -649,7 +709,7 @@ function grouped(){
 }
 function renderOrganized(){
   const el = $("organized");
-  if (!items.length && !Object.values(extra).some(v=>v && v.trim())){ el.innerHTML = '<p class="empty">Comece a escrever em “Meu Texto” para ver a divisão aqui.</p>'; $("orgTitle").textContent = "Divisão"; return; }
+  if (!items.length && !Object.values(extra).some(v=>v && v.trim())){ el.innerHTML = EMPTY("🗂️", "A divisão aparece aqui", "Cada frase que você escrever em “Meu Texto” vira um tópico, numa caixa com a cor da categoria."); $("orgTitle").textContent = "Divisão"; return; }
   const g = grouped();
   const used = ORDER.filter(c=>g[c].length);
   const total = used.reduce((a,c)=>a+g[c].length,0);
@@ -702,7 +762,7 @@ function catBox(c, isMissing){
 
 function renderImprove(){
   const hasText = items.length > 0;
-  const startMsg = '<p class="empty">Comece a escrever em “Meu Texto”.</p>';
+  const startMsg = START;
   // palavras vagas
   const vague = hasText ? vagueFound() : [];
   $("vagueBox").innerHTML = !hasText ? startMsg :
@@ -710,7 +770,7 @@ function renderImprove(){
         <b>“${esc(k)}”</b>
         <input type="text" data-vague="${esc(k)}" placeholder="${esc(VAGUE[k])}" value="${esc(meanings[k]||"")}">
         <button class="ghost" data-ignore="${esc(k)}" title="Não é vago, pode manter">ok assim</button>
-      </div></div>`).join("") : `<div class="good">Nenhuma palavra vaga.</div>`;
+      </div></div>`).join("") : EMPTY("✓", "Nenhuma palavra vaga", "Seu texto não tem palavras que podem significar muita coisa.", true);
   setCount("p-vague", vague.filter(k => !(meanings[k]||"").trim()).length);
 
   // o que falta: recomendadas em cima, opcionais embaixo
@@ -724,12 +784,12 @@ function renderImprove(){
   if (!hasText) html = startMsg;
   else {
     const subs = [
-      ["req", "Recomendadas", missReq.length, "warn", missReq.length ? missReq.map(c => catBox(c, true)).join("") : `<div class="good">Nenhuma categoria recomendada faltando.</div>`],
-      ["opt", "Opcionais", missOpt.length + (noRole?1:0), "", (noRole ? `<div class="box done"><div class="boxhead"><b style="color:var(--c-role)">Papel da IA</b><span class="tag">opcional</span></div><p>Quem a IA deve ser: professor, designer, revisor…</p><button class="ghost" data-goto="p-role">Escolher na aba “Papel da IA”</button></div>` : "") + missOpt.map(c => catBox(c, true)).join("") || `<div class="good">Nenhuma opcional faltando.</div>`],
-      ["have", "Já tem no texto", rest.length, "ok", rest.length ? `<p class="note" style="margin:0 0 8px">Quer acrescentar algo nessas?</p>` + rest.map(c => catBox(c, false)).join("") : `<p class="empty">Nenhuma ainda.</p>`],
+      ["req", "Recomendadas", missReq.length, "warn", missReq.length ? missReq.map(c => catBox(c, true)).join("") : EMPTY("✓", "Nenhuma recomendada faltando", "Seu texto já tem tudo o que mais ajuda a IA. Veja as opcionais se quiser caprichar.", true)],
+      ["opt", "Opcionais", missOpt.length + (noRole?1:0), "", (noRole ? `<div class="box done"><div class="boxhead"><b style="color:var(--c-role)">Papel da IA</b><span class="tag">opcional</span></div><p>Quem a IA deve ser: professor, designer, revisor…</p><button class="ghost" data-goto="p-role">Escolher na aba “Papel da IA”</button></div>` : "") + missOpt.map(c => catBox(c, true)).join("") || EMPTY("✓", "Nenhuma opcional faltando", "", true)],
+      ["have", "Já tem no texto", rest.length, "ok", rest.length ? `<p class="note" style="margin:0 0 8px">Quer acrescentar algo nessas?</p>` + rest.map(c => catBox(c, false)).join("") : EMPTY("📭", "Nenhuma ainda", "As categorias que aparecerem no seu texto ficam aqui, para você acrescentar detalhes.")],
     ];
     html = `<div class="tabs subtabs">${subs.map(([k,l,n,kind]) => `<button class="tab ${missSub===k?"active":""}" data-sub="${k}">${l} <span class="tag ${kind}">${n||""}</span></button>`).join("")}</div>` +
-      subs.map(([k,,,,body]) => `<div data-subpanel="${k}" ${missSub===k?"":"hidden"}>${body}</div>`).join("");
+      subs.map(([k,,,,body]) => `<div class="fill" data-subpanel="${k}" ${missSub===k?"":"hidden"}>${body}</div>`).join("");
   }
   $("missBox").innerHTML = html;
   $("missBox").querySelectorAll("[data-sub]").forEach(t => t.onclick = () => {
@@ -753,7 +813,7 @@ function renderImprove(){
   }
   $("warnBox").innerHTML = !hasText ? startMsg : warns.length
     ? warns.map(([t,w]) => `<div class="box vague"><b>${t}</b><div>${w}</div></div>`).join("")
-    : `<div class="good">Nenhum aviso.</div>`;
+    : EMPTY("✓", "Nenhum aviso", "Nada no texto parece confundir a IA.", true);
   setCount("p-warn", warns.length);
 
   refreshSpell();
@@ -781,11 +841,11 @@ function updateScore(){
 /* ================= ortografia ================= */
 let spellWorker = null, spellState = "idle", spellSeq = 0;
 function spellHTML(){
-  if (!items.length) return '<p class="empty">Comece a escrever em “Meu Texto”.</p>';
-  if (spellState === "loading") return `<p class="empty">Carregando lista de palavras do português… (alguns segundos)</p>`;
-  if (spellState === "error") return `<p class="empty">Não deu para carregar a lista de palavras. Os erros continuam sublinhados em vermelho na caixa de texto pelo próprio navegador.</p>`;
-  if (spellState === "checking" || spellState === "idle") return `<p class="empty">Verificando…</p>`;
-  if (!spellResults.length) return `<div class="good">Nenhum erro encontrado.</div>`;
+  if (!items.length) return START;
+  if (spellState === "loading") return EMPTY("⏳", "Carregando a lista de palavras…", "Leva alguns segundos na primeira vez.");
+  if (spellState === "error") return EMPTY("⚠️", "Não deu para carregar a lista de palavras", "Os erros continuam sublinhados em vermelho na caixa de texto pelo próprio navegador.");
+  if (spellState === "checking" || spellState === "idle") return EMPTY("🔎", "Verificando…");
+  if (!spellResults.length) return EMPTY("✓", "Nenhum erro de digitação", "Todas as palavras estão na lista do português.", true);
   return spellResults.map(r => `<div class="box spell"><b>${esc(r.w)}</b> ${r.s.length ? "→ " + r.s.map(s=>`<button class="chip" data-from="${esc(r.w)}" data-to="${esc(s)}">${esc(s)}</button>`).join(" ") : "<span class='note'>sem sugestão</span>"}
     <button class="ghost" data-keep="${esc(r.w)}" style="float:right">está certo</button></div>`).join("");
 }
@@ -893,6 +953,7 @@ function addFiles(files){
 }
 function renderImages(){
   setCount("p-img", images.length, "ok");
+  $("drop").classList.toggle("big", !images.length);
   $("images").innerHTML = images.map((im,idx) => `
     <div class="img">
       <img src="${im.url}" alt="Imagem ${idx+1}">
