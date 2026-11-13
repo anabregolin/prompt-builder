@@ -84,6 +84,7 @@ label.chk{font-size:14px;display:flex;gap:6px;align-items:center}
 .alert{background:var(--err-soft);color:var(--text)} .alert b{color:var(--err)}
 .good{background:var(--ok-soft);color:var(--ok);border-radius:8px;padding:10px;font-weight:600;font-size:14px}
 code{font-family:var(--mono);font-size:.92em;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:0 4px}
+.where{font-size:13px;color:var(--muted)} .where span{font-family:var(--mono);color:var(--text);background:var(--card);border-radius:4px;padding:1px 6px}
 mark{background:var(--err-soft);color:var(--err);border-radius:3px;padding:0 2px;font-weight:700}
 
 /* categorias em caixas coloridas */
@@ -365,12 +366,15 @@ function applyMarkers(text){
   return text;
 }
 // procura marcadores abertos, fechados longe demais ou pela metade
+const CH_NAME = {"/":"barras","*":"asteriscos","#":"cerquilhas","%":"sinais de %","-":"traços","_":"sublinhados","~":"tils","=":"sinais de ="};
+const many = (n, ch) => `${n} ${CH_NAME[ch] || "caracteres"}`;
 function markerIssues(text){
   const issues = [];
   const snippet = (i, len) => {
-    const a = Math.max(0, i-25), b = Math.min(text.length, i+len+25);
+    const a = Math.max(0, i-30), b = Math.min(text.length, i+len+30);
     return (a>0?"…":"") + esc(text.slice(a,i)) + "<mark>" + esc(text.slice(i,i+len)) + "</mark>" + esc(text.slice(i+len,b)) + (b<text.length?"…":"");
   };
+  const add = (title, how, i, len) => issues.push({title, how, where: snippet(i, len)});
   for (const m of activeMarkers()){
     if (m.open === m.close){
       // posições exatas do marcador (sem pegar pedaços de uma sequência maior)
@@ -382,7 +386,9 @@ function markerIssues(text){
           const len = r[0].length;
           if (len === m.open.length) pos.push(r.index);
           else if (len >= 2 && !(ch === "/" && text[r.index-1] === ":"))   // ignora https://
-            issues.push(`Encontrei <code>${esc(r[0])}</code> (${len} caracteres), mas o seu marcador é <code>${esc(m.open)}</code>. Faltou ou sobrou um caractere? ${snippet(r.index,len)}`);
+            add(len < m.open.length ? "Marcador incompleto?" : "Marcador com sobra?",
+                `Você escreveu <code>${esc(r[0])}</code> (${many(len,ch)}). O marcador de citação é <code>${esc(m.open)}</code> (${many(m.open.length,ch)}). Se era para marcar uma citação, ${len < m.open.length ? "acrescente mais" : "tire"} ${Math.abs(m.open.length-len) === 1 ? "1 " + (CH_NAME[ch] ? CH_NAME[ch].replace(/s( de .*)?$/, "$1") : "caractere") : many(Math.abs(m.open.length-len), ch)}. Se não era, pode ignorar.`,
+                r.index, len);
         }
       } else {
         let i = text.indexOf(m.open);
@@ -391,22 +397,22 @@ function markerIssues(text){
       for (let k = 0; k + 1 < pos.length; k += 2){
         const inner = text.slice(pos[k] + m.open.length, pos[k+1]);
         if (inner.length > 120 || /[.!?]\s|\n/.test(inner))
-          issues.push(`A citação com <code>${esc(m.open)}</code> fecha muito longe de onde abriu (atravessa frases ou passa de 120 letras). Confira se você fechou no lugar certo: ${snippet(pos[k], pos[k+1]-pos[k]+m.close.length)}`);
+          add("Citação longa demais?", `A citação começa num <code>${esc(m.open)}</code> e só termina bem depois, em outra frase. Talvez o fechamento esteja no lugar errado. Tudo o que está marcado abaixo vai ficar sem tradução.`, pos[k], pos[k+1]-pos[k]+m.close.length);
       }
-      if (pos.length % 2) issues.push(`O marcador <code>${esc(m.open)}</code> foi aberto e não foi fechado: ${snippet(pos[pos.length-1], m.open.length)}`);
+      if (pos.length % 2) add("Citação sem fechar", `Este <code>${esc(m.open)}</code> abre uma citação, mas não tem outro <code>${esc(m.open)}</code> depois para fechar. Coloque <code>${esc(m.open)}</code> no fim do trecho que é citação.`, pos[pos.length-1], m.open.length);
     } else {
       const re = new RegExp(`${reEsc(m.open)}|${reEsc(m.close)}`, "g"); let r, openAt = -1;
       while ((r = re.exec(text))){
-        if (r[0] === m.open){ if (openAt >= 0) issues.push(`<code>${esc(m.open)}</code> aberto de novo antes de fechar o anterior: ${snippet(r.index, m.open.length)}`); openAt = r.index; }
-        else { if (openAt < 0) issues.push(`<code>${esc(m.close)}</code> fechado sem ter sido aberto: ${snippet(r.index, m.close.length)}`);
-               else if (r.index - openAt > 120 || /[.!?]\s|\n/.test(text.slice(openAt, r.index))) issues.push(`A citação com <code>${esc(m.open)}…${esc(m.close)}</code> fecha muito longe de onde abriu: ${snippet(openAt, r.index-openAt+m.close.length)}`);
+        if (r[0] === m.open){ if (openAt >= 0) add("Citação aberta duas vezes", `Você abriu outra citação com <code>${esc(m.open)}</code> antes de fechar a anterior com <code>${esc(m.close)}</code>.`, r.index, m.open.length); openAt = r.index; }
+        else { if (openAt < 0) add("Fechamento sem abertura", `Este <code>${esc(m.close)}</code> fecha uma citação que não foi aberta. Falta um <code>${esc(m.open)}</code> antes.`, r.index, m.close.length);
+               else if (r.index - openAt > 120 || /[.!?]\s|\n/.test(text.slice(openAt, r.index))) add("Citação longa demais?", `A citação começa num <code>${esc(m.open)}</code> e só fecha bem depois, em outra frase. Talvez o fechamento esteja no lugar errado.`, openAt, r.index-openAt+m.close.length);
                openAt = -1; }
       }
-      if (openAt >= 0) issues.push(`<code>${esc(m.open)}</code> aberto e não fechado: ${snippet(openAt, m.open.length)}`);
+      if (openAt >= 0) add("Citação sem fechar", `Este <code>${esc(m.open)}</code> abre uma citação, mas falta o <code>${esc(m.close)}</code> no fim dela.`, openAt, m.open.length);
     }
   }
   const dq = [...text.matchAll(/"/g)].map(x=>x.index);
-  if (dq.length % 2) issues.push(`Tem uma aspa <code>"</code> sem par: ${snippet(dq[dq.length-1],1)}`);
+  if (dq.length % 2) add("Aspas sem par", `Tem uma aspa <code>"</code> sem a outra que fecha.`, dq[dq.length-1], 1);
   return issues;
 }
 function renderMarkers(){
@@ -557,7 +563,9 @@ $("input").addEventListener("input", () => {
 
 function renderMarkWarn(raw){
   const issues = markerIssues(raw);
-  $("markWarn").innerHTML = issues.map(i => `<div class="box alert" style="margin:8px 0 0"><b>Citação:</b> ${i}</div>`).join("");
+  $("markWarn").innerHTML = issues.map(i => `<div class="box alert" style="margin:8px 0 0"><b>⚠ ${i.title}</b>
+    <div style="margin:2px 0 6px">${i.how}</div>
+    <div class="where">Onde: <span>${i.where}</span></div></div>`).join("");
   window._markIssues = issues.length;
 }
 
