@@ -257,9 +257,8 @@ button.area.on{color:var(--text);background:var(--card);box-shadow:0 0 0 1px var
 .rolepicks button.pick{padding:6px 14px;font-size:14px}
 .tab .dot{width:7px;height:7px;border-radius:50%;background:var(--ok);display:inline-block}
 .opt.maxed:not(.on){opacity:.45}
-.role-preview{border-top:1px solid var(--line);margin-top:10px;padding-top:10px;font-size:13px}
-.role-preview b{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
-.role-preview pre{min-height:0;font-size:12.5px;padding:8px 10px;margin-top:4px;max-height:110px;overflow:auto}
+.role-says{margin:0 0 10px;padding:8px 12px;border-left:3px solid var(--c-role);background:color-mix(in srgb,var(--c-role) 10%,transparent);border-radius:0 8px 8px 0;font-size:14px;line-height:1.45}
+.role-says small{display:block;font-size:11px;color:var(--muted);margin-bottom:2px}
 .steps-hint{font-size:13px;color:var(--muted);margin:0 0 8px}
 .steps-hint b{color:var(--text)}
 @media (max-width:700px){ .edhint{display:none} .edbtn{padding:5px 8px;font-size:12px} }
@@ -369,6 +368,7 @@ button.area.on{color:var(--text);background:var(--card);box-shadow:0 0 0 1px var
       <div class="panel" id="p-role" hidden>
         <div class="panel-head"><h3>Papel da IA</h3><span class="tag">opcional</span></div>
         <p class="panel-desc">Quem a IA deve ser e como deve responder. Muda o foco, o vocabulário e a profundidade da resposta. Tudo aqui é opcional.</p>
+        <p class="role-says" id="rolePreview" hidden></p>
         <div class="tabs subtabs" id="roleTabs">
           <button class="tab active" data-rsub="who">Quem a IA é <span class="dot" id="rt-who" hidden></span></button>
           <button class="tab" data-rsub="area">Especialidade <span class="dot" id="rt-area" hidden></span></button>
@@ -422,9 +422,8 @@ button.area.on{color:var(--text);background:var(--card);box-shadow:0 0 0 1px var
 
         <div data-rpanel="lang" class="fill" hidden>
           <div class="opt-grid" id="langs"></div>
-          <p class="note">O prompt sai em inglês, então a IA tende a responder em inglês. Escolher a língua aqui evita isso.</p>
+          <p class="note">Se o prompt sair em inglês, a IA tende a responder em inglês. Escolher a língua aqui evita isso.</p>
         </div>
-        <div class="role-preview"><b>Como isso entra no seu prompt</b><pre id="rolePreview"></pre></div>
       </div>
 
       <div class="panel" id="p-img" hidden>
@@ -946,14 +945,10 @@ document.querySelectorAll("[data-rsub]").forEach(t => t.onclick = () => {
 const roleChosen = () => !!role.pick;
 async function renderRolePreview(){
   const el = $("rolePreview"); if (!el) return;
-  const lines = [];
+  // mostra só a frase que a IA vai ler sobre quem ela é; o resto já aparece nas próprias sub-abas
   const rs = await roleSentence("pt");
-  if (rs) lines.push("## Papel da IA", "- " + rs, "");
-  const how = BEHAVIORS.filter(b => prefs.behaviors[b[0]]).map(b => BEH_PT[b[0]]);
-  const ans = {pt:"Responda em português do Brasil.", en:"Responda em inglês.", es:"Responda em espanhol."}[prefs.lang];
-  if (ans) how.push(ans);
-  if (how.length) lines.push("## Como responder", ...how.map(h => "- " + h));
-  el.textContent = lines.length ? lines.join("\n") + (prefs.promptLang === "en" ? "\n\n(no prompt em inglês, isso sai traduzido)" : "") : "Nada escolhido ainda: o prompt sai sem papel e sem instruções de resposta.";
+  el.hidden = !rs;
+  el.innerHTML = rs ? `<small>A IA vai ler:</small>“${esc(rs)}”` : "";
 }
 async function roleSentence(lang = "en"){
   if (!roleChosen()) return "";
