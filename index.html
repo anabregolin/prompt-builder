@@ -43,15 +43,15 @@ h1{font-size:24px;margin:0 0 4px}
 .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
 .subtabs{margin-bottom:12px}
 .opt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
-button.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-weight:400;width:100%}
-button.opt:hover{border-color:var(--muted)}
-button.opt .check{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--muted);flex:none;display:grid;place-items:center;font-size:12px;line-height:1;color:#fff;margin-top:1px}
-button.opt.radio .check{border-radius:50%}
-button.opt.on{border-color:var(--accent);background:var(--accent-soft)}
-button.opt.on .check{background:var(--accent);border-color:var(--accent)}
-button.opt.on .check::after{content:"✓"}
-button.opt b{display:block;font-size:14px;font-weight:600}
-button.opt small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-weight:400;width:100%}
+.opt:hover{border-color:var(--muted)}
+.opt .check{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--muted);flex:none;display:grid;place-items:center;font-size:12px;line-height:1;color:#fff;margin-top:1px}
+.opt.radio .check{border-radius:50%}
+.opt.on{border-color:var(--accent);background:var(--accent-soft)}
+.opt.on .check{background:var(--accent);border-color:var(--accent)}
+.opt.on .check::after{content:"✓"}
+.opt b{display:block;font-size:14px;font-weight:600}
+.opt small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
 .group-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:14px 0 6px}
 .group-title:first-child{margin-top:0}
 label.field{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-top:14px}
@@ -137,12 +137,13 @@ details.how dd{margin:0;color:var(--muted)}
 .markers-list{display:flex;flex-direction:column;gap:6px}
 .markers-list label{font-size:14px}
 /* altura fixa: trocar de aba não muda o tamanho da página; o conteúdo rola por dentro */
-#boxConf .panel{height:clamp(380px,60vh,680px);overflow-y:auto;overscroll-behavior:contain;padding-right:6px;scrollbar-gutter:stable}
+#boxConf .panel{height:clamp(380px,60vh,680px);overflow:hidden}
 #panel-msg,#panel-out{min-height:430px}
 #output{max-height:min(55vh,560px);overflow-y:auto}
 #boxConf .panel{display:flex;flex-direction:column}
 #boxConf .panel[hidden],.fill[hidden]{display:none}
-.fill{flex:1;display:flex;flex-direction:column;min-height:0}
+.fill{flex:1;display:flex;flex-direction:column;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding-right:6px;scrollbar-gutter:stable}
+#missBox{overflow:hidden;padding-right:0}
 .empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px;color:var(--muted);border:1.5px dashed var(--line);border-radius:10px;padding:24px;font-size:14px;min-height:160px}
 .empty-state .ico{font-size:34px;line-height:1;margin-bottom:4px}
 .empty-state b{color:var(--text);font-size:15px}
@@ -161,6 +162,31 @@ footer.site a{color:var(--accent)}
 footer.site kbd{font-family:var(--mono);font-size:12px;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 5px;background:var(--card);color:var(--text)}
 footer.site .bottom{margin-top:20px;padding-top:14px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
 @media (max-width:600px){footer.site{padding:24px 16px 32px}}
+/* papel da IA */
+.role-bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.role-bar select{font-size:14px;padding:5px 8px}
+.chosen{font-size:13px;color:var(--muted);display:flex;gap:6px;align-items:center}
+.pick .x{margin-left:6px;opacity:.6}
+.pick .x:hover{opacity:1}
+.addbox{border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-top:16px;background:var(--bg)}
+.addbox h4{margin:0;font-size:14px}
+.addgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0 12px}
+.addgrid select{width:100%;margin-top:4px;font-size:14px;padding:6px 8px}
+/* citações */
+.mk-demo{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:6px}
+.mk-demo .lbl{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-bottom:4px}
+.mk-demo code{display:block;padding:6px 8px;font-size:13px;background:var(--card)}
+.mk-demo .arrow{font-size:20px;color:var(--accent)}
+@media (max-width:600px){.mk-demo{grid-template-columns:1fr}.mk-demo .arrow{transform:rotate(90deg);justify-self:center}}
+.opt code{font-size:14px;background:transparent;border:0;padding:0;font-weight:700}
+.opt .rm{margin-left:auto;align-self:center;background:transparent;color:var(--muted);border:1px solid var(--line);padding:2px 9px;font-size:12px;font-weight:500}
+.opt .rm:hover{color:var(--err);border-color:var(--err)}
+.opt.locked{opacity:.85;cursor:default}
+.mk-preview{margin-top:4px;font-family:var(--mono);font-size:14px;border:1px dashed var(--line);border-radius:6px;padding:6px 8px;color:var(--text);min-height:34px}
+ul.checks{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:6px}
+ul.checks li{font-size:13px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+ul.checks li::before{content:"⚠ ";color:var(--warn)}
+.err-text{color:var(--err);font-size:13px}
 </style>
 </head>
 <body>
@@ -254,31 +280,56 @@ footer.site .bottom{margin-top:20px;padding-top:14px;border-top:1px solid var(--
         <p class="panel-desc">Quem a IA deve ser e como deve responder. Muda o foco, o vocabulário e a profundidade da resposta. Tudo aqui é opcional.</p>
         <div class="tabs subtabs" id="roleTabs">
           <button class="tab active" data-rsub="who">Quem a IA é <span class="tag ok" id="rt-who"></span></button>
+          <button class="tab" data-rsub="area">Especialidade <span class="tag ok" id="rt-area"></span></button>
           <button class="tab" data-rsub="lvl">Experiência <span class="tag ok" id="rt-lvl"></span></button>
           <button class="tab" data-rsub="how">Como responder <span class="tag ok" id="rt-how"></span></button>
           <button class="tab" data-rsub="lang">Idioma da resposta <span class="tag ok" id="rt-lang"></span></button>
         </div>
 
-        <div data-rpanel="who">
-          <div id="roleChips"></div>
-          <label class="field">Não achou? Escreva o seu
-            <input type="text" id="roleCustom" placeholder="ex.: professora de história do ensino médio">
-          </label>
+        <div data-rpanel="who" class="fill">
+          <div class="role-bar">
+            <label class="chk" for="roleTag">Tag:</label>
+            <select id="roleTag"></select>
+            <span class="chosen" id="roleChosenLine"></span>
+          </div>
+          <div class="picks" id="roleChips"></div>
+          <div class="addbox">
+            <h4>Não achou? Adicione um papel</h4>
+            <div class="addgrid">
+              <label class="field">Nome do papel
+                <input type="text" id="newRoleName" placeholder="ex.: professora de história do ensino médio">
+              </label>
+              <label class="field">Tag
+                <select id="newRoleTag"></select>
+              </label>
+              <label class="field" id="newTagWrap" hidden>Nome da nova tag
+                <input type="text" id="newTagName" placeholder="ex.: Saúde">
+              </label>
+            </div>
+            <div class="row"><button id="addRole">Adicionar e escolher</button><span class="err-text" id="roleErr"></span></div>
+            <p class="note">Os papéis que você adicionar ficam salvos neste navegador.</p>
+          </div>
         </div>
 
-        <div data-rpanel="lvl" hidden>
-          <p class="note" style="margin:0 0 10px">Quanto a IA deve saber sobre o assunto. Quanto mais experiente, mais técnica e aprofundada tende a ser a resposta.</p>
-          <div class="opt-grid" id="levels"></div>
-          <label class="field" style="margin-top:14px">Especialidade (opcional)
+        <div data-rpanel="area" class="fill" hidden>
+          <p class="note" style="margin:0 0 4px">Um assunto específico dentro do papel. Ex.: um designer especializado em acessibilidade.</p>
+          <label class="field">Especialidade
             <input type="text" id="roleArea" placeholder="ex.: acessibilidade web, direito trabalhista, confeitaria…">
           </label>
+          <div class="group-title" style="margin-top:16px">Sugestões</div>
+          <div class="picks" id="areaChips"></div>
         </div>
 
-        <div data-rpanel="how" hidden>
+        <div data-rpanel="lvl" class="fill" hidden>
+          <p class="note" style="margin:0 0 10px">Quanto a IA deve saber sobre o assunto. Quanto mais experiente, mais técnica e aprofundada tende a ser a resposta.</p>
+          <div class="opt-grid" id="levels"></div>
+        </div>
+
+        <div data-rpanel="how" class="fill" hidden>
           <div id="behaviors"></div>
         </div>
 
-        <div data-rpanel="lang" hidden>
+        <div data-rpanel="lang" class="fill" hidden>
           <div class="opt-grid" id="langs"></div>
           <p class="note">O prompt sai em inglês, então a IA tende a responder em inglês. Escolher a língua aqui evita isso.</p>
         </div>
@@ -287,20 +338,41 @@ footer.site .bottom{margin-top:20px;padding-top:14px;border-top:1px solid var(--
       <div class="panel" id="p-img" hidden>
         <div class="panel-head"><h3>Imagens e prints</h3><span class="tag">opcional</span></div>
         <p class="panel-desc">A página não “enxerga” a imagem, porque isso exigiria IA. Ela lê o texto que aparece na imagem (no seu navegador), coloca no prompt a sua explicação e liga as frases que falam de “imagem” ou “print” ao anexo.</p>
-        <div class="drop" id="drop">📎 Anexar imagem ou print: arraste aqui, clique ou cole (Ctrl+V)</div>
-        <input type="file" id="file" accept="image/*" multiple hidden>
-        <div id="images"></div>
+        <div class="fill">
+          <div class="drop" id="drop">📎 Anexar imagem ou print: arraste aqui, clique ou cole (Ctrl+V)</div>
+          <input type="file" id="file" accept="image/*" multiple hidden>
+          <div id="images"></div>
+        </div>
       </div>
 
       <div class="panel" id="p-marks" hidden>
         <div class="panel-head"><h3>Citações e marcadores</h3><span class="tag">opcional</span></div>
         <p class="panel-desc">O que estiver entre estes sinais é tratado como citação: vai para o prompt exatamente como você escreveu, sem tradução e sem virar “palavra vaga”. Parênteses comuns não contam como citação.</p>
-        <div class="markers-list" id="markerList"></div>
-        <div class="row">
-          <input type="text" id="newMarker" placeholder="Novo marcador: ex. %% (abre e fecha igual) ou <<…>> (abre << e fecha >>)" style="flex:1;min-width:220px;font-family:var(--mono)">
-          <button class="ghost" id="addMarker">Adicionar</button>
+        <div class="fill">
+          <div class="mk-demo">
+            <div><span class="lbl">Você escreve</span><code>tire ///o botão azul/// daqui</code></div>
+            <span class="arrow">→</span>
+            <div><span class="lbl">No prompt</span><code>Remove "o botão azul" from here</code></div>
+          </div>
+          <div class="group-title" style="margin-top:16px">Marcadores (clique para ligar ou desligar)</div>
+          <div class="opt-grid" id="markerList"></div>
+          <div class="addbox">
+            <h4>Criar um marcador</h4>
+            <div class="addgrid">
+              <label class="field">Abre com <input type="text" id="mkOpen" maxlength="5" placeholder="ex.: %%" style="font-family:var(--mono)"></label>
+              <label class="field">Fecha com <input type="text" id="mkClose" maxlength="5" placeholder="igual ao de abrir" style="font-family:var(--mono)"></label>
+              <div class="field">Prévia <div class="mk-preview" id="mkPreview"></div></div>
+            </div>
+            <div class="row"><button id="addMarker">Adicionar marcador</button><span class="err-text" id="mkErr"></span></div>
+          </div>
+          <div class="group-title" style="margin-top:16px">A página avisa, abaixo da sua mensagem, quando</div>
+          <ul class="checks">
+            <li>um marcador abre e não fecha</li>
+            <li>fecha longe demais, em outra frase</li>
+            <li>aparece pela metade, como <code>//</code> em vez de <code>///</code></li>
+            <li>uma aspa fica sem par</li>
+          </ul>
         </div>
-        <p class="note">Se um marcador ficar aberto, fechar longe demais ou aparecer pela metade (ex.: <code>//</code> em vez de <code>///</code>), aparece um aviso logo abaixo da sua mensagem.</p>
       </div>
     </section>
   </div>
@@ -506,12 +578,33 @@ function markerIssues(text){
   return issues;
 }
 function renderMarkers(){
+  const card = (m, on, extra, attrs) => { const p = parseMarker(m);
+    return `<div class="opt ${on?"on":""} ${extra}" ${attrs} role="button" tabindex="0" aria-pressed="${on}"><span class="check"></span>
+      <span><code>${esc(p.open)}assim${esc(p.close)}</code><small>${p.open===p.close ? `abre e fecha com ${esc(p.open)}` : `abre com ${esc(p.open)}, fecha com ${esc(p.close)}`}</small></span>`; };
   $("markerList").innerHTML =
-    `<label class="chk"><input type="checkbox" checked disabled> <code>"assim"</code> e <code>“assim”</code>: aspas sempre funcionam</label>` +
-    PRESET_MARKERS.map(m => { const p = parseMarker(m); return `<label class="chk"><input type="checkbox" data-mk="${esc(m)}" ${markerCfg.on[m]?"checked":""}> <code>${esc(p.open)}assim${esc(p.close)}</code></label>`; }).join("") +
-    markerCfg.custom.map((m,i) => { const p = parseMarker(m); return `<label class="chk"><input type="checkbox" checked disabled> <code>${esc(p.open)}assim${esc(p.close)}</code> <button class="ghost" data-rmk="${i}" style="padding:1px 8px">remover</button></label>`; }).join("");
-  document.querySelectorAll("[data-mk]").forEach(c => c.onchange = () => { markerCfg.on[c.dataset.mk] = c.checked; store.set("pb.markers2", markerCfg); analyze(); });
+    `<div class="opt on locked"><span class="check"></span><span><code>"assim"</code><small>aspas: sempre ligadas</small></span></div>` +
+    PRESET_MARKERS.map(m => card(m, !!markerCfg.on[m], "", `data-mk="${esc(m)}"`) + `</div>`).join("") +
+    markerCfg.custom.map((m,i) => card(m, true, "locked", "") + `<button class="rm" data-rmk="${i}" title="Remover">remover</button></div>`).join("");
+  document.querySelectorAll("[data-mk]").forEach(c => c.onclick = c.onkeydown = e => {
+    if (e.type === "keydown" && e.key !== "Enter" && e.key !== " ") return;
+    e.preventDefault(); markerCfg.on[c.dataset.mk] = !markerCfg.on[c.dataset.mk]; store.set("pb.markers2", markerCfg); renderMarkers(); analyze(); });
   document.querySelectorAll("[data-rmk]").forEach(b => b.onclick = () => { markerCfg.custom.splice(+b.dataset.rmk, 1); store.set("pb.markers2", markerCfg); renderMarkers(); analyze(); });
+}
+function mkPreview(){
+  const o = $("mkOpen").value.trim(), c = $("mkClose").value.trim() || o;
+  $("mkPreview").innerHTML = o ? `${esc(o)}assim${esc(c)} <span style="color:var(--muted)">→</span> "assim"` : `<span style="color:var(--muted)">escreva o sinal de abrir</span>`;
+  $("mkErr").textContent = "";
+}
+function addMarker(){
+  const o = $("mkOpen").value.trim(), c = $("mkClose").value.trim() || o;
+  const bad = x => !/^[^\p{L}\p{N}\s"“”]{1,5}$/u.test(x);
+  if (!o) return $("mkErr").textContent = "Escreva o sinal de abrir.";
+  if (bad(o) || bad(c)) return $("mkErr").textContent = "Use só símbolos (sem letras, números, espaços ou aspas).";
+  const raw = o === c ? o : `${o}…${c}`;
+  if (PRESET_MARKERS.includes(raw)) markerCfg.on[raw] = true;
+  else if (markerCfg.custom.includes(raw)) return $("mkErr").textContent = "Esse marcador já existe.";
+  else markerCfg.custom.push(raw);
+  store.set("pb.markers2", markerCfg); $("mkOpen").value = ""; $("mkClose").value = ""; mkPreview(); renderMarkers(); analyze();
 }
 
 /* ================= quebra em tópicos ================= */
@@ -599,7 +692,12 @@ const ROLE_GROUPS = [
     ["Crítico(a) sincero(a)", "a brutally honest critic who doesn't sugarcoat"],
     ["Advogado(a) do diabo", "a devil's advocate who challenges my ideas"]]],
 ];
-const ROLES = ROLE_GROUPS.flatMap(g => g[1]);
+const BUILTIN_ROLES = ROLE_GROUPS.flatMap(([tag, list]) => list.map(([name, en]) => ({name, en, tag})));
+let customRoles = store.get("pb.roles", []);   // [{name, tag}]
+const allRoles = () => [...BUILTIN_ROLES, ...customRoles.map(r => ({...r, custom:true}))];
+const allTags = () => [...new Set(allRoles().map(r => r.tag))];
+let roleTagSel = ROLE_GROUPS[0][0];
+const AREAS = ["acessibilidade web","SEO","design de interfaces","Python","JavaScript","marketing digital","e-commerce","direito trabalhista","educação infantil","ensino médio","redação acadêmica","recursos humanos","finanças pessoais","nutrição","saúde mental","fotografia","games","sustentabilidade"];
 const LEVELS = [
   ["", "Sem preferência", "A IA decide o nível."],
   ["experienced", "Experiente", "Como alguém com mais de 10 anos na área."],
@@ -620,21 +718,53 @@ const BEHAVIORS = [
   ["summary",  "Resumo no começo", "Duas linhas de resumo antes dos detalhes.", "Start with a 2-line summary, then the details.", false, "Tamanho e estrutura"],
   ["checklist","Próximos passos no fim", "Termina com uma lista do que fazer depois.", "End with a short list of next steps.", false, "Tamanho e estrutura"],
 ];
-let role = {pick:-1, level:""};
+let role = {pick:null, level:""};   // pick = nome do papel escolhido
 let prefs = store.get("pb.prefs", {});
 prefs = { behaviors: {...Object.fromEntries(BEHAVIORS.map(b=>[b[0], b[4]])), ...(prefs.behaviors||{})}, lang: prefs.lang ?? "pt" };
 const savePrefs = () => store.set("pb.prefs", prefs);
 const optBtn = (attrs, on, title, desc, radio) => `<button class="opt ${radio?"radio":""} ${on?"on":""}" ${attrs} aria-pressed="${on}"><span class="check"></span><span><b>${title}</b>${desc?`<small>${desc}</small>`:""}</span></button>`;
 
 function renderRoleChips(){
-  let i = 0;
-  $("roleChips").innerHTML = ROLE_GROUPS.map(([g, list]) => `<div class="group-title">${g}</div><div class="picks">${list.map(r => { const k = i++; return `<button class="pick ${role.pick===k?"on":""}" data-role="${k}">${r[0]}</button>`; }).join("")}</div>`).join("");
-  document.querySelectorAll("[data-role]").forEach(b => b.onclick = () => {
-    role.pick = role.pick === +b.dataset.role ? -1 : +b.dataset.role;
-    if (role.pick >= 0) $("roleCustom").value = "";
+  const tags = allTags();
+  if (!tags.includes(roleTagSel)) roleTagSel = tags[0];
+  const count = t => allRoles().filter(r => r.tag === t).length;
+  $("roleTag").innerHTML = tags.map(t => `<option value="${esc(t)}" ${t===roleTagSel?"selected":""}>${esc(t)} (${count(t)})</option>`).join("");
+  const newSel = $("newRoleTag").value;
+  $("newRoleTag").innerHTML = tags.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join("") + `<option value="__new">+ Criar nova tag…</option>`;
+  $("newRoleTag").value = newSel && (tags.includes(newSel) || newSel === "__new") ? newSel : roleTagSel;
+  $("newTagWrap").hidden = $("newRoleTag").value !== "__new";
+  $("roleChips").innerHTML = allRoles().filter(r => r.tag === roleTagSel).map(r =>
+    `<button class="pick ${role.pick===r.name?"on":""}" data-role="${esc(r.name)}">${esc(r.name)}${r.custom ? `<span class="x" data-delrole="${esc(r.name)}" title="Apagar este papel">✕</span>` : ""}</button>`).join("");
+  $("roleChosenLine").innerHTML = role.pick ? `Escolhido: <button class="pick on" data-unpick>${esc(role.pick)} <span class="x">✕</span></button>` : "Nenhum papel escolhido";
+  document.querySelectorAll("[data-role]").forEach(b => b.onclick = e => {
+    const del = e.target.closest("[data-delrole]");
+    if (del){ customRoles = customRoles.filter(r => r.name !== del.dataset.delrole); store.set("pb.roles", customRoles); if (role.pick === del.dataset.delrole) role.pick = null; }
+    else role.pick = role.pick === b.dataset.role ? null : b.dataset.role;
     renderRoleChips(); renderImprove(); changed();
   });
+  document.querySelectorAll("[data-unpick]").forEach(b => b.onclick = () => { role.pick = null; renderRoleChips(); renderImprove(); changed(); });
   roleTabTags();
+}
+function addRole(){
+  const name = $("newRoleName").value.trim();
+  const isNew = $("newRoleTag").value === "__new";
+  const tag = isNew ? $("newTagName").value.trim() : $("newRoleTag").value;
+  if (!name) return $("roleErr").textContent = "Escreva o nome do papel.";
+  if (!tag) return $("roleErr").textContent = "Escreva o nome da nova tag.";
+  if (allRoles().some(r => r.name.toLowerCase() === name.toLowerCase())) return $("roleErr").textContent = "Esse papel já existe.";
+  customRoles.push({name, tag}); store.set("pb.roles", customRoles);
+  role.pick = name; roleTagSel = tag;
+  $("newRoleName").value = ""; $("newTagName").value = ""; $("roleErr").textContent = "";
+  $("newRoleTag").value = tag;
+  renderRoleChips(); renderImprove(); changed();
+}
+function renderAreas(){
+  const cur = $("roleArea").value.trim().toLowerCase();
+  $("areaChips").innerHTML = AREAS.map(a => `<button class="pick ${cur===a.toLowerCase()?"on":""}" data-area="${esc(a)}">${esc(a)}</button>`).join("");
+  document.querySelectorAll("[data-area]").forEach(b => b.onclick = () => {
+    $("roleArea").value = cur === b.dataset.area.toLowerCase() ? "" : b.dataset.area;
+    renderAreas(); roleTabTags(); changed();
+  });
 }
 function renderLevels(){
   $("levels").innerHTML = LEVELS.map(([k,t,d]) => optBtn(`data-lvl="${k}"`, role.level===k, t, d, true)).join("");
@@ -656,7 +786,8 @@ function renderLangs(){
 function roleTabTags(){
   if (!$("rt-who")) return;
   $("rt-who").textContent = roleChosen() ? "✓" : "";
-  $("rt-lvl").textContent = role.level || $("roleArea").value.trim() ? "✓" : "";
+  $("rt-lvl").textContent = role.level ? "✓" : "";
+  $("rt-area").textContent = $("roleArea").value.trim() ? "✓" : "";
   const n = BEHAVIORS.filter(b => prefs.behaviors[b[0]]).length;
   $("rt-how").textContent = n ? String(n) : "";
   $("rt-lang").textContent = (LANGS.find(l => l[0]===prefs.lang)||[])[1]?.split(" ")[0] || "";
@@ -665,10 +796,12 @@ document.querySelectorAll("[data-rsub]").forEach(t => t.onclick = () => {
   document.querySelectorAll("[data-rsub]").forEach(x => x.classList.toggle("active", x === t));
   document.querySelectorAll("[data-rpanel]").forEach(p => p.hidden = p.dataset.rpanel !== t.dataset.rsub);
 });
-const roleChosen = () => role.pick >= 0 || $("roleCustom").value.trim() !== "";
+const roleChosen = () => !!role.pick;
 async function roleSentence(){
   if (!roleChosen()) return "";
-  let base = $("roleCustom").value.trim() ? await tr(applyMarkers($("roleCustom").value.trim())) : ROLES[role.pick][1];
+  const r = allRoles().find(x => x.name === role.pick);
+  if (!r) return "";
+  let base = r.en || await tr(applyMarkers(r.name));
   base = base.replace(/^(you are|you're)\s+/i,"").replace(/\.$/,"");
   if (!/^(a|an|the)\s/i.test(base)) base = (/^[aeiou]/i.test(base) ? "an " : "a ") + base;
   const lvl = role.level;
@@ -1043,7 +1176,7 @@ function annotate(text){
 }
 function signature(){
   return JSON.stringify([$("input").value, extra, meanings, [...ignoredVague], images.map(i=>[i.id,i.note,i.ocr]),
-    role.pick, $("roleCustom").value, role.level, $("roleArea").value, prefs, overrides, markerCfg, $("online").checked]);
+    role.pick, customRoles, role.level, $("roleArea").value, prefs, overrides, markerCfg, $("online").checked]);
 }
 // mostra se o prompt final está em dia com o que você escreveu
 function changed(){
@@ -1147,16 +1280,15 @@ drop.ondragover = e => { e.preventDefault(); drop.classList.add("over"); };
 drop.ondragleave = () => drop.classList.remove("over");
 drop.ondrop = e => { e.preventDefault(); drop.classList.remove("over"); addFiles(e.dataTransfer.files); };
 document.addEventListener("paste", e => { const f = [...(e.clipboardData?.files||[])]; if (f.length){ e.preventDefault(); addFiles(f); } });
-$("roleCustom").oninput = () => { if (role.pick >= 0 && $("roleCustom").value.trim()){ role.pick = -1; renderRoleChips(); } renderImprove(); roleTabTags(); changed(); };
-$("roleArea").oninput = () => { roleTabTags(); changed(); };
-$("addMarker").onclick = () => {
-  const v = $("newMarker").value.trim().replace("...", "…");
-  if (!v || v.length > 12 || /\s/.test(v.replace("…",""))) return;
-  if (!markerCfg.custom.includes(v) && !PRESET_MARKERS.includes(v)) markerCfg.custom.push(v);
-  if (PRESET_MARKERS.includes(v)) markerCfg.on[v] = true;
-  store.set("pb.markers2", markerCfg); $("newMarker").value = ""; renderMarkers(); analyze();
-};
-renderRoleChips(); renderLevels(); renderBehaviors(); renderLangs(); renderMarkers(); renderImages(); setStatus(); analyze();
+$("roleArea").oninput = () => { renderAreas(); roleTabTags(); changed(); };
+$("roleTag").onchange = e => { roleTagSel = e.target.value; renderRoleChips(); };
+$("newRoleTag").onchange = () => { $("newTagWrap").hidden = $("newRoleTag").value !== "__new"; if (!$("newTagWrap").hidden) $("newTagName").focus(); };
+$("addRole").onclick = addRole;
+$("newRoleName").onkeydown = $("newTagName").onkeydown = e => { if (e.key === "Enter") addRole(); };
+$("addMarker").onclick = addMarker;
+$("mkOpen").oninput = $("mkClose").oninput = mkPreview;
+$("mkOpen").onkeydown = $("mkClose").onkeydown = e => { if (e.key === "Enter") addMarker(); };
+renderRoleChips(); renderAreas(); renderLevels(); mkPreview(); renderBehaviors(); renderLangs(); renderMarkers(); renderImages(); setStatus(); analyze();
 </script>
 </body>
 </html>
