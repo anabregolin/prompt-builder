@@ -142,7 +142,7 @@ details.how dd{margin:0;color:var(--muted)}
 #output{max-height:min(55vh,560px);overflow-y:auto}
 #boxConf .panel{display:flex;flex-direction:column}
 #boxConf .panel[hidden],.fill[hidden]{display:none}
-.fill{flex:1;display:flex;flex-direction:column;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding-right:6px;scrollbar-gutter:stable}
+.fill{flex:1;display:flex;flex-direction:column;min-height:0;overflow-y:auto;padding-right:6px;scrollbar-gutter:stable}
 #missBox{overflow:hidden;padding-right:0}
 .empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px;color:var(--muted);border:1.5px dashed var(--line);border-radius:10px;padding:24px;font-size:14px;min-height:160px}
 .empty-state .ico{font-size:34px;line-height:1;margin-bottom:4px}
@@ -187,6 +187,11 @@ ul.checks{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:
 ul.checks li{font-size:13px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
 ul.checks li::before{content:"⚠ ";color:var(--warn)}
 .err-text{color:var(--err);font-size:13px}
+ul.have{margin:0 0 8px;padding-left:18px;font-size:14px}
+ul.have li{margin:2px 0}
+.vague .ctx{font-size:12px;color:var(--muted);margin:4px 0 0}
+.trwarn{background:var(--warn-soft);color:var(--text);border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.trwarn b{color:var(--warn)}
 </style>
 </head>
 <body>
@@ -200,7 +205,7 @@ ul.checks li::before{content:"⚠ ";color:var(--warn)}
       <li>Escreva o que você quer pedir na caixa <b>Meu Texto</b>, do jeito que vier.</li>
       <li>Enquanto você digita, a caixa <b>Minhas Configurações</b> já vai mostrando a divisão em categorias, as palavras vagas, o que falta e os erros de digitação. O número em cada aba mostra quantas coisas ainda pedem atenção ali.</li>
       <li>Complete o que quiser nas abas de baixo. Tudo o que você escrever ou escolher ali entra no prompt.</li>
-      <li>Clique em <b>Gerar Prompt</b>. O resultado aparece na aba <b>Prompt final</b>, em inglês. Se você mudar algo depois, a aba avisa que o prompt ficou <b>desatualizado</b>.</li>
+      <li>Clique em <b>Gerar Prompt</b>. O resultado aparece na aba <b>Prompt final</b>, em inglês ou português (você escolhe lá). Se você mudar algo depois, a aba avisa que o prompt ficou <b>desatualizado</b>.</li>
       <li>Copie, cole no chat da IA e anexe as imagens junto, se tiver.</li>
     </ol>
     <p class="note">Etiquetas: <span class="tag info">automático</span> a página faz sozinha · <span class="tag warn">recomendado</span> melhora muito o prompt · <span class="tag">opcional</span> use se quiser.</p>
@@ -227,6 +232,13 @@ ul.checks li::before{content:"⚠ ";color:var(--warn)}
       </div>
 
       <div id="panel-out" role="tabpanel" hidden>
+        <div class="row" style="margin:0 0 10px">
+          <span class="chk">Idioma do prompt:</span>
+          <button class="pick" data-plang="en">Inglês</button>
+          <button class="pick" data-plang="pt">Português</button>
+          <span class="note" style="margin:0">O prompt inteiro sai em um idioma só. Citações entre aspas ficam como você escreveu.</span>
+        </div>
+        <div class="trwarn" id="trWarn" hidden></div>
         <div class="stale" id="staleBanner" hidden>Você mudou algo depois de gerar o prompt. <button id="regen" style="padding:4px 12px;font-size:13px">Atualizar prompt</button></div>
         <pre id="output"></pre>
         <div class="tokens" id="tokens"></div>
@@ -253,7 +265,7 @@ ul.checks li::before{content:"⚠ ";color:var(--warn)}
 
       <div class="panel" id="p-vague" hidden>
         <div class="panel-head"><h3>Palavras vagas</h3><span class="tag warn">recomendado</span></div>
-        <p class="panel-desc">Palavras que podem significar muita coisa. Explique o que você quis dizer: a explicação entra no prompt ao lado da palavra. Se for uma citação, use aspas ou um marcador.</p>
+        <p class="panel-desc">Palavras que podem significar muita coisa, e palavras como “isso” ou “lá embaixo”, que quem lê o prompt não sabe a que se referem. Explique o que você quis dizer: a explicação entra no prompt ao lado da palavra. Se não for vago, clique em “ok assim”. Se for uma citação, use aspas ou um marcador.</p>
         <div id="vagueBox" class="fill"></div>
       </div>
 
@@ -265,7 +277,7 @@ ul.checks li::before{content:"⚠ ";color:var(--warn)}
 
       <div class="panel" id="p-warn" hidden>
         <div class="panel-head"><h3>Avisos</h3><span class="tag warn">recomendado</span></div>
-        <p class="panel-desc">Coisas no texto que podem confundir a IA: referências soltas, formato sem tamanho, citações quebradas.</p>
+        <p class="panel-desc">Coisas no texto que podem confundir a IA: formato sem tamanho, citações quebradas, mensagem curta, imagem sem explicação.</p>
         <div id="warnBox" class="fill"></div>
       </div>
 
@@ -436,12 +448,12 @@ const KW = {
   role: ["aja como","atue como","voce e um","voce e uma","seja um","seja uma","finja ser","faca o papel","papel de","como se fosse um","como se fosse uma"],
   goal: GOAL_VERBS,
   context: ["sou","trabalho","estou","tenho","temos","meu","minha","meus","minhas","nosso","nossa","projeto","empresa","porque","pois","situacao","cenario","atualmente","hoje","historico","ja tentei","contexto","area","negocio","curso","faculdade","site","app","aplicativo","sistema","ferramenta","pagina"],
-  problems: ["nao gostei","nao gosto","estranho","estranha","ruim","errado","errada","erro","bug","nao funciona","problema","quebrado","quebrada","feio","feia","confuso","confusa","nao entendeu","nao entende","nao aparece","travou","trava","lento","bagunca","incomoda","nao parece","parece que"],
+  problems: ["nao gostei","nao gosto","estranho","estranha","ruim","errado","errada","erro","bug","nao funciona","problema","quebrado","quebrada","feio","feia","confuso","confusa","nao entendeu","nao entende","nao aparece","travou","trava","lento","bagunca","incomoda","nao parece","parece que","bugado","bugada","bugando","bugou","bugs","esquisito","esquisita","misturado","misturada","misturando","quebrou","sumiu","sumindo","nao rola","nao da","nao consigo","nao deu","falha","falhando","travando","nao considerou","nao considera","mas apareceu","apareceu como","errou","nao mostra","nao abre","nao carrega","cortado","cortada"],
   audience: ["publico","leitor","leitores","cliente","clientes","iniciante","iniciantes","leigo","leigos","criancas","alunos","equipe","time","chefe","gestor","diretoria","usuarios","seguidores","investidores","recrutador","professor","especialistas","destinado"],
   format: ["formato","tabela","lista","bullets","topicos","paragrafo","paragrafos","json","markdown","codigo","e-mail","email","slides","passo a passo","resumo","palavras","paginas","linhas","caracteres","titulo","titulos","secoes","estrutura","csv","roteiro","post","artigo"],
   tone: ["tom","formal","informal","descontraido","profissional","tecnico","amigavel","direto","criativo","estilo","serio","divertido","humor","empatico","persuasivo","didatico","educado","simpatico","linguagem","casual","elegante"],
   constraints: ["nao","nunca","sem","evite","evitar","apenas","somente","so","maximo","minimo","ate","limite","prazo","obrigatorio","deve","precisa ter","nao pode","exceto","restricao","orcamento","sempre","o mais","possivel"],
-  examples: ["exemplo","exemplos","por exemplo","igual a","parecido","referencia","modelo","inspirado","como este","como esse"],
+  examples: ["exemplo","exemplos","por exemplo","igual a","parecido","referencias","de referencia","como referencia","uma referencia","modelo","inspirado","como este","como esse"],
 };
 const WEIGHT = {role:3, goal:1.2, context:.8, problems:1.6, audience:1.3, format:1.2, tone:1.3, constraints:1.1, examples:1.4};
 
@@ -635,8 +647,11 @@ function splitSentences(text){
   }
   return out.map(restore).map(cleanBullet).filter(s => s.replace(/[^\p{L}\p{N}]/gu,"").length > 2);
 }
+// abreviações comuns de quem digita rápido
+const SLANG = {n:"nao","ñ":"nao",nn:"nao",q:"que",oq:"o que",pq:"porque",vc:"voce",vcs:"voces",tb:"tambem",tbm:"tambem",ta:"esta",to:"estou",pra:"para",pro:"para o",msm:"mesmo",mt:"muito",mto:"muito",td:"tudo",tds:"todos",qnd:"quando",qdo:"quando",cmg:"comigo",hj:"hoje",obg:"obrigado",fds:"fim de semana",dps:"depois",agr:"agora",ngm:"ninguem",nd:"nada"};
+const unslang = n => n.replace(/(^|[^a-z0-9ñ])(ñ|[a-z]+)(?=[^a-z0-9]|$)/g, (m,p,w) => p + (SLANG[w] ?? w));
 function classify(sentence){
-  const n = norm(stripQuotes(sentence));
+  const n = unslang(norm(stripQuotes(sentence)));
   let best = "context", bestScore = 0;
   const hits = new Set();
   for (const c of ORDER){
@@ -718,9 +733,22 @@ const BEHAVIORS = [
   ["summary",  "Resumo no começo", "Duas linhas de resumo antes dos detalhes.", "Start with a 2-line summary, then the details.", false, "Tamanho e estrutura"],
   ["checklist","Próximos passos no fim", "Termina com uma lista do que fazer depois.", "End with a short list of next steps.", false, "Tamanho e estrutura"],
 ];
+const BEH_PT = {
+  ask: "Se algo estiver ambíguo ou faltando, me pergunte antes de responder.",
+  unsure: "Diga claramente quando não tiver certeza. Não invente.",
+  critic: "Seja crítica: aponte falhas, riscos e pontos fracos, mesmo os que eu não perguntei.",
+  steps: "Explique seu raciocínio passo a passo.",
+  plain: "Use linguagem simples; evite jargão ou explique quando usar.",
+  examples: "Inclua exemplos concretos.",
+  options: "Ofereça 2 ou 3 opções diferentes e diga qual recomenda e por quê.",
+  concise: "Seja direta. Sem enrolação nem introduções genéricas.",
+  detail: "Seja o mais detalhada e dividida possível: uma ideia por tópico.",
+  summary: "Comece com um resumo de 2 linhas e depois os detalhes.",
+  checklist: "Termine com uma lista curta de próximos passos.",
+};
 let role = {pick:null, level:""};   // pick = nome do papel escolhido
 let prefs = store.get("pb.prefs", {});
-prefs = { behaviors: {...Object.fromEntries(BEHAVIORS.map(b=>[b[0], b[4]])), ...(prefs.behaviors||{})}, lang: prefs.lang ?? "pt" };
+prefs = { behaviors: {...Object.fromEntries(BEHAVIORS.map(b=>[b[0], b[4]])), ...(prefs.behaviors||{})}, lang: prefs.lang ?? "pt", promptLang: prefs.promptLang ?? "en" };
 const savePrefs = () => store.set("pb.prefs", prefs);
 const optBtn = (attrs, on, title, desc, radio) => `<button class="opt ${radio?"radio":""} ${on?"on":""}" ${attrs} aria-pressed="${on}"><span class="check"></span><span><b>${title}</b>${desc?`<small>${desc}</small>`:""}</span></button>`;
 
@@ -797,19 +825,25 @@ document.querySelectorAll("[data-rsub]").forEach(t => t.onclick = () => {
   document.querySelectorAll("[data-rpanel]").forEach(p => p.hidden = p.dataset.rpanel !== t.dataset.rsub);
 });
 const roleChosen = () => !!role.pick;
-async function roleSentence(){
+async function roleSentence(lang = "en"){
   if (!roleChosen()) return "";
   const r = allRoles().find(x => x.name === role.pick);
   if (!r) return "";
+  const area = $("roleArea").value.trim();
+  if (lang === "pt"){
+    let t = `Você é ${r.name}${role.level === "expert" ? ", referência na área" : ""}.`;
+    if (role.level === "experienced") t += " Você tem mais de 10 anos de experiência.";
+    if (area) t += ` Sua especialidade é ${area}.`;
+    return t;
+  }
   let base = r.en || await tr(applyMarkers(r.name));
   base = base.replace(/^(you are|you're)\s+/i,"").replace(/\.$/,"");
   if (!/^(a|an|the)\s/i.test(base)) base = (/^[aeiou]/i.test(base) ? "an " : "a ") + base;
-  const lvl = role.level;
-  if (lvl === "experienced") base = base.replace(/^(a|an)\s+/i, "a senior ") + " with 10+ years of experience";
-  if (lvl === "expert") base = base.replace(/^(a|an)\s+/i, "a world-class ");
-  const area = $("roleArea").value.trim();
-  if (area) base += `, specialized in ${await tr(applyMarkers(area))}`;
-  return `You are ${base}.`;
+  if (role.level === "expert") base = base.replace(/^(a|an)\s+/i, "a world-class ");
+  let t = `You are ${base}.`;
+  if (role.level === "experienced") t += " You have 10+ years of experience.";
+  if (area) t += ` Your specialty is ${await tr(applyMarkers(area))}.`;
+  return t;
 }
 
 /* ================= análise ao vivo ================= */
@@ -860,6 +894,11 @@ function covered(c){
   if (c === "context") return items.some(it => it.cat === "context");   // só conta tópico de contexto de verdade
   return items.some(it => it.cat === c || (it.hits && it.hits.has(c)));
 }
+// palavras vagas + referências soltas ("isso", "ali", "lá embaixo"…), todas no mesmo lugar
+function allVague(){
+  return [...vagueFound().map(k => ({k, q: VAGUE[k]})),
+          ...looseRefs().map(r => ({k: r.word, q: `a que “${r.word}” se refere? Diga o nome da coisa.`, ctx: r.text}))];
+}
 function vagueFound(){
   const found = [];
   const all = norm(items.map(i=>stripQuotes(i.text)).join(" \n "));
@@ -872,10 +911,11 @@ function vagueFound(){
 function looseRefs(){
   const out = [];
   for (const it of items){
-    const n = norm(stripQuotes(it.text));
-    const first = n.split(/\s+/)[0];
+    const t = stripQuotes(it.text).toLowerCase();
+    const first = (t.trim().split(/\s+/)[0] || "").replace(/[^\p{L}]/gu, "");   // sem tirar acento: "está" (verbo) não é "esta"
+    const n = norm(t);
     const hit = (LOOSE_START.includes(first) ? first : null) || LOOSE_ANY.find(k => hasWord(n,k));
-    if (hit) out.push({text:it.text, word:hit});
+    if (hit && !ignoredVague.has(hit) && !out.some(o => o.word === hit)) out.push({text:it.text, word:hit});
   }
   return out;
 }
@@ -887,7 +927,7 @@ function catBox(c, isMissing){
   const tag = !isMissing ? `<span class="tag ok">já tem no texto</span>` : opt ? `<span class="tag">opcional</span>` : `<span class="tag warn">recomendado</span>`;
   return `<div class="box ${isMissing && !opt ? "miss" : "done"}">
     <div class="boxhead"><b style="color:var(--c-${c})">${CATS[c].pt}</b>${tag}</div>
-    <p>${isMissing ? MISSING_HELP[c] : "Quer acrescentar algo?"}</p>
+    ${isMissing ? `<p>${MISSING_HELP[c]}</p>` : `<p>No seu texto:</p><ul class="have">${items.filter(it => it.cat === c || it.hits.has(c)).map(it => `<li>${esc(it.text)}${it.cat !== c ? ` <span class="tag">também em ${CATS[it.cat].pt}</span>` : ""}</li>`).join("")}</ul><p>Quer acrescentar algo?</p>`}
     <div class="picks">${(BASES[c]||[]).map(b => `<button class="pick ${chosen.has(b)?"on":""}" data-base="${c}" data-val="${esc(b)}">${esc(b)}</button>`).join("")}</div>
     <input type="text" data-c="${c}" placeholder="Ou escreva aqui" value="${esc(extra[c]||"")}">
   </div>`;
@@ -897,14 +937,14 @@ function renderImprove(){
   const hasText = items.length > 0;
   const startMsg = START;
   // palavras vagas
-  const vague = hasText ? vagueFound() : [];
+  const vague = hasText ? allVague() : [];
   $("vagueBox").innerHTML = !hasText ? startMsg :
-    vague.length ? vague.map(k => `<div class="box vague"><div class="pair">
-        <b>“${esc(k)}”</b>
-        <input type="text" data-vague="${esc(k)}" placeholder="${esc(VAGUE[k])}" value="${esc(meanings[k]||"")}">
-        <button class="ghost" data-ignore="${esc(k)}" title="Não é vago, pode manter">ok assim</button>
-      </div></div>`).join("") : EMPTY("✓", "Nenhuma palavra vaga", "Seu texto não tem palavras que podem significar muita coisa.", true);
-  setCount("p-vague", vague.filter(k => !(meanings[k]||"").trim()).length);
+    vague.length ? vague.map(v => `<div class="box vague"><div class="pair">
+        <b>“${esc(v.k)}”</b>
+        <input type="text" data-vague="${esc(v.k)}" placeholder="${esc(v.q)}" value="${esc(meanings[v.k]||"")}">
+        <button class="ghost" data-ignore="${esc(v.k)}" title="Não é vago, pode manter">ok assim</button>
+      </div>${v.ctx ? `<p class="ctx">Em: “${esc(v.ctx)}”</p>` : ""}</div>`).join("") : EMPTY("✓", "Nenhuma palavra vaga", "Seu texto não tem palavras que podem significar muita coisa.", true);
+  setCount("p-vague", vague.filter(v => !(meanings[v.k]||"").trim()).length);
 
   // o que falta: recomendadas em cima, opcionais embaixo
   const cats = ORDER.filter(c => c !== "role");
@@ -919,7 +959,7 @@ function renderImprove(){
     const subs = [
       ["req", "Recomendadas", missReq.length, "warn", missReq.length ? missReq.map(c => catBox(c, true)).join("") : EMPTY("✓", "Nenhuma recomendada faltando", "Seu texto já tem tudo o que mais ajuda a IA. Veja as opcionais se quiser caprichar.", true)],
       ["opt", "Opcionais", missOpt.length + (noRole?1:0), "", (noRole ? `<div class="box done"><div class="boxhead"><b style="color:var(--c-role)">Papel da IA</b><span class="tag">opcional</span></div><p>Quem a IA deve ser: professor, designer, revisor…</p><button class="ghost" data-goto="p-role">Escolher na aba “Papel da IA”</button></div>` : "") + missOpt.map(c => catBox(c, true)).join("") || EMPTY("✓", "Nenhuma opcional faltando", "", true)],
-      ["have", "Já tem no texto", rest.length, "ok", rest.length ? `<p class="note" style="margin:0 0 8px">Quer acrescentar algo nessas?</p>` + rest.map(c => catBox(c, false)).join("") : EMPTY("📭", "Nenhuma ainda", "As categorias que aparecerem no seu texto ficam aqui, para você acrescentar detalhes.")],
+      ["have", "Já tem no texto", rest.length, "ok", rest.length ? rest.map(c => catBox(c, false)).join("") : EMPTY("📭", "Nenhuma ainda", "As categorias que aparecerem no seu texto ficam aqui, para você acrescentar detalhes.")],
     ];
     html = `<div class="tabs subtabs">${subs.map(([k,l,n,kind]) => `<button class="tab ${missSub===k?"active":""}" data-sub="${k}">${l} <span class="tag ${kind}">${n||""}</span></button>`).join("")}</div>` +
       subs.map(([k,,,,body]) => `<div class="fill" data-subpanel="${k}" ${missSub===k?"":"hidden"}>${body}</div>`).join("");
@@ -937,8 +977,6 @@ function renderImprove(){
   if (hasText){
     const all = norm(items.map(i=>i.text).join(" "));
     if (window._markIssues) warns.push(["Citações", `Há ${plural(window._markIssues,"problema","problemas")} com citações ou marcadores. Veja os avisos em vermelho logo abaixo da sua mensagem.`]);
-    for (const r of looseRefs())
-      warns.push(["Referência solta", `“${esc(r.word)}” em “${esc(r.text)}”. Quem lê o prompt não sabe do que você está falando. Diga o nome da coisa.`]);
     if (items.some(it=>it.cat==="format") && !/\d/.test(all) && !/(curto|longo|breve|detalhad)/.test(all))
       warns.push(["Formato sem tamanho", "Diga quantas palavras, linhas ou itens."]);
     if (all.split(/\s+/).length < 12) warns.push(["Mensagem curta", "Prompts melhores costumam ter contexto e detalhes."]);
@@ -954,7 +992,7 @@ function renderImprove(){
 }
 function bindImprove(){
   document.querySelectorAll("button[data-goto]").forEach(b => b.onclick = () => showConf(b.dataset.goto));
-  document.querySelectorAll("input[data-vague]").forEach(inp => inp.oninput = () => { meanings[inp.dataset.vague] = inp.value; setCount("p-vague", vagueFound().filter(k => !(meanings[k]||"").trim()).length); changed(); });
+  document.querySelectorAll("input[data-vague]").forEach(inp => inp.oninput = () => { meanings[inp.dataset.vague] = inp.value; setCount("p-vague", allVague().filter(v => !(meanings[v.k]||"").trim()).length); changed(); });
   document.querySelectorAll("button[data-ignore]").forEach(b => b.onclick = () => { ignoredVague.add(b.dataset.ignore); delete meanings[b.dataset.ignore]; renderImprove(); changed(); });
   document.querySelectorAll("input[data-c]").forEach(inp => inp.oninput = () => { extra[inp.dataset.c] = inp.value; renderOrganized(); updateScore(); changed(); });
   document.querySelectorAll("button[data-base]").forEach(b => b.onclick = () => {
@@ -1121,7 +1159,7 @@ async function runOCR(im){
 
 /* ================= tradução ================= */
 const cache = new Map();
-let translator = null, engine = "none", triedLocal = false;
+let translator = null, engine = "none", triedLocal = false, trFails = 0;
 const withTimeout = (p, ms) => Promise.race([p, new Promise((_,rej)=>setTimeout(()=>rej(new Error("timeout")), ms))]);
 async function initTranslator(){
   if (!triedLocal){
@@ -1130,6 +1168,10 @@ async function initTranslator(){
       if ("Translator" in self){
         const a = await withTimeout(Translator.availability({sourceLanguage:"pt", targetLanguage:"en"}), 3000);
         if (a === "available"){ translator = await withTimeout(Translator.create({sourceLanguage:"pt", targetLanguage:"en"}), 5000); engine = "local"; return; }
+        if (a === "downloadable" || a === "downloading"){   // o Chrome baixa o tradutor uma vez só
+          $("tstatus").textContent = "baixando o tradutor do Chrome (só na primeira vez)…"; $("tstatus").className = "tag";
+          translator = await withTimeout(Translator.create({sourceLanguage:"pt", targetLanguage:"en"}), 120000); engine = "local"; return;
+        }
       }
     }catch(e){ console.warn("Tradutor local indisponível:", e); }
   }
@@ -1151,13 +1193,15 @@ async function tr(text){
     }
   }catch(e){ console.warn(e); }
   if (out){ out = restore(out); cache.set(text,out); return out; }
+  if (engine !== "none") trFails++;
   return text;
 }
 function setStatus(){
   const b = $("tstatus"), n = $("tnote");
   if (engine === "local"){ b.textContent="tradução no navegador"; b.className="tag ok"; n.textContent="O prompt sai em inglês, traduzido no seu próprio navegador: o texto não sai do computador."; }
   else if (engine === "online"){ b.textContent="tradução online"; b.className="tag warn"; n.textContent="O prompt sai em inglês. O texto vai para o MyMemory (serviço externo) para ser traduzido. Não use com dados sensíveis. Imagens nunca são enviadas."; }
-  else { b.textContent="sem tradução"; b.className="tag warn"; n.textContent="Seu navegador não tem tradutor embutido (o Chrome 138+ tem). Os títulos saem em inglês, mas o conteúdo fica em português. Marque a tradução online para traduzir tudo."; }
+  else { b.textContent="sem tradução"; b.className="tag warn"; n.textContent="Seu navegador não tem tradutor embutido (o Chrome 138+ tem). Para sair em inglês, marque a tradução online."; }
+  if (prefs.promptLang === "pt"){ b.textContent="em português"; b.className="tag ok"; n.textContent="O prompt sai todo em português, sem tradução. Nada sai do seu computador."; }
 }
 
 /* ================= geração do prompt ================= */
@@ -1192,43 +1236,73 @@ async function generate(){
   showTab("out");
   await renderOutput();
 }
+const PT_HEAD = {images:"Imagens anexadas", how:"Como responder"};
+const EN_HEAD = {images:"Attached images", how:"How to respond"};
 async function renderOutput(){
   const seq = ++renderSeq;
   generatedSig = signature();
   const out = $("output");
+  $("trWarn").hidden = true;
   if (!items.length && !images.length && !Object.values(extra).some(v=>v&&v.trim())){ out.textContent = "Escreva algo na aba “Mensagem” primeiro."; $("tokens").innerHTML=""; setStatus(); changed(); return; }
-  if (!translator) await initTranslator();
+  let lang = prefs.promptLang;
+  if (lang === "en"){
+    if (!translator) await initTranslator();
+    // sem tradutor, o prompt sairia metade inglês, metade português: gera tudo em português e avisa
+    if (engine === "none") lang = "pt";
+  }
   setStatus();
-  if (engine !== "none"){ $("tstatus").textContent = "traduzindo…"; $("tstatus").className = "tag"; }
+  if (lang === "en"){ $("tstatus").textContent = "traduzindo…"; $("tstatus").className = "tag"; }
   out.textContent = "Gerando…";
+  trFails = 0;
+  const T = lang === "en" ? tr : (x => Promise.resolve(x));
+  const H = lang === "en" ? EN_HEAD : PT_HEAD;
   const g = grouped();
   let txt = "";
-  const rs = await roleSentence();
+  const rs = await roleSentence(lang);
   for (const c of ORDER){
-    const lines = await Promise.all(g[c].map(it => tr(annotate(it.text))));
+    const lines = await Promise.all(g[c].map(it => T(annotate(it.text))));
     if (c === "role" && rs) lines.unshift(rs);
     if (!lines.length) continue;
-    txt += `## ${CATS[c].en}\n` + lines.map(l=>`- ${l}`).join("\n") + "\n\n";
+    txt += `## ${lang === "en" ? CATS[c].en : CATS[c].pt}\n` + lines.map(l=>`- ${l}`).join("\n") + "\n\n";
   }
   if (images.length){
-    txt += "## Attached images\n";
+    txt += `## ${H.images}\n`;
     for (let i=0;i<images.length;i++){
       const im = images[i];
-      const note = im.note.trim() ? await tr(applyMarkers(im.note.trim())) : "(no description given)";
-      txt += `- Image ${i+1} (${im.name}, ${im.w}×${im.h}): ${note}\n`;
-      if (im.ocr && im.ocr.trim()) txt += `  - Text visible in the image (original language): "${im.ocr.trim().replace(/\s*\n\s*/g," / ")}"\n`;
+      const note = im.note.trim() ? await T(applyMarkers(im.note.trim())) : (lang === "en" ? "(no description given)" : "(sem descrição)");
+      txt += lang === "en" ? `- Image ${i+1} (${im.name}, ${im.w}×${im.h}): ${note}\n` : `- Imagem ${i+1} (${im.name}, ${im.w}×${im.h}): ${note}\n`;
+      if (im.ocr && im.ocr.trim()) txt += `  - ${lang === "en" ? "Text visible in the image (original language)" : "Texto que aparece na imagem"}: "${im.ocr.trim().replace(/\s*\n\s*/g," / ")}"\n`;
     }
     txt += "\n";
   }
-  const how = BEHAVIORS.filter(b => prefs.behaviors[b[0]]).map(b => b[3]);
-  if (prefs.lang === "pt") how.push("Answer in Brazilian Portuguese.");
-  if (prefs.lang === "en") how.push("Answer in English.");
-  if (prefs.lang === "es") how.push("Answer in Spanish.");
-  if (/["“”]/.test(txt)) how.push("Words in quotation marks are literal quotes from me or from the screen. Keep them as they are.");
-  if (how.length) txt += "## How to respond\n" + how.map(h=>`- ${h}`).join("\n");
+  const how = BEHAVIORS.filter(b => prefs.behaviors[b[0]]).map(b => lang === "en" ? b[3] : BEH_PT[b[0]]);
+  const ans = lang === "en" ? {pt:"Answer in Brazilian Portuguese.", en:"Answer in English.", es:"Answer in Spanish."}
+                            : {pt:"Responda em português do Brasil.", en:"Responda em inglês.", es:"Responda em espanhol."};
+  if (ans[prefs.lang]) how.push(ans[prefs.lang]);
+  if (/["“”]/.test(txt)) how.push(lang === "en" ? "Words in quotation marks are literal quotes from me or from the screen. Keep them as they are." : "Palavras entre aspas são citações literais, minhas ou da tela. Mantenha como estão.");
+  if (how.length) txt += `## ${H.how}\n` + how.map(h=>`- ${h}`).join("\n");
   if (seq !== renderSeq) return;
   out.textContent = txt.trim(); setStatus(); renderTokens(txt.trim()); changed();
+  // avisos de idioma
+  const w = $("trWarn");
+  if (prefs.promptLang === "en" && lang === "pt"){
+    w.innerHTML = `<b>Saiu em português.</b> Este navegador não tem tradutor, e traduzir só uma parte deixaria o prompt misturado. <button class="ghost" id="useOnline">Traduzir online (MyMemory)</button>`;
+    w.hidden = false;
+    $("useOnline").onclick = () => { $("online").checked = true; engine = "online"; cache.clear(); renderOutput(); };
+  } else if (lang === "en" && trFails){
+    w.innerHTML = `<b>${plural(trFails,"trecho ficou","trechos ficaram")} sem tradução</b> (o tradutor falhou). Tente de novo ou gere em português para não misturar. <button class="ghost" id="retryTr">Tentar de novo</button> <button class="ghost" id="toPt">Gerar em português</button>`;
+    w.hidden = false;
+    $("retryTr").onclick = renderOutput;
+    $("toPt").onclick = () => setPromptLang("pt");
+  }
 }
+function setPromptLang(l){
+  prefs.promptLang = l; savePrefs();
+  document.querySelectorAll("[data-plang]").forEach(b => b.classList.toggle("on", b.dataset.plang === l));
+  if (generatedSig !== null) renderOutput(); else changed();
+}
+document.querySelectorAll("[data-plang]").forEach(b => b.onclick = () => setPromptLang(b.dataset.plang));
+document.querySelectorAll("[data-plang]").forEach(b => b.classList.toggle("on", b.dataset.plang === prefs.promptLang));
 function imgTokens(im){   // ≈ largura×altura/750, imagem reduzida até 1568px no lado maior
   const scale = Math.min(1, 1568/Math.max(im.w, im.h));
   return Math.min(1600, Math.ceil((im.w*scale)*(im.h*scale)/750));
