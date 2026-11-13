@@ -205,8 +205,23 @@ ul.have li{margin:2px 0}
 .hl{position:absolute;inset:0;padding:10px;border:1px solid transparent;border-radius:8px;font:inherit;font-size:16px;line-height:1.5;white-space:pre-wrap;overflow-wrap:break-word;color:transparent;overflow:hidden;pointer-events:none;scrollbar-gutter:stable}
 #input{position:relative;z-index:1;background:transparent;line-height:1.5;scrollbar-gutter:stable;display:block}
 .hl mark{color:transparent;font-weight:inherit;padding:0;border-radius:3px;background:none}
-.hl mark.v{background:color-mix(in srgb,var(--accent) 30%,transparent)}
-.hl mark.d{background:color-mix(in srgb,var(--ok) 22%,transparent)}
+.hl .seg{background:color-mix(in srgb,var(--sc) 16%,transparent);box-shadow:-3px 0 0 var(--sc);border-top-left-radius:0;border-bottom-left-radius:0;border-radius:3px;-webkit-box-decoration-break:slice;box-decoration-break:slice}
+.hl mark.v{background:color-mix(in srgb,var(--accent) 45%,transparent)}
+.hl mark.d{background:color-mix(in srgb,var(--ok) 35%,transparent)}
+.hl mark.q{background:color-mix(in srgb,var(--c-examples) 22%,transparent);text-decoration:underline 2px var(--c-examples);text-underline-offset:4px}
+.hl .seg.alt{background:color-mix(in srgb,var(--sc) 30%,transparent)}
+.hl-legend .lg-cats{display:flex;gap:10px;flex-wrap:wrap}
+.hl-legend .lg-q{text-decoration:underline 2px var(--c-examples);text-underline-offset:3px;background:color-mix(in srgb,var(--c-examples) 22%,transparent);border-radius:3px;padding:0 2px}
+.hl-legend .lg-tip{flex-basis:100%}
+.edbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:0 0 8px}
+.edhint{font-size:12px;color:var(--muted);margin-right:4px}
+.edbtn{padding:5px 10px;font-size:13px;background:var(--bg);color:var(--text);border:1px solid var(--line)}
+.edbtn:disabled{opacity:.45;cursor:default}
+.edbtn:not(:disabled):hover{border-color:var(--accent)}
+.gobox{border:1px dashed var(--line);border-radius:10px;padding:22px;text-align:center;color:var(--muted)}
+.gobox p{margin:0 0 12px}
+.btnlink{display:inline-block;margin-top:8px;padding:6px 12px;border-radius:8px;background:var(--accent);color:#fff;text-decoration:none;font-size:14px}
+.trwarn ol{margin:6px 0;padding-left:20px}
 .hl mark.s{text-decoration:underline wavy var(--err);text-decoration-skip-ink:none;text-underline-offset:3px}
 .hl mark.flash{animation:flash 1.4s ease-out}
 @keyframes flash{0%,40%{background:color-mix(in srgb,var(--accent) 70%,transparent)}}
@@ -241,6 +256,7 @@ select.nice:hover{border-color:var(--muted)}
 .role-preview pre{min-height:0;font-size:12.5px;padding:8px 10px;margin-top:4px;max-height:110px;overflow:auto}
 .steps-hint{font-size:13px;color:var(--muted);margin:0 0 8px}
 .steps-hint b{color:var(--text)}
+@media (max-width:700px){ .edhint{display:none} .edbtn{padding:5px 8px;font-size:12px} }
 </style>
 </head>
 <body>
@@ -254,7 +270,7 @@ select.nice:hover{border-color:var(--muted)}
       <li>Escreva o que você quer pedir na caixa <b>Meu Texto</b>, do jeito que vier.</li>
       <li>Enquanto você digita, a caixa <b>Minhas Configurações</b> já vai mostrando a divisão em categorias, as palavras vagas, o que falta e os erros de digitação. O número em cada aba mostra quantas coisas ainda pedem atenção ali.</li>
       <li>Complete o que quiser nas abas de baixo. Tudo o que você escrever ou escolher ali entra no prompt.</li>
-      <li>Clique em <b>Gerar Prompt</b>. O resultado aparece na aba <b>Prompt final</b>, em inglês ou português (você escolhe lá). Se você mudar algo depois, a aba avisa que o prompt ficou <b>desatualizado</b>.</li>
+      <li>Abra a aba <b>Prompt final</b> e clique em <b>Gerar Prompt</b> (ou aperte Ctrl+Enter no texto). O resultado sai, em inglês ou português (você escolhe lá). Se você mudar algo depois, a aba avisa que o prompt ficou <b>desatualizado</b>.</li>
       <li>Copie, cole no chat da IA e anexe as imagens junto, se tiver.</li>
     </ol>
     <p class="note">Etiquetas: <span class="tag info">automático</span> a página faz sozinha · <span class="tag warn">recomendado</span> melhora muito o prompt · <span class="tag">opcional</span> use se quiser.</p>
@@ -271,11 +287,17 @@ select.nice:hover{border-color:var(--muted)}
       </div>
 
       <div id="panel-msg" role="tabpanel">
+        <div class="edbar" id="edbar" role="toolbar" aria-label="Editar o trecho selecionado">
+          <span class="edhint" id="edHint">Selecione um trecho e escolha:</span>
+          <button class="edbtn" data-ed="quote" title="Põe o trecho entre aspas: vira citação e não é alterado nem traduzido">“ ” Citação</button>
+          <button class="edbtn" data-ed="unquote" title="Tira as aspas ou o marcador em volta do trecho">Tirar aspas</button>
+          <button class="edbtn" data-ed="split" title="Começa um assunto novo no início do trecho (ou onde está o cursor)">↵ Novo assunto</button>
+          <button class="edbtn" data-ed="join" title="Junta as frases do trecho num assunto só">⤺ Juntar frases</button>
+        </div>
         <div class="hl-wrap"><div class="hl" id="hl" aria-hidden="true"></div><textarea id="input" spellcheck="false" lang="pt-BR" placeholder="Ex.: Quero um e-mail para meu chefe pedindo férias em janeiro. Sou analista há 2 anos. Tom formal mas simpático, no máximo 150 palavras."></textarea></div>
         <div class="hl-legend" id="hlLegend" hidden></div>
         <div id="markWarn"></div>
         <div class="row">
-          <button id="go">Gerar Prompt</button>
           <button class="ghost" id="clear">Limpar tudo</button>
           <span class="score" id="score"></span>
         </div>
@@ -290,12 +312,12 @@ select.nice:hover{border-color:var(--muted)}
         </div>
         <div class="trwarn" id="trWarn" hidden></div>
         <div class="stale" id="staleBanner" hidden>Você mudou algo depois de gerar o prompt. <button id="regen" style="padding:4px 12px;font-size:13px">Atualizar prompt</button></div>
-        <pre id="output"></pre>
+        <div class="gobox" id="goBox"><p>O prompt é montado a partir da aba “Mensagem” e das suas configurações.</p><button id="go">Gerar Prompt</button></div>
+        <pre id="output" hidden></pre>
         <div class="tokens" id="tokens"></div>
-        <div class="row">
+        <div class="row" id="outRow" hidden>
           <button id="copy">Copiar prompt</button>
-          <button class="ghost" id="backMsg">← Voltar para a mensagem</button>
-          <label class="chk"><input type="checkbox" id="online"> Usar tradução online (MyMemory)</label>
+          <button class="ghost" id="regen2">Gerar de novo</button>
           <span class="tag" id="tstatus"></span>
         </div>
         <p class="note" id="tnote"></p>
@@ -457,7 +479,7 @@ select.nice:hover{border-color:var(--muted)}
       <h4>Privacidade</h4>
       <ul>
         <li>O texto fica no seu navegador.</li>
-        <li>Só sai do computador se você ligar a tradução online (MyMemory).</li>
+        <li>Só sai do computador se você clicar em “Abrir no Google Tradutor”.</li>
         <li>Imagens nunca são enviadas.</li>
         <li>Preferências ficam salvas só neste navegador.</li>
       </ul>
@@ -481,7 +503,7 @@ select.nice:hover{border-color:var(--muted)}
   </div>
   <div class="bottom">
     <span>Código aberto no <a href="https://github.com/anabregolin/prompt-builder" target="_blank" rel="noopener">GitHub</a></span>
-    <span>Tradução: tradutor do Chrome ou MyMemory · Leitura de imagens: Tesseract.js · Ortografia: lista de frequência do português (FrequencyWords)</span>
+    <span>Tradução: tradutor embutido do Chrome · Leitura de imagens: Tesseract.js · Ortografia: lista de frequência do português (FrequencyWords)</span>
   </div>
 </footer>
 
@@ -501,7 +523,7 @@ const CATS = {
 const ORDER = Object.keys(CATS);
 const OPTIONAL = new Set(["examples","problems","role"]);
 
-const GOAL_VERBS = ["quero","queria","preciso","precisava","gostaria","quero que","gostaria que","crie","criar","faca","fazer","escreva","escrever","gere","gerar","explique","explicar","ajude","ajudar","analise","analisar","resuma","resumir","traduza","traduzir","monte","montar","desenvolva","desenvolver","liste","listar","compare","comparar","revise","revisar","corrija","corrigir","sugira","sugerir","planeje","planejar","otimize","melhore","melhorar","redija","elabore","calcule","organize","organizar","me de","me diga","adicione","adicionar","coloque","colocar","inclua","incluir","mostre","mostrar","identifique","identificar","mude","mudar","troque","trocar","remova","remover","tire","tirar","deixe","ponha","bote","implemente","implementar","arrume","arrumar","conserte","consertar","ajuste","ajustar","transforme","converta","descreva","descrever","verifique","verificar","encontre","procure","pesquise","recomende","avalie","avaliar","refaca","reescreva","atualize","separe","separar","destaque","relacione","relacionar","permita","permitir","avise","notifique","renomeie","repare","veja","olhe","padronize","deveria","deveriam","tem que","precisa","precisam","objetivo","meta"];
+const GOAL_VERBS = ["quero","queria","preciso","precisava","gostaria","quero que","gostaria que","crie","criar","faca","fazer","escreva","escrever","gere","gerar","explique","explicar","ajude","ajudar","analise","analisar","resuma","resumir","traduza","traduzir","monte","montar","desenvolva","desenvolver","liste","listar","compare","comparar","revise","revisar","corrija","corrigir","sugira","sugerir","planeje","planejar","otimize","melhore","melhorar","redija","elabore","calcule","organize","organizar","me de","me diga","adicione","adicionar","coloque","colocar","inclua","incluir","mostre","mostrar","identifique","identificar","mude","mudar","troque","trocar","remova","remover","tire","tirar","deixe","ponha","bote","implemente","implementar","arrume","arrumar","conserte","consertar","ajuste","ajustar","transforme","converta","descreva","descrever","verifique","verificar","encontre","procure","pesquise","recomende","avalie","avaliar","refaca","reescreva","atualize","separe","separar","destaque","relacione","relacionar","permita","permitir","avise","notifique","renomeie","repare","veja","olhe","padronize","poderia","poderiam","podia","seria bom","seria legal","deveria","deveriam","tem que","precisa","precisam","objetivo","meta"];
 const KW = {
   role: ["aja como","atue como","voce e um","voce e uma","seja um","seja uma","finja ser","faca o papel","papel de","como se fosse um","como se fosse uma"],
   goal: GOAL_VERBS,
@@ -552,7 +574,7 @@ const VAGUE = {
 const LOOSE_START = ["isso","isto","esse","essa","este","esta","ele","ela","eles","elas","aquilo","aquele","aquela"];
 const LOOSE_ANY = ["dele","dela","deles","delas","la embaixo","aqui embaixo","ali embaixo","la em cima","aqui em cima","ali"];
 const IMG_WORDS = ["imagem","imagens","print","prints","screenshot","foto","fotos","anexo","anexa","anexei","captura","tela","figura"];
-const SPELL_IGNORE = new Set(["oq","q","n","pq","vc","vcs","tb","tbm","ta","pra","msm","mt","mto","td","tds","qnd","qdo","cmg","hj","dps","agr","ngm","nd","blz","obg","nn","prompt","prompts","site","sites","app","apps","print","prints","screenshot","upload","download","bullet","bullets","token","tokens","email","e-mail","link","links","ok","online","offline","chat","layout","design","feedback","post","posts","login","web","bug","bugs","dark","mode","ia","ai","json","csv","markdown","pdf","github","google","claude","chatgpt","ctrl","tipo","tag","tags","tab","tabs"]);
+const SPELL_IGNORE = new Set(["oq","q","n","pq","vc","vcs","tb","tbm","ta","pra","msm","mt","mto","td","tds","qnd","qdo","cmg","hj","dps","agr","ngm","nd","blz","obg","nn","prompt","prompts","site","sites","app","apps","print","prints","screenshot","upload","download","bullet","bullets","token","tokens","email","e-mail","link","links","ok","online","offline","chat","layout","design","feedback","post","posts","login","web","bug","bugs","dark","mode","ia","ai","json","csv","markdown","pdf","github","google","claude","chatgpt","ctrl","tipo","tag","tags","tab","tabs","dai"]);
 try{ for (const w of JSON.parse(localStorage.getItem("pb.spellok")) || []) SPELL_IGNORE.add(w); }catch{}
 
 /* ================= utilidades ================= */
@@ -699,6 +721,10 @@ function splitSentences(text){
   const t = text.replace(QUOTE_RE, m => { quotes.push(m); return `\u0000${quotes.length-1}\u0000`; });
   const restore = s => s.replace(/\u0000(\d+)\u0000/g, (_,i) => quotes[+i]);
   const verbAlt = GOAL_VERBS.filter(v=>!v.includes(" ")).join("|");
+  // cada parágrafo (separado por linha em branco) é tratado à parte: frases de parágrafos diferentes nunca se juntam
+  return t.split(/\n[ \t]*\n/).flatMap(p => splitPara(p, restore, verbAlt));
+}
+function splitPara(t, restore, verbAlt){
   const out = [];
   for (const s of t.split(/(?<=[.!?;])\s+|\n+|\s+[–—]\s+(?=[A-ZÀ-Ú])/)){
     const byAnd = s.split(new RegExp(`\\s+(?:e|e também|e tambem|além disso|alem disso)\\s+(?=(?:${verbAlt})\\b)`, "i"));
@@ -715,7 +741,7 @@ function splitSentences(text){
   const list = out.map(restore).map(cleanBullet).filter(s => s.replace(/[^\p{L}\p{N}]/gu,"").length > 2);
   // frases que continuam a anterior ("Mesma coisa no que falta", "Isso precisa mudar", "Depois que seleciono")
   // ficam junto dela, para não perder o assunto
-  const CONT = /^(mesma coisa|o mesmo|a mesma|tambem acontece|depois que|depois de|apos|porque|pois|ja que|mas|so que|isso|isto|ai|entao|talvez|ou seja|inclusive|nem|por isso|senao|alias|e ai|tipo)\b/;
+  const CONT = /^(mesma coisa|o mesmo|a mesma|tambem acontece|depois que|depois de|apos|porque|pois|ja que|mas|so que|isso|isto|ai|entao|talvez|ou seja|inclusive|nem|por isso|senao|alias|e ai|tipo|dai|pode ate|pode tambem|ele|ela|eles|elas|ser um|ser uma|assim)\b/;
   const merged = [];
   for (const x of list){
     const n = unslang(norm(stripQuotes(x))).trim();
@@ -950,7 +976,7 @@ function analyze(){
   items = splitSentences(text).filter(t => { const k = norm(t); if (seen.has(k)) return false; seen.add(k); return true; })
     .map(t => { const r = classify(t); return {text:t, cat: overrides[t] || r.cat, hits:r.hits}; });
   renderMarkWarn(raw);
-  renderOrganized(); renderImprove(); updateScore(); changed();
+  renderOrganized(); renderImprove(); updateScore(); changed(); renderHL();
 }
 let anaTimer = null, spellTimer = null;
 $("input").addEventListener("input", () => {
@@ -1062,6 +1088,27 @@ function replaceInText(word, repl, exact){
 }
 /* ---- destaque colorido dentro da caixa de texto ---- */
 let hlRanges = [], goIdx = {};
+// onde começa cada tópico da divisão dentro do texto original (para pintar com a cor da categoria)
+function segRanges(raw){
+  const nraw = [...raw].map(ch => { const n = norm(ch); return n.length === 1 ? n : ch.toLowerCase().slice(0,1) || ch; }).join("");
+  if (nraw.length !== raw.length) return [];
+  const starts = []; let cur = 0;
+  for (const it of items){
+    const words = (norm(stripQuotes(it.text)).match(/[\p{L}\p{N}]+/gu) || []).slice(0, 3);
+    if (!words.length) continue;
+    const re = new RegExp(`(^|[^\\p{L}\\p{N}])(${words.map(reEsc).join("[^\\p{L}\\p{N}]+")})`, "gu");
+    re.lastIndex = cur;
+    const m = re.exec(nraw);
+    if (!m) continue;
+    const a = m.index + m[1].length;
+    starts.push({a, cat: it.cat}); cur = a + m[2].length;
+  }
+  return starts.map((x, i) => {
+    let b = i + 1 < starts.length ? starts[i+1].a : raw.length;
+    while (b > x.a && /\s/.test(raw[b-1])) b--;
+    return {a: x.a, b, cat: x.cat};
+  });
+}
 function renderHL(){
   const raw = $("input").value, ranges = [];
   if (items.length){
@@ -1071,18 +1118,37 @@ function renderHL(){
     }
     if (spellState === "done") for (const r of spellResults) for (const [a,b] of wordHits(raw, r.w)) ranges.push({a, b, kind: "s", key: r.w});
   }
-  ranges.sort((x,y) => x.a - y.a);
+  for (const [a,b] of protectedRanges(raw)) ranges.push({a, b, kind: "q"});
+  ranges.sort((x,y) => x.a - y.a || (x.kind === "q") - (y.kind === "q"));
   const clean = []; for (const r of ranges) if (!clean.length || r.a >= clean[clean.length-1].b) clean.push(r);
-  hlRanges = clean;
+  hlRanges = clean.filter(r => r.kind !== "q");
+  // marcas dentro de [a,b), cortadas nas bordas
+  const marks = (a, b) => {
+    let h = "", last = a;
+    for (const r of clean){
+      const x = Math.max(a, r.a), y = Math.min(b, r.b);
+      if (x >= y) continue;
+      h += esc(raw.slice(last, x)) + `<mark class="${r.kind}" data-a="${r.a}">${esc(raw.slice(x, y))}</mark>`; last = y;
+    }
+    return h + esc(raw.slice(last, b));
+  };
+  const segs = items.length ? segRanges(raw) : [];
   let html = "", last = 0;
-  for (const r of clean){ html += esc(raw.slice(last, r.a)) + `<mark class="${r.kind}" data-a="${r.a}">${esc(raw.slice(r.a, r.b))}</mark>`; last = r.b; }
-  $("hl").innerHTML = html + esc(raw.slice(last)) + "\n ";
+  segs.forEach((g, i) => {
+    html += marks(last, g.a) + `<span class="seg${i % 2 ? " alt" : ""}" style="--sc:var(--c-${g.cat})" title="${CATS[g.cat].pt}">${marks(g.a, g.b)}</span>`;
+    last = g.b;
+  });
+  $("hl").innerHTML = html + marks(last, raw.length) + "\n ";
   $("hl").scrollTop = $("input").scrollTop;
-  const kinds = new Set(clean.map(r => r.kind));
-  $("hlLegend").hidden = !kinds.size;
-  $("hlLegend").innerHTML = (kinds.has("v") ? `<span><i style="background:color-mix(in srgb,var(--accent) 30%,transparent)"></i>palavra vaga: clique nela para explicar</span>` : "") +
-    (kinds.has("d") ? `<span><i style="background:color-mix(in srgb,var(--ok) 22%,transparent)"></i>já explicada</span>` : "") +
-    (kinds.has("s") ? `<span><u style="text-decoration:underline wavy var(--err);text-underline-offset:3px">abc</u> possível erro de digitação: clique para ver sugestões</span>` : "");
+  const kinds = new Set(clean.map(r => r.kind)), cats = [...new Set(segs.map(g => g.cat))].sort((x,y) => ORDER.indexOf(x) - ORDER.indexOf(y));
+  $("hlLegend").hidden = !kinds.size && !cats.length;
+  $("hlLegend").innerHTML =
+    (cats.length ? `<span class="lg-cats">${cats.map(c => `<span><i style="background:color-mix(in srgb,var(--c-${c}) 22%,transparent);box-shadow:inset 3px 0 0 var(--c-${c})"></i>${CATS[c].pt}</span>`).join("")}</span>` : "") +
+    (kinds.has("q") ? `<span><u class="lg-q">“abc”</u> citação (fica como está)</span>` : "") +
+    (kinds.has("v") ? `<span><i style="background:color-mix(in srgb,var(--accent) 45%,transparent)"></i>palavra vaga: clique nela para explicar</span>` : "") +
+    (kinds.has("d") ? `<span><i style="background:color-mix(in srgb,var(--ok) 35%,transparent)"></i>já explicada</span>` : "") +
+    (kinds.has("s") ? `<span><u style="text-decoration:underline wavy var(--err);text-underline-offset:3px">abc</u> possível erro de digitação: clique para ver sugestões</span>` : "") +
+    (cats.length ? `<span class="lg-tip">A faixa no começo de cada cor mostra onde a página dividiu o texto. Dividiu errado? Selecione o trecho e use “Novo assunto” ou “Juntar frases”.</span>` : "");
 }
 // leva até a palavra no texto (a cada clique, vai para a próxima vez que ela aparece)
 function goToWord(word, exact){
@@ -1108,6 +1174,60 @@ $("input").addEventListener("click", () => {
   const box = document.querySelector(`[data-vbox="${CSS.escape(r.key)}"]`);
   if (box){ box.scrollIntoView({block: "nearest"}); box.animate([{outline: "2px solid var(--accent)"}, {outline: "2px solid transparent"}], {duration: 1400}); }
 });
+/* ---- barra de edição: age sobre o trecho selecionado ---- */
+function edState(){
+  const ta = $("input"), sel = ta.selectionStart !== ta.selectionEnd && document.activeElement === ta;
+  document.querySelectorAll("[data-ed]").forEach(b => b.disabled = b.dataset.ed !== "split" ? !sel : !ta.value.trim());
+}
+// troca [a,b) por txt mantendo o Ctrl+Z da caixa de texto
+function edReplace(a, b, txt, selA, selB){
+  const ta = $("input");
+  ta.focus(); ta.setSelectionRange(a, b);
+  if (!document.execCommand("insertText", false, txt)){ ta.setRangeText(txt, a, b, "end"); ta.dispatchEvent(new Event("input")); }
+  if (selA != null) ta.setSelectionRange(selA, selB);
+  renderHL(); edState();
+}
+const ED = {
+  quote(a, b, v){
+    while (a < b && /\s/.test(v[a])) a++;
+    while (b > a && /\s/.test(v[b-1])) b--;
+    if (a === b) return;
+    const inner = v.slice(a, b).replace(/["“”]/g, "");
+    edReplace(a, b, `“${inner}”`, a + 1, a + 1 + inner.length);
+  },
+  unquote(a, b, v){
+    const hit = protectedRanges(v).filter(([x,y]) => x < b && y > a).sort((p,q) => q[0] - p[0]);
+    if (!hit.length){ const t = v.slice(a, b).replace(/["“”]/g, ""); if (t !== v.slice(a, b)) edReplace(a, b, t, a, a + t.length); return; }
+    let lo = Math.min(...hit.map(h => h[0])), hi = Math.max(...hit.map(h => h[1])), seg = v.slice(lo, hi);
+    for (const [x, y] of hit){
+      let i = x - lo, j = y - lo;
+      while (/\s/.test(seg[i])) i++;
+      const mk = activeMarkers().find(m => seg.startsWith(m.open, i) && seg.slice(i, j).endsWith(m.close) && j - i > m.open.length + m.close.length);
+      const ol = mk ? mk.open.length : 1, cl = mk ? mk.close.length : 1;
+      seg = seg.slice(0, i) + seg.slice(i + ol, j - cl) + seg.slice(j);
+    }
+    edReplace(lo, hi, seg, lo, lo + seg.length);
+  },
+  split(a, b, v){
+    let x = a; while (x > 0 && /[ \t]/.test(v[x-1])) x--;
+    if (x === 0 || /\n[ \t]*\n$/.test(v.slice(0, x))) return toast("Isso já começa um assunto novo.");
+    while (x > 0 && v[x-1] === "\n") x--;
+    edReplace(x, a, "\n\n", x + 2, x + 2 + (b - a));
+    toast("Assunto novo criado: veja a cor mudar no texto.");
+  },
+  join(a, b, v){
+    let t = v.slice(a, b).replace(/\s*[.!?;…]+\s+(\p{L})/gu, (_, c) => ", " + c.toLowerCase()).replace(/\s*\n+\s*/g, ", ").replace(/,\s*,/g, ",");
+    if (t === v.slice(a, b)) return toast("Não achei pontos ou quebras de linha no trecho para juntar.");
+    edReplace(a, b, t, a, a + t.length);
+  },
+};
+document.querySelectorAll("[data-ed]").forEach(b => {
+  b.addEventListener("mousedown", e => e.preventDefault());   // não tira a seleção da caixa de texto
+  b.onclick = () => { const ta = $("input"); ED[b.dataset.ed](ta.selectionStart, ta.selectionEnd, ta.value); };
+});
+["select", "keyup", "mouseup", "focus", "blur", "input"].forEach(ev => $("input").addEventListener(ev, edState));
+document.addEventListener("selectionchange", edState);
+edState();
 function flashSaved(el){ el.classList.add("saved"); setTimeout(() => el.classList.remove("saved"), 1200); }
 
 let missSub = "req";   // sub-aba aberta em “O que falta”
@@ -1436,7 +1556,7 @@ async function initTranslator(){
       }
     }catch(e){ console.warn("Tradutor local indisponível:", e); }
   }
-  engine = $("online").checked ? "online" : "none";
+  engine = "none";
 }
 // trechos entre aspas viram marcadores e voltam intactos depois da tradução
 async function tr(text){
@@ -1447,11 +1567,6 @@ async function tr(text){
   let out = null;
   try{
     if (engine === "local") out = await translator.translate(masked);
-    else if (engine === "online"){
-      const r = await fetch("https://api.mymemory.translated.net/get?langpair=pt-BR|en&q="+encodeURIComponent(masked.slice(0,480)));
-      const j = await r.json();
-      if (j.responseStatus == 200) out = j.responseData.translatedText;
-    }
   }catch(e){ console.warn(e); }
   if (out){ out = restore(out); cache.set(text,out); return out; }
   if (engine !== "none") trFails++;
@@ -1460,8 +1575,7 @@ async function tr(text){
 function setStatus(){
   const b = $("tstatus"), n = $("tnote");
   if (engine === "local"){ b.textContent="tradução no navegador"; b.className="tag ok"; n.textContent="O prompt sai em inglês, traduzido no seu próprio navegador: o texto não sai do computador."; }
-  else if (engine === "online"){ b.textContent="tradução online"; b.className="tag warn"; n.textContent="O prompt sai em inglês. O texto vai para o MyMemory (serviço externo) para ser traduzido. Não use com dados sensíveis. Imagens nunca são enviadas."; }
-  else { b.textContent="sem tradução"; b.className="tag warn"; n.textContent="Seu navegador não tem tradutor embutido (o Chrome 138+ tem). Para sair em inglês, marque a tradução online."; }
+  else { b.textContent="sem tradutor no navegador"; b.className="tag warn"; n.textContent=""; }
   if (prefs.promptLang === "pt"){ b.textContent="em português"; b.className="tag ok"; n.textContent="O prompt sai todo em português, sem tradução. Nada sai do seu computador."; }
 }
 
@@ -1490,7 +1604,7 @@ function annotate(text){
 }
 function signature(){
   return JSON.stringify([$("input").value, extra, meanings, vagueDone, [...ignoredVague], images.map(i=>[i.id,i.note,i.ocr]),
-    role.pick, customRoles, role.level, $("roleArea").value, prefs, overrides, markerCfg, $("online").checked]);
+    role.pick, customRoles, role.level, $("roleArea").value, prefs, overrides, markerCfg]);
 }
 // mostra se o prompt final está em dia com o que você escreveu
 function changed(){
@@ -1524,7 +1638,7 @@ async function renderOutput(){
   const seq = ++renderSeq;
   generatedSig = signature();
   const out = $("output");
-  $("trWarn").hidden = true;
+  $("trWarn").hidden = true; out.hidden = false; $("goBox").hidden = true; $("outRow").hidden = false;
   if (!items.length && !images.length && !Object.values(extra).some(v=>v&&v.trim())){ out.textContent = "Escreva algo na aba “Mensagem” primeiro."; $("tokens").innerHTML=""; setStatus(); changed(); return; }
   if (isGibberish()){
     const l = prefs.promptLang;
@@ -1578,9 +1692,14 @@ async function renderOutput(){
   // avisos de idioma
   const w = $("trWarn");
   if (prefs.promptLang === "en" && lang === "pt"){
-    w.innerHTML = `<b>Saiu em português.</b> Este navegador não tem tradutor, e traduzir só uma parte deixaria o prompt misturado. <button class="ghost" id="useOnline">Traduzir online (MyMemory)</button>`;
+    w.innerHTML = `<b>Saiu em português porque este navegador não traduz sozinho.</b> Para ter em inglês, use outro app de tradução:
+      <ol><li>Clique em <b>Abrir no Google Tradutor</b> (o texto do prompt vai para o Google) ou copie o prompt e cole no tradutor que preferir (DeepL, por exemplo).</li>
+      <li>Copie o resultado em inglês e use na IA.</li></ol>
+      <span class="note" style="margin:0">Dica: o Chrome 138 ou mais novo traduz aqui mesmo, sem enviar o texto para ninguém.</span><br>
+      <a class="btnlink" id="gtrans" target="_blank" rel="noopener">Abrir no Google Tradutor ↗</a> <button class="ghost" id="toPt2">Prefiro em português</button>`;
     w.hidden = false;
-    $("useOnline").onclick = () => { $("online").checked = true; engine = "online"; cache.clear(); renderOutput(); };
+    $("gtrans").href = "https://translate.google.com/?sl=pt&tl=en&op=translate&text=" + encodeURIComponent(txt.trim().slice(0, 5000));
+    $("toPt2").onclick = () => setPromptLang("pt");
   } else if (lang === "en" && trFails){
     w.innerHTML = `<b>${plural(trFails,"trecho ficou","trechos ficaram")} sem tradução</b> (o tradutor falhou). Tente de novo ou gere em português para não misturar. <button class="ghost" id="retryTr">Tentar de novo</button> <button class="ghost" id="toPt">Gerar em português</button>`;
     w.hidden = false;
@@ -1629,7 +1748,7 @@ $("legend").innerHTML = ORDER.map(c=>`<dt style="color:var(--c-${c})">${CATS[c].
   `<dt>Tokens</dt><dd>Pedaços de texto que a IA conta para medir uso e limite. Em inglês, cerca de 4 letras por token. Imagens também gastam tokens. Prompts mais enxutos gastam menos.</dd>`;
 $("tab-msg").onclick = () => showTab("msg");
 $("tab-out").onclick = () => showTab("out");
-$("backMsg").onclick = () => showTab("msg");
+$("regen2").onclick = renderOutput;
 $("go").onclick = generate;
 $("regen").onclick = renderOutput;
 $("clear").onclick = () => { $("input").value=""; items=[]; overrides={}; extra={}; meanings={}; vagueDone={}; ignoredVague=new Set(); images=[]; spellResults=[]; renderImages(); analyze(); };
@@ -1638,7 +1757,6 @@ $("copy").onclick = async () => {
   try{ await navigator.clipboard.writeText(t); }catch{ const r=document.createRange(); r.selectNodeContents($("output")); getSelection().removeAllRanges(); getSelection().addRange(r); document.execCommand("copy"); }
   const b = $("copy"); b.textContent="Copiado ✓"; setTimeout(()=>b.textContent="Copiar prompt",1500);
 };
-$("online").onchange = e => { if (engine !== "local") engine = e.target.checked ? "online" : "none"; cache.clear(); if (generatedSig !== null) renderOutput(); };
 $("input").addEventListener("keydown", e => { if (e.key==="Enter" && (e.ctrlKey||e.metaKey)) generate(); });
 const drop = $("drop");
 drop.onclick = () => $("file").click();
