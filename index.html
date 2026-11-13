@@ -41,7 +41,21 @@ h1{font-size:24px;margin:0 0 4px}
 .tab{background:transparent;color:var(--muted);border-radius:8px 8px 0 0;padding:8px 14px;font-weight:600;border:0;border-bottom:2px solid transparent;margin-bottom:-1px;display:inline-flex;align-items:center;gap:6px}
 .tab:hover{color:var(--text)}
 .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
-.subtabs{margin-bottom:12px} .subtabs .tab{font-size:13px;padding:6px 12px}
+.subtabs{margin-bottom:12px}
+.opt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+button.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-weight:400;width:100%}
+button.opt:hover{border-color:var(--muted)}
+button.opt .check{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--muted);flex:none;display:grid;place-items:center;font-size:12px;line-height:1;color:#fff;margin-top:1px}
+button.opt.radio .check{border-radius:50%}
+button.opt.on{border-color:var(--accent);background:var(--accent-soft)}
+button.opt.on .check{background:var(--accent);border-color:var(--accent)}
+button.opt.on .check::after{content:"✓"}
+button.opt b{display:block;font-size:14px;font-weight:600}
+button.opt small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.group-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:14px 0 6px}
+.group-title:first-child{margin-top:0}
+label.field{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-top:14px}
+label.field input{margin-top:4px;font-weight:400} .subtabs .tab{font-size:13px;padding:6px 12px}
 
 /* etiquetas: um único padrão para tudo */
 .tag{display:inline-block;font-size:11px;font-weight:600;line-height:18px;padding:0 8px;border-radius:99px;background:var(--line);color:var(--muted);text-transform:none;letter-spacing:0;white-space:nowrap}
@@ -122,6 +136,10 @@ details.how dt{font-weight:600}
 details.how dd{margin:0;color:var(--muted)}
 .markers-list{display:flex;flex-direction:column;gap:6px}
 .markers-list label{font-size:14px}
+/* altura fixa: trocar de aba não muda o tamanho da página; o conteúdo rola por dentro */
+#boxConf .panel{height:clamp(380px,60vh,680px);overflow-y:auto;overscroll-behavior:contain;padding-right:6px;scrollbar-gutter:stable}
+#panel-msg,#panel-out{min-height:430px}
+#output{max-height:min(55vh,560px);overflow-y:auto}
 </style>
 </head>
 <body>
@@ -212,30 +230,37 @@ details.how dd{margin:0;color:var(--muted)}
 
       <div class="panel" id="p-role" hidden>
         <div class="panel-head"><h3>Papel da IA</h3><span class="tag">opcional</span></div>
-        <p class="panel-desc">Quem a IA deve ser e como deve responder. Muda o foco, o vocabulário e a profundidade da resposta.</p>
-        <div id="roleChips"></div>
-        <div class="row"><input type="text" id="roleCustom" placeholder="Ou escreva o seu: ex. professora de história do ensino médio"></div>
-        <div class="row">
-          <label class="chk" for="roleLevel">Experiência:</label>
-          <select id="roleLevel">
-            <option value="">— sem preferência</option>
-            <option value="experienced">Experiente (10+ anos)</option>
-            <option value="expert">Referência na área</option>
-          </select>
-          <input type="text" id="roleArea" placeholder="Especialidade (ex.: acessibilidade web)" style="flex:1;min-width:180px">
+        <p class="panel-desc">Quem a IA deve ser e como deve responder. Muda o foco, o vocabulário e a profundidade da resposta. Tudo aqui é opcional.</p>
+        <div class="tabs subtabs" id="roleTabs">
+          <button class="tab active" data-rsub="who">Quem a IA é <span class="tag ok" id="rt-who"></span></button>
+          <button class="tab" data-rsub="lvl">Experiência <span class="tag ok" id="rt-lvl"></span></button>
+          <button class="tab" data-rsub="how">Como responder <span class="tag ok" id="rt-how"></span></button>
+          <button class="tab" data-rsub="lang">Idioma da resposta <span class="tag ok" id="rt-lang"></span></button>
         </div>
-        <h4 style="margin:16px 0 6px">Como a IA deve responder</h4>
-        <div id="behaviors"></div>
-        <div class="row">
-          <label class="chk" for="answerLang">Responder em:</label>
-          <select id="answerLang">
-            <option value="pt">Português (Brasil)</option>
-            <option value="en">Inglês</option>
-            <option value="es">Espanhol</option>
-            <option value="">Tanto faz</option>
-          </select>
+
+        <div data-rpanel="who">
+          <div id="roleChips"></div>
+          <label class="field">Não achou? Escreva o seu
+            <input type="text" id="roleCustom" placeholder="ex.: professora de história do ensino médio">
+          </label>
         </div>
-        <p class="note">O prompt sai em inglês, então a IA tende a responder em inglês. Escolher a língua aqui evita isso.</p>
+
+        <div data-rpanel="lvl" hidden>
+          <p class="note" style="margin:0 0 10px">Quanto a IA deve saber sobre o assunto. Quanto mais experiente, mais técnica e aprofundada tende a ser a resposta.</p>
+          <div class="opt-grid" id="levels"></div>
+          <label class="field" style="margin-top:14px">Especialidade (opcional)
+            <input type="text" id="roleArea" placeholder="ex.: acessibilidade web, direito trabalhista, confeitaria…">
+          </label>
+        </div>
+
+        <div data-rpanel="how" hidden>
+          <div id="behaviors"></div>
+        </div>
+
+        <div data-rpanel="lang" hidden>
+          <div class="opt-grid" id="langs"></div>
+          <p class="note">O prompt sai em inglês, então a IA tende a responder em inglês. Escolher a língua aqui evita isso.</p>
+        </div>
       </div>
 
       <div class="panel" id="p-img" hidden>
@@ -478,73 +503,115 @@ function classify(sentence){
 }
 
 /* ================= papel da IA ================= */
-const ROLES = [
-  ["Professor(a)", "a patient teacher who explains things clearly, with examples"],
-  ["Tutor(a) de estudos", "a study tutor who checks my understanding as we go"],
-  ["Designer UX/UI", "a UX/UI designer"],
-  ["Designer gráfico", "a graphic designer"],
-  ["Programador(a)", "a software engineer"],
-  ["Desenvolvedor(a) web", "a front-end web developer"],
-  ["Analista de dados", "a data analyst"],
-  ["Redator(a) / copywriter", "a professional copywriter"],
-  ["Revisor(a) de texto", "a meticulous proofreader and editor"],
-  ["Escritor(a)", "a creative writer"],
-  ["Jornalista", "a journalist who values clarity and accuracy"],
-  ["Tradutor(a)", "a professional translator"],
-  ["Especialista em marketing", "a marketing strategist"],
-  ["Social media", "a social media manager"],
-  ["Consultor(a) de negócios", "a business consultant"],
-  ["Gerente de projetos", "a project manager"],
-  ["Gerente de produto", "a product manager"],
-  ["Recrutador(a) / RH", "an experienced recruiter and HR specialist"],
-  ["Coach de carreira", "a career coach"],
-  ["Pesquisador(a)", "a researcher who separates facts from assumptions"],
-  ["Cientista", "a scientist who explains the evidence behind each claim"],
-  ["Especialista em finanças pessoais", "a personal finance educator (general information, not personalized advice)"],
-  ["Especialista em acessibilidade", "an accessibility specialist"],
-  ["Engenheiro(a) de prompts", "a prompt engineer"],
-  ["Organizador(a) pessoal", "a personal productivity and organization expert"],
-  ["Chef de cozinha", "a professional chef"],
-  ["Crítico(a) sincero(a)", "a brutally honest critic who doesn't sugarcoat"],
-  ["Advogado(a) do diabo", "a devil's advocate who challenges my ideas"],
+const ROLE_GROUPS = [
+  ["Ensino", [
+    ["Professor(a)", "a patient teacher who explains things clearly, with examples"],
+    ["Tutor(a) de estudos", "a study tutor who checks my understanding as we go"],
+    ["Pesquisador(a)", "a researcher who separates facts from assumptions"],
+    ["Cientista", "a scientist who explains the evidence behind each claim"]]],
+  ["Design e tecnologia", [
+    ["Designer UX/UI", "a UX/UI designer"],
+    ["Designer gráfico", "a graphic designer"],
+    ["Programador(a)", "a software engineer"],
+    ["Desenvolvedor(a) web", "a front-end web developer"],
+    ["Analista de dados", "a data analyst"],
+    ["Especialista em acessibilidade", "an accessibility specialist"],
+    ["Engenheiro(a) de prompts", "a prompt engineer"]]],
+  ["Escrita", [
+    ["Redator(a) / copywriter", "a professional copywriter"],
+    ["Revisor(a) de texto", "a meticulous proofreader and editor"],
+    ["Escritor(a)", "a creative writer"],
+    ["Jornalista", "a journalist who values clarity and accuracy"],
+    ["Tradutor(a)", "a professional translator"]]],
+  ["Trabalho e negócios", [
+    ["Especialista em marketing", "a marketing strategist"],
+    ["Social media", "a social media manager"],
+    ["Consultor(a) de negócios", "a business consultant"],
+    ["Gerente de projetos", "a project manager"],
+    ["Gerente de produto", "a product manager"],
+    ["Recrutador(a) / RH", "an experienced recruiter and HR specialist"],
+    ["Coach de carreira", "a career coach"]]],
+  ["Dia a dia", [
+    ["Organizador(a) pessoal", "a personal productivity and organization expert"],
+    ["Especialista em finanças pessoais", "a personal finance educator (general information, not personalized advice)"],
+    ["Chef de cozinha", "a professional chef"]]],
+  ["Para desafiar suas ideias", [
+    ["Crítico(a) sincero(a)", "a brutally honest critic who doesn't sugarcoat"],
+    ["Advogado(a) do diabo", "a devil's advocate who challenges my ideas"]]],
 ];
+const ROLES = ROLE_GROUPS.flatMap(g => g[1]);
+const LEVELS = [
+  ["", "Sem preferência", "A IA decide o nível."],
+  ["experienced", "Experiente", "Como alguém com mais de 10 anos na área."],
+  ["expert", "Referência na área", "Como uma das pessoas que mais entendem do assunto."],
+];
+const LANGS = [["pt","Português (Brasil)"],["en","Inglês"],["es","Espanhol"],["","Tanto faz"]];
+// [chave, título, explicação, texto do prompt, ligado por padrão, grupo]
 const BEHAVIORS = [
-  ["ask",      "Perguntar antes de responder, se faltar algo", "If anything is ambiguous or missing, ask me before answering.", true],
-  ["unsure",   "Avisar quando não tiver certeza", "Say clearly when you are not sure. Don't make things up.", true],
-  ["steps",    "Explicar o raciocínio passo a passo", "Explain your reasoning step by step.", false],
-  ["critic",   "Ser crítica e apontar falhas", "Be critical: point out flaws, risks and weak spots, even ones I didn't ask about.", false],
-  ["options",  "Dar 2–3 opções e recomendar uma", "Offer 2–3 different options and say which one you recommend and why.", false],
-  ["concise",  "Ser direta, sem enrolação", "Be concise. Skip filler and generic intros.", false],
-  ["plain",    "Usar linguagem simples", "Use plain language; avoid jargon, or explain it when you use it.", false],
-  ["examples", "Dar exemplos concretos", "Include concrete examples.", false],
-  ["summary",  "Começar com um resumo de 2 linhas", "Start with a 2-line summary, then the details.", false],
-  ["detail",   "Ser o mais detalhada e dividida possível", "Be as detailed and broken down as possible: one idea per bullet.", false],
-  ["checklist","Terminar com próximos passos", "End with a short list of next steps.", false],
+  ["ask",      "Perguntar antes", "Se faltar informação, pergunta em vez de chutar.", "If anything is ambiguous or missing, ask me before answering.", true, "Cuidado"],
+  ["unsure",   "Avisar quando não souber", "Diz quando não tem certeza e não inventa.", "Say clearly when you are not sure. Don't make things up.", true, "Cuidado"],
+  ["critic",   "Ser crítica", "Aponta falhas e riscos, mesmo os que você não perguntou.", "Be critical: point out flaws, risks and weak spots, even ones I didn't ask about.", false, "Cuidado"],
+  ["steps",    "Mostrar o raciocínio", "Explica passo a passo como chegou à resposta.", "Explain your reasoning step by step.", false, "Jeito de explicar"],
+  ["plain",    "Linguagem simples", "Evita termos técnicos ou explica quando usar.", "Use plain language; avoid jargon, or explain it when you use it.", false, "Jeito de explicar"],
+  ["examples", "Exemplos concretos", "Mostra casos práticos, não só teoria.", "Include concrete examples.", false, "Jeito de explicar"],
+  ["options",  "Dar opções", "Traz 2 ou 3 caminhos e recomenda um.", "Offer 2–3 different options and say which one you recommend and why.", false, "Jeito de explicar"],
+  ["concise",  "Direta ao ponto", "Sem introdução genérica nem enrolação.", "Be concise. Skip filler and generic intros.", false, "Tamanho e estrutura"],
+  ["detail",   "Bem detalhada", "Uma ideia por tópico, o mais dividido possível.", "Be as detailed and broken down as possible: one idea per bullet.", false, "Tamanho e estrutura"],
+  ["summary",  "Resumo no começo", "Duas linhas de resumo antes dos detalhes.", "Start with a 2-line summary, then the details.", false, "Tamanho e estrutura"],
+  ["checklist","Próximos passos no fim", "Termina com uma lista do que fazer depois.", "End with a short list of next steps.", false, "Tamanho e estrutura"],
 ];
-let role = {pick:-1};
+let role = {pick:-1, level:""};
 let prefs = store.get("pb.prefs", {});
-prefs = { behaviors: {...Object.fromEntries(BEHAVIORS.map(b=>[b[0], b[3]])), ...(prefs.behaviors||{})}, lang: prefs.lang ?? "pt" };
+prefs = { behaviors: {...Object.fromEntries(BEHAVIORS.map(b=>[b[0], b[4]])), ...(prefs.behaviors||{})}, lang: prefs.lang ?? "pt" };
 const savePrefs = () => store.set("pb.prefs", prefs);
+const optBtn = (attrs, on, title, desc, radio) => `<button class="opt ${radio?"radio":""} ${on?"on":""}" ${attrs} aria-pressed="${on}"><span class="check"></span><span><b>${title}</b>${desc?`<small>${desc}</small>`:""}</span></button>`;
 
 function renderRoleChips(){
-  $("roleChips").innerHTML = `<div class="picks">${ROLES.map((r,i)=>`<button class="pick ${role.pick===i?"on":""}" data-role="${i}">${r[0]}</button>`).join("")}</div>`;
+  let i = 0;
+  $("roleChips").innerHTML = ROLE_GROUPS.map(([g, list]) => `<div class="group-title">${g}</div><div class="picks">${list.map(r => { const k = i++; return `<button class="pick ${role.pick===k?"on":""}" data-role="${k}">${r[0]}</button>`; }).join("")}</div>`).join("");
   document.querySelectorAll("[data-role]").forEach(b => b.onclick = () => {
     role.pick = role.pick === +b.dataset.role ? -1 : +b.dataset.role;
     if (role.pick >= 0) $("roleCustom").value = "";
     renderRoleChips(); renderImprove(); changed();
   });
+  roleTabTags();
+}
+function renderLevels(){
+  $("levels").innerHTML = LEVELS.map(([k,t,d]) => optBtn(`data-lvl="${k}"`, role.level===k, t, d, true)).join("");
+  document.querySelectorAll("[data-lvl]").forEach(b => b.onclick = () => { role.level = b.dataset.lvl; renderLevels(); changed(); });
+  roleTabTags();
 }
 function renderBehaviors(){
-  $("behaviors").innerHTML = BEHAVIORS.map(b=>`<label class="chk" style="margin:4px 0"><input type="checkbox" data-beh="${b[0]}" ${prefs.behaviors[b[0]]?"checked":""}> ${b[1]}</label>`).join("");
-  document.querySelectorAll("[data-beh]").forEach(c => c.onchange = () => { prefs.behaviors[c.dataset.beh] = c.checked; savePrefs(); changed(); });
+  const groups = [...new Set(BEHAVIORS.map(b=>b[5]))];
+  $("behaviors").innerHTML = groups.map(g => `<div class="group-title">${g}</div><div class="opt-grid">${
+    BEHAVIORS.filter(b=>b[5]===g).map(b => optBtn(`data-beh="${b[0]}"`, prefs.behaviors[b[0]], b[1], b[2])).join("")}</div>`).join("");
+  document.querySelectorAll("[data-beh]").forEach(b => b.onclick = () => { prefs.behaviors[b.dataset.beh] = !prefs.behaviors[b.dataset.beh]; savePrefs(); renderBehaviors(); changed(); });
+  roleTabTags();
 }
+function renderLangs(){
+  $("langs").innerHTML = LANGS.map(([k,t]) => optBtn(`data-lang="${k}"`, prefs.lang===k, t, "", true)).join("");
+  document.querySelectorAll("[data-lang]").forEach(b => b.onclick = () => { prefs.lang = b.dataset.lang; savePrefs(); renderLangs(); changed(); });
+  roleTabTags();
+}
+function roleTabTags(){
+  if (!$("rt-who")) return;
+  $("rt-who").textContent = roleChosen() ? "✓" : "";
+  $("rt-lvl").textContent = role.level || $("roleArea").value.trim() ? "✓" : "";
+  const n = BEHAVIORS.filter(b => prefs.behaviors[b[0]]).length;
+  $("rt-how").textContent = n ? String(n) : "";
+  $("rt-lang").textContent = (LANGS.find(l => l[0]===prefs.lang)||[])[1]?.split(" ")[0] || "";
+}
+document.querySelectorAll("[data-rsub]").forEach(t => t.onclick = () => {
+  document.querySelectorAll("[data-rsub]").forEach(x => x.classList.toggle("active", x === t));
+  document.querySelectorAll("[data-rpanel]").forEach(p => p.hidden = p.dataset.rpanel !== t.dataset.rsub);
+});
 const roleChosen = () => role.pick >= 0 || $("roleCustom").value.trim() !== "";
 async function roleSentence(){
   if (!roleChosen()) return "";
   let base = $("roleCustom").value.trim() ? await tr(applyMarkers($("roleCustom").value.trim())) : ROLES[role.pick][1];
   base = base.replace(/^(you are|you're)\s+/i,"").replace(/\.$/,"");
   if (!/^(a|an|the)\s/i.test(base)) base = (/^[aeiou]/i.test(base) ? "an " : "a ") + base;
-  const lvl = $("roleLevel").value;
+  const lvl = role.level;
   if (lvl === "experienced") base = base.replace(/^(a|an)\s+/i, "a senior ") + " with 10+ years of experience";
   if (lvl === "expert") base = base.replace(/^(a|an)\s+/i, "a world-class ");
   const area = $("roleArea").value.trim();
@@ -915,7 +982,7 @@ function annotate(text){
 }
 function signature(){
   return JSON.stringify([$("input").value, extra, meanings, [...ignoredVague], images.map(i=>[i.id,i.note,i.ocr]),
-    role.pick, $("roleCustom").value, $("roleLevel").value, $("roleArea").value, prefs, overrides, markerCfg, $("online").checked]);
+    role.pick, $("roleCustom").value, role.level, $("roleArea").value, prefs, overrides, markerCfg, $("online").checked]);
 }
 // mostra se o prompt final está em dia com o que você escreveu
 function changed(){
@@ -959,7 +1026,7 @@ async function renderOutput(){
     }
     txt += "\n";
   }
-  const how = BEHAVIORS.filter(b => prefs.behaviors[b[0]]).map(b => b[2]);
+  const how = BEHAVIORS.filter(b => prefs.behaviors[b[0]]).map(b => b[3]);
   if (prefs.lang === "pt") how.push("Answer in Brazilian Portuguese.");
   if (prefs.lang === "en") how.push("Answer in English.");
   if (prefs.lang === "es") how.push("Answer in Spanish.");
@@ -1019,11 +1086,8 @@ drop.ondragover = e => { e.preventDefault(); drop.classList.add("over"); };
 drop.ondragleave = () => drop.classList.remove("over");
 drop.ondrop = e => { e.preventDefault(); drop.classList.remove("over"); addFiles(e.dataTransfer.files); };
 document.addEventListener("paste", e => { const f = [...(e.clipboardData?.files||[])]; if (f.length){ e.preventDefault(); addFiles(f); } });
-$("answerLang").value = prefs.lang;
-$("answerLang").onchange = e => { prefs.lang = e.target.value; savePrefs(); changed(); };
-$("roleCustom").oninput = () => { if (role.pick >= 0 && $("roleCustom").value.trim()){ role.pick = -1; renderRoleChips(); } renderImprove(); changed(); };
-$("roleLevel").onchange = changed;
-$("roleArea").oninput = changed;
+$("roleCustom").oninput = () => { if (role.pick >= 0 && $("roleCustom").value.trim()){ role.pick = -1; renderRoleChips(); } renderImprove(); roleTabTags(); changed(); };
+$("roleArea").oninput = () => { roleTabTags(); changed(); };
 $("addMarker").onclick = () => {
   const v = $("newMarker").value.trim().replace("...", "…");
   if (!v || v.length > 12 || /\s/.test(v.replace("…",""))) return;
@@ -1031,7 +1095,7 @@ $("addMarker").onclick = () => {
   if (PRESET_MARKERS.includes(v)) markerCfg.on[v] = true;
   store.set("pb.markers2", markerCfg); $("newMarker").value = ""; renderMarkers(); analyze();
 };
-renderRoleChips(); renderBehaviors(); renderMarkers(); renderImages(); setStatus(); analyze();
+renderRoleChips(); renderLevels(); renderBehaviors(); renderLangs(); renderMarkers(); renderImages(); setStatus(); analyze();
 </script>
 </body>
 </html>
