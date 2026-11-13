@@ -200,6 +200,47 @@ ul.have li{margin:2px 0}
   .tab{flex:none}
   #boxConf .panel{height:75vh}
 }
+/* destaque das palavras dentro da caixa de texto */
+.hl-wrap{position:relative;background:var(--bg);border-radius:8px}
+.hl{position:absolute;inset:0;padding:10px;border:1px solid transparent;border-radius:8px;font:inherit;font-size:16px;line-height:1.5;white-space:pre-wrap;overflow-wrap:break-word;color:transparent;overflow:hidden;pointer-events:none;scrollbar-gutter:stable}
+#input{position:relative;z-index:1;background:transparent;line-height:1.5;scrollbar-gutter:stable;display:block}
+.hl mark{color:transparent;font-weight:inherit;padding:0;border-radius:3px;background:none}
+.hl mark.v{background:color-mix(in srgb,var(--accent) 30%,transparent)}
+.hl mark.d{background:color-mix(in srgb,var(--ok) 22%,transparent)}
+.hl mark.s{text-decoration:underline wavy var(--err);text-decoration-skip-ink:none;text-underline-offset:3px}
+.hl mark.flash{animation:flash 1.4s ease-out}
+@keyframes flash{0%,40%{background:color-mix(in srgb,var(--accent) 70%,transparent)}}
+.hl-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:6px}
+.hl-legend i{display:inline-block;width:14px;height:10px;border-radius:3px;vertical-align:middle;margin-right:4px}
+/* palavras vagas */
+.vbox{border-radius:10px;padding:10px 12px;margin-bottom:8px;background:var(--accent-soft)}
+.vbox.ok{background:var(--bg);border:1px solid var(--line);opacity:.75}
+.vhead{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:6px}
+button.wordlink{background:transparent;color:var(--accent);padding:0;font-weight:700;font-size:15px;border:0;border-bottom:1px dashed currentColor;border-radius:0}
+button.wordlink:hover{opacity:.8}
+.snip{font-size:13px;color:var(--muted)}
+.snip mark{background:color-mix(in srgb,var(--accent) 30%,transparent);color:var(--text);font-weight:600;padding:0 2px}
+.vrow{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.vrow input{flex:1;min-width:200px}
+.vrow button{padding:6px 12px;font-size:13px}
+.inrow{display:flex;gap:6px;align-items:center}
+.inrow input{flex:1}
+input.saved{border-color:var(--ok)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--ok) 25%,transparent);transition:box-shadow .2s}
+.limit-note{color:var(--warn);font-size:13px;font-weight:600;margin:4px 0 0}
+/* ortografia */
+.spell .vhead b{color:var(--info)}
+button.chip{background:var(--card);color:var(--ok);border:1.5px solid var(--ok);font-weight:600;padding:2px 12px;font-size:13px;border-radius:99px}
+button.chip:hover{background:var(--ok);color:#fff}
+/* menus */
+select.nice{appearance:none;-webkit-appearance:none;border:1px solid var(--line);border-radius:8px;background:var(--card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23888' stroke-width='1.6'/%3E%3C/svg%3E") no-repeat right 12px center;padding:7px 34px 7px 12px;font-size:14px;color:var(--text);cursor:pointer;min-width:220px}
+select.nice:hover{border-color:var(--muted)}
+.tab .dot{width:7px;height:7px;border-radius:50%;background:var(--ok);display:inline-block}
+.opt.maxed:not(.on){opacity:.45}
+.role-preview{border-top:1px solid var(--line);margin-top:10px;padding-top:10px;font-size:13px}
+.role-preview b{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.role-preview pre{min-height:0;font-size:12.5px;padding:8px 10px;margin-top:4px;max-height:110px;overflow:auto}
+.steps-hint{font-size:13px;color:var(--muted);margin:0 0 8px}
+.steps-hint b{color:var(--text)}
 </style>
 </head>
 <body>
@@ -230,7 +271,8 @@ ul.have li{margin:2px 0}
       </div>
 
       <div id="panel-msg" role="tabpanel">
-        <textarea id="input" spellcheck="true" lang="pt-BR" placeholder="Ex.: Quero um e-mail para meu chefe pedindo férias em janeiro. Sou analista há 2 anos. Tom formal mas simpático, no máximo 150 palavras."></textarea>
+        <div class="hl-wrap"><div class="hl" id="hl" aria-hidden="true"></div><textarea id="input" spellcheck="false" lang="pt-BR" placeholder="Ex.: Quero um e-mail para meu chefe pedindo férias em janeiro. Sou analista há 2 anos. Tom formal mas simpático, no máximo 150 palavras."></textarea></div>
+        <div class="hl-legend" id="hlLegend" hidden></div>
         <div id="markWarn"></div>
         <div class="row">
           <button id="go">Gerar Prompt</button>
@@ -273,7 +315,7 @@ ul.have li{margin:2px 0}
 
       <div class="panel" id="p-vague" hidden>
         <div class="panel-head"><h3>Palavras vagas</h3><span class="tag warn">recomendado</span></div>
-        <p class="panel-desc">Palavras que podem significar muita coisa, e palavras como “isso” ou “lá embaixo”, que quem lê o prompt não sabe a que se referem. Explique o que você quis dizer: a explicação entra no prompt ao lado da palavra. Se não for vago, clique em “ok assim”. Se for uma citação, use aspas ou um marcador.</p>
+        <p class="panel-desc">Palavras que podem significar muita coisa, e palavras como “isso” ou “lá embaixo”, que quem lê o prompt não sabe a que se referem. Explique o que você quis dizer: a explicação entra no prompt ao lado da palavra. Clique na palavra para ver onde ela está no texto. Se não for vago, clique em “não é vago”. Se for uma citação, use aspas ou um marcador.</p>
         <div id="vagueBox" class="fill"></div>
       </div>
 
@@ -299,17 +341,17 @@ ul.have li{margin:2px 0}
         <div class="panel-head"><h3>Papel da IA</h3><span class="tag">opcional</span></div>
         <p class="panel-desc">Quem a IA deve ser e como deve responder. Muda o foco, o vocabulário e a profundidade da resposta. Tudo aqui é opcional.</p>
         <div class="tabs subtabs" id="roleTabs">
-          <button class="tab active" data-rsub="who">Quem a IA é <span class="tag ok" id="rt-who"></span></button>
-          <button class="tab" data-rsub="area">Especialidade <span class="tag ok" id="rt-area"></span></button>
-          <button class="tab" data-rsub="lvl">Experiência <span class="tag ok" id="rt-lvl"></span></button>
-          <button class="tab" data-rsub="how">Como responder <span class="tag ok" id="rt-how"></span></button>
-          <button class="tab" data-rsub="lang">Idioma da resposta <span class="tag ok" id="rt-lang"></span></button>
+          <button class="tab active" data-rsub="who">Quem a IA é <span class="dot" id="rt-who" hidden></span></button>
+          <button class="tab" data-rsub="area">Especialidade <span class="dot" id="rt-area" hidden></span></button>
+          <button class="tab" data-rsub="lvl">Experiência <span class="dot" id="rt-lvl" hidden></span></button>
+          <button class="tab" data-rsub="how">Como responder <span class="dot" id="rt-how" hidden></span></button>
+          <button class="tab" data-rsub="lang">Idioma da resposta <span class="dot" id="rt-lang" hidden></span></button>
         </div>
 
         <div data-rpanel="who" class="fill">
+          <p class="steps-hint"><b>1.</b> Escolha a área no menu &nbsp; <b>2.</b> Clique num papel para escolher (clique de novo para tirar)</p>
           <div class="role-bar">
-            <label class="chk" for="roleTag">Tag:</label>
-            <select id="roleTag"></select>
+            <select id="roleTag" class="nice" aria-label="Área"></select>
             <span class="chosen" id="roleChosenLine"></span>
           </div>
           <div class="picks" id="roleChips"></div>
@@ -320,7 +362,7 @@ ul.have li{margin:2px 0}
                 <input type="text" id="newRoleName" placeholder="ex.: professora de história do ensino médio">
               </label>
               <label class="field">Tag
-                <select id="newRoleTag"></select>
+                <select id="newRoleTag" class="nice"></select>
               </label>
               <label class="field" id="newTagWrap" hidden>Nome da nova tag
                 <input type="text" id="newTagName" placeholder="ex.: Saúde">
@@ -346,6 +388,8 @@ ul.have li{margin:2px 0}
         </div>
 
         <div data-rpanel="how" class="fill" hidden>
+          <p class="note" style="margin:0 0 4px" id="behCount"></p>
+          <p class="limit-note" id="behNote"></p>
           <div id="behaviors"></div>
         </div>
 
@@ -353,6 +397,7 @@ ul.have li{margin:2px 0}
           <div class="opt-grid" id="langs"></div>
           <p class="note">O prompt sai em inglês, então a IA tende a responder em inglês. Escolher a língua aqui evita isso.</p>
         </div>
+        <div class="role-preview"><b>Como isso entra no seu prompt</b><pre id="rolePreview"></pre></div>
       </div>
 
       <div class="panel" id="p-img" hidden>
@@ -366,7 +411,7 @@ ul.have li{margin:2px 0}
       </div>
 
       <div class="panel" id="p-marks" hidden>
-        <div class="panel-head"><h3>Citações e marcadores</h3><span class="tag">opcional</span></div>
+        <div class="panel-head"><h3>Marcadores</h3><span class="tag">opcional</span></div>
         <p class="panel-desc">O que estiver entre estes sinais é tratado como citação: vai para o prompt exatamente como você escreveu, sem tradução e sem virar “palavra vaga”. Parênteses comuns não contam como citação.</p>
         <div class="fill">
           <div class="mk-demo">
@@ -384,6 +429,11 @@ ul.have li{margin:2px 0}
               <div class="field">Prévia <div class="mk-preview" id="mkPreview"></div></div>
             </div>
             <div class="row"><button id="addMarker">Adicionar marcador</button><span class="err-text" id="mkErr"></span></div>
+          </div>
+          <div class="addbox">
+            <h4>Experimente</h4>
+            <input type="text" id="mkTry" placeholder="ex.: troque ///Salvar/// por ///Enviar///" style="margin-top:6px">
+            <div class="mk-preview" id="mkTryOut"></div>
           </div>
           <div class="group-title" style="margin-top:16px">A página avisa, abaixo da sua mensagem, quando</div>
           <ul class="checks">
@@ -526,6 +576,8 @@ let overrides = {};        // texto do tópico -> categoria escolhida à mão
 let extra = {};            // categoria -> texto digitado/escolhido em "O que falta"
 let meanings = {};         // palavra vaga -> significado
 let ignoredVague = new Set();
+let vagueDone = {};       // palavra vaga -> "explain" depois de confirmar
+let limitMsg = {};       // aviso de limite por categoria
 let images = [];           // {id, name, url, w, h, note, ocr, ocrState}
 let spellResults = [];
 let generatedSig = null;   // "assinatura" do que foi usado na última geração
@@ -582,18 +634,18 @@ function markerIssues(text){
       for (let k = 0; k + 1 < pos.length; k += 2){
         const inner = text.slice(pos[k] + m.open.length, pos[k+1]);
         if (inner.length > 120 || /[.!?]\s|\n/.test(inner))
-          add("Citação longa demais?", `A citação começa num <code>${esc(m.open)}</code> e só termina bem depois, em outra frase. Talvez o fechamento esteja no lugar errado. Tudo o que está marcado abaixo vai ficar sem tradução.`, pos[k], pos[k+1]-pos[k]+m.close.length);
+          add("Marcador fecha longe demais?", `A citação começa num <code>${esc(m.open)}</code> e só termina bem depois, em outra frase. Talvez o fechamento esteja no lugar errado. Tudo o que está marcado abaixo vai ficar sem tradução.`, pos[k], pos[k+1]-pos[k]+m.close.length);
       }
-      if (pos.length % 2) add("Citação sem fechar", `Este <code>${esc(m.open)}</code> abre uma citação, mas não tem outro <code>${esc(m.open)}</code> depois para fechar. Coloque <code>${esc(m.open)}</code> no fim do trecho que é citação.`, pos[pos.length-1], m.open.length);
+      if (pos.length % 2) add("Marcador sem fechar", `Este <code>${esc(m.open)}</code> abre uma citação, mas não tem outro <code>${esc(m.open)}</code> depois para fechar. Coloque <code>${esc(m.open)}</code> no fim do trecho que é citação.`, pos[pos.length-1], m.open.length);
     } else {
       const re = new RegExp(`${reEsc(m.open)}|${reEsc(m.close)}`, "g"); let r, openAt = -1;
       while ((r = re.exec(text))){
-        if (r[0] === m.open){ if (openAt >= 0) add("Citação aberta duas vezes", `Você abriu outra citação com <code>${esc(m.open)}</code> antes de fechar a anterior com <code>${esc(m.close)}</code>.`, r.index, m.open.length); openAt = r.index; }
+        if (r[0] === m.open){ if (openAt >= 0) add("Marcador aberto duas vezes", `Você abriu outra citação com <code>${esc(m.open)}</code> antes de fechar a anterior com <code>${esc(m.close)}</code>.`, r.index, m.open.length); openAt = r.index; }
         else { if (openAt < 0) add("Fechamento sem abertura", `Este <code>${esc(m.close)}</code> fecha uma citação que não foi aberta. Falta um <code>${esc(m.open)}</code> antes.`, r.index, m.close.length);
-               else if (r.index - openAt > 120 || /[.!?]\s|\n/.test(text.slice(openAt, r.index))) add("Citação longa demais?", `A citação começa num <code>${esc(m.open)}</code> e só fecha bem depois, em outra frase. Talvez o fechamento esteja no lugar errado.`, openAt, r.index-openAt+m.close.length);
+               else if (r.index - openAt > 120 || /[.!?]\s|\n/.test(text.slice(openAt, r.index))) add("Marcador fecha longe demais?", `A citação começa num <code>${esc(m.open)}</code> e só fecha bem depois, em outra frase. Talvez o fechamento esteja no lugar errado.`, openAt, r.index-openAt+m.close.length);
                openAt = -1; }
       }
-      if (openAt >= 0) add("Citação sem fechar", `Este <code>${esc(m.open)}</code> abre uma citação, mas falta o <code>${esc(m.close)}</code> no fim dela.`, openAt, m.open.length);
+      if (openAt >= 0) add("Marcador sem fechar", `Este <code>${esc(m.open)}</code> abre uma citação, mas falta o <code>${esc(m.close)}</code> no fim dela.`, openAt, m.open.length);
     }
   }
   const dq = [...text.matchAll(/"/g)].map(x=>x.index);
@@ -653,15 +705,25 @@ function splitSentences(text){
     for (const part of byAnd){
       const pieces = part.split(/,\s+/);
       const startsGoal = p => new RegExp(`^(?:${verbAlt})\\b`).test(unslang(norm(p.trim())));
-      const ownCat = p => { const h = classify(p.replace(/\u0000\d+\u0000/g, "")).hits; h.delete("context"); return h.size > 0; };
-      const big = p => p.trim().split(/\s+/).length >= 3 || startsGoal(p) || ownCat(p);
-      const merged = [];
-      for (const p of pieces){ if (!merged.length || big(p)) merged.push(p); else merged[merged.length-1] += ", " + p; }
-      if (merged.length > 1 && !big(merged[0])) merged.splice(0, 2, merged[0] + ", " + merged[1]);
-      out.push(...merged);
+      // só divide nas vírgulas quando cada pedaço tem assunto próprio (ex.: "para meu chefe, tom técnico, sem jargão");
+      // senão a frase perde o sentido ("na aba de palavras vagas, quando aperto Enter, nada acontece")
+      const ownCat = p => { const h = classify(p.replace(/\u0000\d+\u0000/g, "")).hits; if (p.trim().split(/\s+/).length < 4) h.delete("context"); return h.size > 0; };
+      if (pieces.length > 1 && pieces.every(p => startsGoal(p) || ownCat(p))) out.push(...pieces);
+      else out.push(part);
     }
   }
-  return out.map(restore).map(cleanBullet).filter(s => s.replace(/[^\p{L}\p{N}]/gu,"").length > 2);
+  const list = out.map(restore).map(cleanBullet).filter(s => s.replace(/[^\p{L}\p{N}]/gu,"").length > 2);
+  // frases que continuam a anterior ("Mesma coisa no que falta", "Isso precisa mudar", "Depois que seleciono")
+  // ficam junto dela, para não perder o assunto
+  const CONT = /^(mesma coisa|o mesmo|a mesma|tambem acontece|depois que|depois de|apos|porque|pois|ja que|mas|so que|isso|isto|ai|entao|talvez|ou seja|inclusive|nem|por isso|senao|alias|e ai|tipo)\b/;
+  const merged = [];
+  for (const x of list){
+    const n = unslang(norm(stripQuotes(x))).trim();
+    const short = n.split(/\s+/).length < 4 && !new RegExp(`^(?:${verbAlt})\\b`).test(n) && ![...classify(x).hits].some(h => h !== "context");
+    if (merged.length && (CONT.test(n) || short)) merged[merged.length-1] += ". " + x;
+    else merged.push(x);
+  }
+  return merged;
 }
 // abreviações comuns de quem digita rápido
 const SLANG = {n:"nao","ñ":"nao",nn:"nao",q:"que",oq:"o que",pq:"porque",vc:"voce",vcs:"voces",tb:"tambem",tbm:"tambem",ta:"esta",to:"estou",pra:"para",pro:"para o",msm:"mesmo",mt:"muito",mto:"muito",td:"tudo",tds:"todos",qnd:"quando",qdo:"quando",cmg:"comigo",hj:"hoje",obg:"obrigado",fds:"fim de semana",dps:"depois",agr:"agora",ngm:"ninguem",nd:"nada"};
@@ -816,10 +878,16 @@ function renderLevels(){
   roleTabTags();
 }
 function renderBehaviors(){
+  const on = BEHAVIORS.filter(b => prefs.behaviors[b[0]]);
   const groups = [...new Set(BEHAVIORS.map(b=>b[5]))];
   $("behaviors").innerHTML = groups.map(g => `<div class="group-title">${g}</div><div class="opt-grid">${
-    BEHAVIORS.filter(b=>b[5]===g).map(b => optBtn(`data-beh="${b[0]}"`, prefs.behaviors[b[0]], b[1], b[2])).join("")}</div>`).join("");
-  document.querySelectorAll("[data-beh]").forEach(b => b.onclick = () => { prefs.behaviors[b.dataset.beh] = !prefs.behaviors[b.dataset.beh]; savePrefs(); renderBehaviors(); changed(); });
+    BEHAVIORS.filter(b=>b[5]===g).map(b => optBtn(`data-beh="${b[0]}"`, prefs.behaviors[b[0]], b[1], b[2]).replace('class="opt', `class="opt ${on.length >= LIMITS.how.max ? "maxed" : ""}`)).join("")}</div>`).join("");
+  $("behCount").textContent = `Escolha até ${LIMITS.how.max}. Escolhidas agora: ${on.length}.`;
+  document.querySelectorAll("[data-beh]").forEach(b => b.onclick = () => {
+    const r = toggleLimited(BEHAVIORS.filter(x => prefs.behaviors[x[0]]).map(x => x[0]), b.dataset.beh, LIMITS.how, k => BEHAVIORS.find(x => x[0] === k)[1]);
+    for (const x of BEHAVIORS) prefs.behaviors[x[0]] = r.list.includes(x[0]);
+    savePrefs(); renderBehaviors(); $("behNote").textContent = r.msg; changed();
+  });
   roleTabTags();
 }
 function renderLangs(){
@@ -829,18 +897,29 @@ function renderLangs(){
 }
 function roleTabTags(){
   if (!$("rt-who")) return;
-  $("rt-who").textContent = roleChosen() ? "✓" : "";
-  $("rt-lvl").textContent = role.level ? "✓" : "";
-  $("rt-area").textContent = $("roleArea").value.trim() ? "✓" : "";
-  const n = BEHAVIORS.filter(b => prefs.behaviors[b[0]]).length;
-  $("rt-how").textContent = n ? String(n) : "";
-  $("rt-lang").textContent = (LANGS.find(l => l[0]===prefs.lang)||[])[1]?.split(" ")[0] || "";
+  $("rt-who").hidden = !roleChosen();
+  $("rt-lvl").hidden = !role.level;
+  $("rt-area").hidden = !$("roleArea").value.trim();
+  $("rt-how").hidden = !BEHAVIORS.some(b => prefs.behaviors[b[0]]);
+  $("rt-lang").hidden = !prefs.lang;
+  renderRolePreview();
 }
 document.querySelectorAll("[data-rsub]").forEach(t => t.onclick = () => {
   document.querySelectorAll("[data-rsub]").forEach(x => x.classList.toggle("active", x === t));
   document.querySelectorAll("[data-rpanel]").forEach(p => p.hidden = p.dataset.rpanel !== t.dataset.rsub);
 });
 const roleChosen = () => !!role.pick;
+async function renderRolePreview(){
+  const el = $("rolePreview"); if (!el) return;
+  const lines = [];
+  const rs = await roleSentence("pt");
+  if (rs) lines.push("## Papel da IA", "- " + rs, "");
+  const how = BEHAVIORS.filter(b => prefs.behaviors[b[0]]).map(b => BEH_PT[b[0]]);
+  const ans = {pt:"Responda em português do Brasil.", en:"Responda em inglês.", es:"Responda em espanhol."}[prefs.lang];
+  if (ans) how.push(ans);
+  if (how.length) lines.push("## Como responder", ...how.map(h => "- " + h));
+  el.textContent = lines.length ? lines.join("\n") + (prefs.promptLang === "en" ? "\n\n(no prompt em inglês, isso sai traduzido)" : "") : "Nada escolhido ainda: o prompt sai sem papel e sem instruções de resposta.";
+}
 async function roleSentence(lang = "en"){
   if (!roleChosen()) return "";
   const r = allRoles().find(x => x.name === role.pick);
@@ -915,14 +994,16 @@ function covered(c){
 }
 // palavras vagas + referências soltas ("isso", "ali", "lá embaixo"…), todas no mesmo lugar
 function allVague(){
-  return [...vagueFound().map(k => ({k, q: VAGUE[k]})),
-          ...looseRefs().map(r => ({k: r.word, q: `a que “${r.word}” se refere? Diga o nome da coisa.`, ctx: r.text}))];
+  const list = [...vagueFound().map(k => ({k, q: VAGUE[k]})),
+                ...looseRefs().map(r => ({k: r.word, q: `a que “${r.word}” se refere? Diga o nome da coisa.`, loose: true}))];
+  return list.map(v => ({...v, state: ignoredVague.has(v.k) ? "ignored" : vagueDone[v.k] === "explain" && (meanings[v.k]||"").trim() ? "explained" : "pending"}));
 }
+const pendingVague = () => allVague().filter(v => v.state === "pending");
 function vagueFound(){
   const found = [];
   const all = norm(items.map(i=>stripQuotes(i.text)).join(" \n "));
   for (const k of Object.keys(VAGUE).sort((a,b)=>b.length-a.length)){
-    if (ignoredVague.has(k) || found.some(f => f.includes(k))) continue;
+    if (found.some(f => f.includes(k))) continue;
     if (hasWord(all,k)) found.push(k);
   }
   return found;
@@ -934,10 +1015,100 @@ function looseRefs(){
     const first = (t.trim().split(/\s+/)[0] || "").replace(/[^\p{L}]/gu, "");   // sem tirar acento: "está" (verbo) não é "esta"
     const n = norm(t);
     const hit = (LOOSE_START.includes(first) ? first : null) || LOOSE_ANY.find(k => hasWord(n,k));
-    if (hit && !ignoredVague.has(hit) && !out.some(o => o.word === hit)) out.push({text:it.text, word:hit});
+    if (hit && !out.some(o => o.word === hit) && !VAGUE[hit]) out.push({text:it.text, word:hit});
   }
   return out;
 }
+
+/* ---- achar palavras no texto (fora de aspas e marcadores) ---- */
+function protectedRanges(raw){
+  const r = [];
+  for (const m of raw.matchAll(QUOTE_RE)) r.push([m.index, m.index + m[0].length]);
+  for (const mk of activeMarkers()){
+    const re = new RegExp(`${reEsc(mk.open)}([^\\n]{1,150}?)${reEsc(mk.close)}`, "g");
+    for (const m of raw.matchAll(re)) r.push([m.index, m.index + m[0].length]);
+  }
+  return r;
+}
+// exact = sem ignorar acento (para "esta" pronome não pegar "está")
+function wordHits(raw, word, exact = false){
+  const hay = exact ? raw.toLowerCase() : norm(raw);
+  const w = exact ? word.toLowerCase() : norm(word);
+  if (hay.length !== raw.length || !w) return [];
+  const prot = protectedRanges(raw), out = [];
+  const re = new RegExp(`(^|[^\\p{L}\\p{N}])(${reEsc(w)})(?=[^\\p{L}\\p{N}]|$)`, "gu"); let m;
+  while ((m = re.exec(hay))){
+    const a = m.index + m[1].length, b = a + m[2].length;
+    if (!prot.some(([x,y]) => a >= x && a < y)) out.push([a, b]);
+    re.lastIndex = b;
+  }
+  return out;
+}
+function snippetAt(raw, a, b){
+  const s = Math.max(0, a - 40), e = Math.min(raw.length, b + 40);
+  return (s > 0 ? "…" : "") + esc(raw.slice(s, a)) + "<mark>" + esc(raw.slice(a, b)) + "</mark>" + esc(raw.slice(b, e)) + (e < raw.length ? "…" : "");
+}
+// troca a palavra no texto (fora das citações), mantendo a maiúscula do começo
+function replaceInText(word, repl, exact){
+  const ta = $("input"), raw = ta.value, hits = wordHits(raw, word, exact);
+  let out = "", last = 0;
+  for (const [a,b] of hits){
+    const orig = raw.slice(a, b);
+    const r = orig[0] !== orig[0].toLowerCase() ? repl[0].toUpperCase() + repl.slice(1) : repl;
+    out += raw.slice(last, a) + r; last = b;
+  }
+  ta.value = out + raw.slice(last);
+  return hits.length;
+}
+/* ---- destaque colorido dentro da caixa de texto ---- */
+let hlRanges = [], goIdx = {};
+function renderHL(){
+  const raw = $("input").value, ranges = [];
+  if (items.length){
+    for (const v of allVague()){
+      if (v.state === "ignored") continue;
+      for (const [a,b] of wordHits(raw, v.k, v.loose)) ranges.push({a, b, kind: v.state === "explained" ? "d" : "v", key: v.k});
+    }
+    if (spellState === "done") for (const r of spellResults) for (const [a,b] of wordHits(raw, r.w)) ranges.push({a, b, kind: "s", key: r.w});
+  }
+  ranges.sort((x,y) => x.a - y.a);
+  const clean = []; for (const r of ranges) if (!clean.length || r.a >= clean[clean.length-1].b) clean.push(r);
+  hlRanges = clean;
+  let html = "", last = 0;
+  for (const r of clean){ html += esc(raw.slice(last, r.a)) + `<mark class="${r.kind}" data-a="${r.a}">${esc(raw.slice(r.a, r.b))}</mark>`; last = r.b; }
+  $("hl").innerHTML = html + esc(raw.slice(last)) + "\n ";
+  $("hl").scrollTop = $("input").scrollTop;
+  const kinds = new Set(clean.map(r => r.kind));
+  $("hlLegend").hidden = !kinds.size;
+  $("hlLegend").innerHTML = (kinds.has("v") ? `<span><i style="background:color-mix(in srgb,var(--accent) 30%,transparent)"></i>palavra vaga: clique nela para explicar</span>` : "") +
+    (kinds.has("d") ? `<span><i style="background:color-mix(in srgb,var(--ok) 22%,transparent)"></i>já explicada</span>` : "") +
+    (kinds.has("s") ? `<span><u style="text-decoration:underline wavy var(--err);text-underline-offset:3px">abc</u> possível erro de digitação: clique para ver sugestões</span>` : "");
+}
+// leva até a palavra no texto (a cada clique, vai para a próxima vez que ela aparece)
+function goToWord(word, exact){
+  const ta = $("input"), hits = wordHits(ta.value, word, exact);
+  if (!hits.length) return;
+  const i = (goIdx[word] = ((goIdx[word] ?? -1) + 1) % hits.length);
+  const [a, b] = hits[i];
+  showTab("msg");
+  ta.scrollIntoView({block: "center", behavior: "smooth"});
+  ta.focus({preventScroll: true});
+  ta.setSelectionRange(a, b);
+  const mk = $("hl").querySelector(`mark[data-a="${a}"]`);
+  if (mk){ ta.scrollTop = Math.max(0, mk.offsetTop - ta.clientHeight / 3); $("hl").scrollTop = ta.scrollTop; mk.classList.remove("flash"); void mk.offsetWidth; mk.classList.add("flash"); }
+}
+$("input").addEventListener("scroll", () => { $("hl").scrollTop = $("input").scrollTop; });
+$("input").addEventListener("input", renderHL);
+// clicar numa palavra destacada abre a aba certa embaixo
+$("input").addEventListener("click", () => {
+  const c = $("input").selectionStart;
+  const r = hlRanges.find(r => c >= r.a && c <= r.b);
+  if (!r) return;
+  showConf(r.kind === "s" ? "p-spell" : "p-vague");
+  const box = document.querySelector(`[data-vbox="${CSS.escape(r.key)}"]`);
+  if (box){ box.scrollIntoView({block: "nearest"}); box.animate([{outline: "2px solid var(--accent)"}, {outline: "2px solid transparent"}], {duration: 1400}); }
+});
+function flashSaved(el){ el.classList.add("saved"); setTimeout(() => el.classList.remove("saved"), 1200); }
 
 let missSub = "req";   // sub-aba aberta em “O que falta”
 function catBox(c, isMissing){
@@ -948,7 +1119,8 @@ function catBox(c, isMissing){
     <div class="boxhead"><b style="color:var(--c-${c})">${CATS[c].pt}</b>${tag}</div>
     ${isMissing ? `<p>${MISSING_HELP[c]}</p>` : `<p>No seu texto:</p><ul class="have">${items.filter(it => it.cat === c || it.hits.has(c)).map(it => `<li>${esc(it.text)}${it.cat !== c ? ` <span class="tag">também em ${CATS[it.cat].pt}</span>` : ""}</li>`).join("")}</ul><p>Quer acrescentar algo?</p>`}
     <div class="picks">${(BASES[c]||[]).map(b => `<button class="pick ${chosen.has(b)?"on":""}" data-base="${c}" data-val="${esc(b)}">${esc(b)}</button>`).join("")}</div>
-    <input type="text" data-c="${c}" placeholder="Ou escreva aqui" value="${esc(extra[c]||"")}">
+    ${limitMsg[c] ? `<p class="limit-note">${esc(limitMsg[c])}</p>` : ""}
+    <div class="inrow"><input type="text" data-c="${c}" placeholder="Ou escreva aqui e aperte Enter" value="${esc(extra[c]||"")}"><button class="ghost" data-cok>OK</button></div>
   </div>`;
 }
 
@@ -957,13 +1129,25 @@ function renderImprove(){
   const startMsg = START;
   // palavras vagas
   const vague = hasText ? allVague() : [];
+  const raw = $("input").value;
+  const snipOf = v => { const h = wordHits(raw, v.k, v.loose)[0]; return h ? snippetAt(raw, h[0], h[1]) : ""; };
+  const vbox = v => {
+    const k = esc(v.k), word = `<button class="wordlink" data-goword="${k}" data-exact="${v.loose ? 1 : ""}" title="Mostrar no texto">“${k}” ↗</button>`;
+    if (v.state === "explained") return `<div class="vbox ok" data-vbox="${k}"><div class="vhead">${word}<span class="snip">explicada como “${esc(meanings[v.k])}”</span>
+      <button class="ghost" data-vedit="${k}">editar</button></div></div>`;
+    if (v.state === "ignored") return `<div class="vbox ok" data-vbox="${k}"><div class="vhead">${word}<span class="snip">marcada como não vaga</span>
+      <button class="ghost" data-unignore="${k}">desfazer</button></div></div>`;
+    return `<div class="vbox" data-vbox="${k}"><div class="vhead">${word}<span class="snip">${snipOf(v)}</span></div>
+      <div class="vrow"><input type="text" data-vague="${k}" placeholder="${esc(v.q)}" value="${esc(meanings[v.k]||"")}">
+        <button data-vexplain="${k}" title="Mantém a palavra e coloca a explicação ao lado, no prompt (Enter)">Explicar ao lado</button>
+        <button class="ghost" data-vreplace="${k}" data-exact="${v.loose ? 1 : ""}" title="Troca a palavra pela explicação no seu texto">Substituir no texto</button>
+        <button class="ghost" data-ignore="${k}" title="Não é vago, pode manter">não é vago</button></div>
+      <p class="limit-note" data-vmsg="${k}"></p></div>`;
+  };
+  const order = {pending: 0, explained: 1, ignored: 2};
   $("vagueBox").innerHTML = !hasText ? startMsg :
-    vague.length ? vague.map(v => `<div class="box vague"><div class="pair">
-        <b>“${esc(v.k)}”</b>
-        <input type="text" data-vague="${esc(v.k)}" placeholder="${esc(v.q)}" value="${esc(meanings[v.k]||"")}">
-        <button class="ghost" data-ignore="${esc(v.k)}" title="Não é vago, pode manter">ok assim</button>
-      </div>${v.ctx ? `<p class="ctx">Em: “${esc(v.ctx)}”</p>` : ""}</div>`).join("") : EMPTY("✓", "Nenhuma palavra vaga", "Seu texto não tem palavras que podem significar muita coisa.", true);
-  setCount("p-vague", vague.filter(v => !(meanings[v.k]||"").trim()).length);
+    vague.length ? [...vague].sort((a,b) => order[a.state] - order[b.state]).map(vbox).join("") : EMPTY("✓", "Nenhuma palavra vaga", "Seu texto não tem palavras que podem significar muita coisa.", true);
+  setCount("p-vague", vague.filter(v => v.state === "pending").length);
 
   // o que falta: recomendadas em cima, opcionais embaixo
   const cats = ORDER.filter(c => c !== "role");
@@ -995,9 +1179,11 @@ function renderImprove(){
   const warns = [];
   if (hasText){
     const all = norm(items.map(i=>i.text).join(" "));
-    if (window._markIssues) warns.push(["Citações", `Há ${plural(window._markIssues,"problema","problemas")} com citações ou marcadores. Veja os avisos em vermelho logo abaixo da sua mensagem.`]);
-    if (items.some(it=>it.cat==="format") && !/\d/.test(all) && !/(curto|longo|breve|detalhad)/.test(all))
-      warns.push(["Formato sem tamanho", "Diga quantas palavras, linhas ou itens."]);
+    if (window._markIssues) warns.push(["Marcadores", `Há ${plural(window._markIssues,"problema","problemas")} com marcadores ou aspas. Veja os avisos em vermelho logo abaixo da sua mensagem.`]);
+    if (items.some(it => it.cat === "format" || it.hits.has("format")) && !/\d/.test(all + " " + (extra.format||"")) && !/(curto|longo|breve|detalhad)/.test(all))
+      warns.push(["Falta o tamanho da resposta", `Você disse o formato (lista, e-mail, texto…), mas não o tamanho. Sem isso a IA chuta, e pode vir curto ou longo demais. Escolha um ou escreva no texto:
+        <div class="picks" style="margin-top:6px">${["até 100 palavras","até 300 palavras","5 tópicos","1 parágrafo"].map(v => `<button class="pick" data-base="format" data-val="${v}">${v}</button>`).join("")}</div>`]);
+    if (isGibberish()) warns.unshift(["Não entendi o texto", "Não consegui identificar palavras do português. Se gerar assim, você recebe um prompt base, com espaços para completar."]);
     const words = all.split(/\s+/).filter(Boolean);
     const EN_WORDS = new Set(["the","and","to","of","for","my","is","with","make","please","i","you","it","this","that","in","on","an","be","can","should","want","need","write","create","your","me","our","we","from","about","by","are","not","what","how","like","use","help","new","website","page","style","max","sections","make","some","more"]);
     if (words.length >= 4 && words.filter(w => EN_WORDS.has(w.replace(/[^a-z]/g,""))).length / words.length >= .2)
@@ -1015,16 +1201,60 @@ function renderImprove(){
 }
 function bindImprove(){
   document.querySelectorAll("button[data-goto]").forEach(b => b.onclick = () => showConf(b.dataset.goto));
-  document.querySelectorAll("input[data-vague]").forEach(inp => inp.oninput = () => { meanings[inp.dataset.vague] = inp.value; setCount("p-vague", allVague().filter(v => !(meanings[v.k]||"").trim()).length); changed(); });
-  document.querySelectorAll("button[data-ignore]").forEach(b => b.onclick = () => { ignoredVague.add(b.dataset.ignore); delete meanings[b.dataset.ignore]; renderImprove(); changed(); });
+  const vmsg = (k, t) => { const el = document.querySelector(`[data-vmsg="${CSS.escape(k)}"]`); if (el) el.textContent = t; };
+  const explain = k => {
+    if (!(meanings[k]||"").trim()){ vmsg(k, "Escreva primeiro o que você quis dizer."); document.querySelector(`input[data-vague="${CSS.escape(k)}"]`)?.focus(); return; }
+    vagueDone[k] = "explain"; renderImprove(); renderHL(); changed();
+  };
+  document.querySelectorAll("input[data-vague]").forEach(inp => {
+    inp.oninput = () => { meanings[inp.dataset.vague] = inp.value; vmsg(inp.dataset.vague, ""); };
+    inp.onkeydown = e => { if (e.key === "Enter"){ e.preventDefault(); explain(inp.dataset.vague); } };
+  });
+  document.querySelectorAll("button[data-vexplain]").forEach(b => b.onclick = () => explain(b.dataset.vexplain));
+  document.querySelectorAll("button[data-vreplace]").forEach(b => b.onclick = () => {
+    const k = b.dataset.vreplace, v = (meanings[k]||"").trim();
+    if (!v){ vmsg(k, "Escreva primeiro pelo que trocar."); return; }
+    const n = replaceInText(k, v, !!b.dataset.exact);
+    delete meanings[k]; delete vagueDone[k];
+    analyze(); renderHL(); runSpell(applyMarkers($("input").value));
+    toast(`Troquei “${k}” por “${v}” no seu texto (${plural(n, "vez", "vezes")}).`);
+  });
+  document.querySelectorAll("button[data-vedit]").forEach(b => b.onclick = () => { delete vagueDone[b.dataset.vedit]; renderImprove(); renderHL(); changed(); document.querySelector(`input[data-vague="${CSS.escape(b.dataset.vedit)}"]`)?.focus(); });
+  document.querySelectorAll("button[data-ignore]").forEach(b => b.onclick = () => { ignoredVague.add(b.dataset.ignore); renderImprove(); renderHL(); changed(); });
+  document.querySelectorAll("button[data-unignore]").forEach(b => b.onclick = () => { ignoredVague.delete(b.dataset.unignore); renderImprove(); renderHL(); changed(); });
+  document.querySelectorAll("button[data-goword]").forEach(b => b.onclick = () => goToWord(b.dataset.goword, !!b.dataset.exact));
+  document.querySelectorAll("button[data-cok]").forEach(b => b.onclick = () => flashSaved(b.previousElementSibling));
   document.querySelectorAll("input[data-c]").forEach(inp => inp.oninput = () => { extra[inp.dataset.c] = inp.value; renderOrganized(); updateScore(); changed(); });
   document.querySelectorAll("button[data-base]").forEach(b => b.onclick = () => {
     const c = b.dataset.base, v = b.dataset.val;
-    const list = (extra[c]||"").split(/\s*,\s*/).filter(Boolean);
-    const i = list.indexOf(v); if (i >= 0) list.splice(i,1); else list.push(v);
-    extra[c] = list.join(", ");
+    const r = toggleLimited((extra[c]||"").split(/\s*,\s*/).filter(Boolean), v, LIMITS[c]);
+    extra[c] = r.list.join(", ");
+    limitMsg = {[c]: r.msg};
     renderOrganized(); renderImprove(); updateScore(); changed();
+    limitMsg = {};
   });
+}
+// opostos não podem ser escolhidos juntos, e no máximo 3 por lista
+const LIMITS = {
+  tone: {max: 3, opp: [["formal","informal"],["formal","descontraído"],["formal","com humor"],["neutro","com humor"],["neutro","persuasivo"],["neutro","empático"],["técnico","descontraído"],["técnico","com humor"]]},
+  format: {max: 3, opp: [["até 100 palavras","até 300 palavras"],["lista com tópicos","texto corrido"],["tabela","texto corrido"],["passo a passo","texto corrido"],["5 tópicos","1 parágrafo"]]},
+  how: {max: 3, opp: [["concise","detail"],["concise","steps"]]},
+};
+function toggleLimited(list, v, rule, label = x => x){
+  list = [...list];
+  const i = list.indexOf(v);
+  if (i >= 0){ list.splice(i, 1); return {list, msg: ""}; }
+  if (!rule) return {list: [...list, v], msg: ""};
+  const opps = rule.opp.map(([a,b]) => a === v ? b : b === v ? a : null).filter(o => o && list.includes(o));
+  if (list.length - opps.length + 1 > rule.max) return {list, msg: `Escolha no máximo ${rule.max}. Desmarque uma para escolher outra.`};
+  list = list.filter(x => !opps.includes(x)); list.push(v);
+  return {list, msg: opps.length ? `Tirei ${opps.map(o => `“${label(o)}”`).join(" e ")}, que é o oposto de “${label(v)}”.` : ""};
+}
+let toastTimer = null;
+function toast(t){
+  let el = $("toast");
+  if (!el){ el = document.createElement("div"); el.id = "toast"; el.setAttribute("role", "status"); el.style.cssText = "position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;z-index:50;max-width:90vw;box-shadow:0 6px 24px rgba(0,0,0,.25)"; document.body.appendChild(el); }
+  el.textContent = t; el.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => el.hidden = true, 3200);
 }
 function updateScore(){
   const req = ORDER.filter(c=>!OPTIONAL.has(c));
@@ -1037,11 +1267,17 @@ let spellWorker = null, spellState = "idle", spellSeq = 0;
 function spellHTML(){
   if (!items.length) return START;
   if (spellState === "loading") return EMPTY("⏳", "Carregando a lista de palavras…", "Leva alguns segundos na primeira vez.");
-  if (spellState === "error") return EMPTY("⚠️", "Não deu para carregar a lista de palavras", "Os erros continuam sublinhados em vermelho na caixa de texto pelo próprio navegador.");
+  if (spellState === "error"){ $("input").spellcheck = true; return EMPTY("⚠️", "Não deu para carregar a lista de palavras", "Os erros continuam sublinhados em vermelho na caixa de texto pelo próprio navegador."); }
   if (spellState === "checking" || spellState === "idle") return EMPTY("🔎", "Verificando…");
   if (!spellResults.length) return EMPTY("✓", "Nenhum erro de digitação", "Todas as palavras estão na lista do português.", true);
-  return spellResults.map(r => `<div class="box spell"><b>${esc(r.w)}</b> ${r.s.length ? "→ " + r.s.map(s=>`<button class="chip" data-from="${esc(r.w)}" data-to="${esc(s)}">${esc(s)}</button>`).join(" ") : "<span class='note'>sem sugestão</span>"}
-    <button class="ghost" data-keep="${esc(r.w)}" style="float:right">está certo</button></div>`).join("");
+  const raw = $("input").value;
+  const live = spellResults.filter(r => wordHits(raw, r.w).length);
+  if (!live.length) return EMPTY("✓", "Nenhum erro de digitação", "Todas as palavras estão na lista do português.", true);
+  return live.map(r => { const h = wordHits(raw, r.w)[0];
+    return `<div class="box spell" data-vbox="${esc(r.w)}"><div class="vhead"><button class="wordlink" style="color:var(--info)" data-goword="${esc(r.w)}" title="Mostrar no texto">${esc(r.w)} ↗</button>
+      <span class="snip">${h ? snippetAt(raw, h[0], h[1]) : ""}</span></div>
+      <div class="vrow">${r.s.length ? `<span class="note" style="margin:0">Trocar por:</span> ` + r.s.map(s=>`<button class="chip" data-from="${esc(r.w)}" data-to="${esc(s)}">${esc(s)}</button>`).join(" ") : "<span class='note' style='margin:0'>sem sugestão</span>"}
+      <button class="ghost" data-keep="${esc(r.w)}" style="margin-left:auto">está certo</button></div></div>`; }).join("");
 }
 function refreshSpell(){
   $("spellBox").innerHTML = spellHTML();
@@ -1057,7 +1293,9 @@ function refreshSpell(){
     spellResults = spellResults.filter(r => r.w !== b.dataset.keep);
     refreshSpell();
   });
-  setCount("p-spell", spellState === "done" && items.length ? spellResults.length : 0);
+  document.querySelectorAll("#spellBox button[data-goword]").forEach(b => b.onclick = () => goToWord(b.dataset.goword));
+  setCount("p-spell", spellState === "done" && items.length ? spellResults.filter(r => wordHits($("input").value, r.w).length).length : 0);
+  renderHL();
 }
 function ensureSpellWorker(){
   if (spellWorker) return;
@@ -1240,7 +1478,7 @@ function expandSlang(text){
 function annotate(text){
   let t = expandSlang(text);
   for (const [k,v] of Object.entries(meanings)){
-    if (!v || !v.trim() || ignoredVague.has(k)) continue;
+    if (!v || !v.trim() || ignoredVague.has(k) || vagueDone[k] !== "explain") continue;
     const re = new RegExp(`(^|[^\\p{L}])(${reEsc(k).replace(/a/g,"[aáàâã]").replace(/e/g,"[eéê]").replace(/i/g,"[ií]").replace(/o/g,"[oóôõ]").replace(/u/g,"[uú]").replace(/c/g,"[cç]")})(?=[^\\p{L}]|$)`, "giu");
     t = t.replace(QUOTE_RE, m => `\u0001${encodeURIComponent(m)}\u0001`)
          .replace(re, (m,p,w) => `${p}${w} (ou seja, ${v.trim()})`)
@@ -1251,7 +1489,7 @@ function annotate(text){
   return t;
 }
 function signature(){
-  return JSON.stringify([$("input").value, extra, meanings, [...ignoredVague], images.map(i=>[i.id,i.note,i.ocr]),
+  return JSON.stringify([$("input").value, extra, meanings, vagueDone, [...ignoredVague], images.map(i=>[i.id,i.note,i.ocr]),
     role.pick, customRoles, role.level, $("roleArea").value, prefs, overrides, markerCfg, $("online").checked]);
 }
 // mostra se o prompt final está em dia com o que você escreveu
@@ -1268,6 +1506,18 @@ async function generate(){
   showTab("out");
   await renderOutput();
 }
+function isGibberish(){
+  const words = ($("input").value.match(/\p{L}+/gu) || []);
+  if (!words.length) return false;
+  const bad = w => /(.)\1{2,}/iu.test(w) || !/[aeiouyáéíóúâêôãõà]/i.test(w) || w.length > 20;
+  if (words.filter(bad).length / words.length >= .5) return true;
+  const uniq = new Set(words.filter(w => w.length >= 3).map(w => w.toLowerCase()));
+  return spellState === "done" && uniq.size >= 2 && spellResults.length / uniq.size >= .7 && !items.some(it => [...it.hits].some(h => h !== "context"));
+}
+const BASE_PROMPT = {
+  pt: ["## Papel da IA","- Você é [quem a IA deve ser: professor(a), designer, revisor(a)…].","","## Objetivo","- [O que você quer, começando com um verbo: escreva, crie, corrija, explique…]","","## Contexto","- [Sobre o que é, quem você é, o que já existe ou já tentou]","","## Público","- [Quem vai ler ou usar o resultado]","","## Formato da resposta","- [Lista, tabela, e-mail… e o tamanho: até X palavras, N tópicos]","","## Tom e estilo","- [Formal, descontraído, técnico…]","","## Restrições","- [O que evitar, limites, o que é obrigatório]"],
+  en: ["## Role","- You are [who the AI should be: a teacher, a designer, an editor…].","","## Goal","- [What you want, starting with a verb: write, create, fix, explain…]","","## Context","- [What this is about, who you are, what already exists or what you tried]","","## Audience","- [Who will read or use the result]","","## Output format","- [List, table, e-mail… and the length: up to X words, N bullet points]","","## Tone & style","- [Formal, relaxed, technical…]","","## Constraints","- [What to avoid, limits, must-haves]"],
+};
 const PT_HEAD = {images:"Imagens anexadas", how:"Como responder"};
 const EN_HEAD = {images:"Attached images", how:"How to respond"};
 async function renderOutput(){
@@ -1276,6 +1526,16 @@ async function renderOutput(){
   const out = $("output");
   $("trWarn").hidden = true;
   if (!items.length && !images.length && !Object.values(extra).some(v=>v&&v.trim())){ out.textContent = "Escreva algo na aba “Mensagem” primeiro."; $("tokens").innerHTML=""; setStatus(); changed(); return; }
+  if (isGibberish()){
+    const l = prefs.promptLang;
+    const how = BEHAVIORS.filter(b => prefs.behaviors[b[0]]).map(b => l === "en" ? b[3] : BEH_PT[b[0]]);
+    const txt = BASE_PROMPT[l].join("\n") + (how.length ? `\n\n## ${l === "en" ? "How to respond" : "Como responder"}\n` + how.map(h => "- " + h).join("\n") : "");
+    out.textContent = txt; renderTokens(txt); setStatus(); changed();
+    const w = $("trWarn");
+    w.innerHTML = `<b>Não consegui identificar o que você quis dizer.</b> Aqui está um prompt base: troque o que está entre [colchetes] pelo seu pedido.`;
+    w.hidden = false;
+    return;
+  }
   let lang = prefs.promptLang;
   if (lang === "en"){
     if (!translator) await initTranslator();
@@ -1354,7 +1614,7 @@ function showTab(which){
   $("tab-out").classList.toggle("active", out); $("tab-msg").classList.toggle("active", !out);
   $("tab-out").setAttribute("aria-selected", out); $("tab-msg").setAttribute("aria-selected", !out);
 }
-const CONF_TABS = [["p-org","Divisão"],["p-vague","Palavras vagas"],["p-miss","O que falta"],["p-warn","Avisos"],["p-spell","Ortografia"],["p-role","Papel da IA"],["p-img","Imagens"],["p-marks","Citações"]];
+const CONF_TABS = [["p-org","Divisão"],["p-vague","Palavras vagas"],["p-miss","O que falta"],["p-warn","Avisos"],["p-spell","Ortografia"],["p-role","Papel da IA"],["p-img","Imagens"],["p-marks","Marcadores"]];
 $("confTabs").innerHTML = CONF_TABS.map(([id,label],i) => `<button role="tab" class="tab ${i?"":"active"}" data-panel="${id}" aria-selected="${!i}">${label} <span class="tag warn" id="count-${id}"></span></button>`).join("");
 document.querySelectorAll("#confTabs .tab").forEach(b => b.onclick = () => showConf(b.dataset.panel));
 function showConf(id){
@@ -1372,7 +1632,7 @@ $("tab-out").onclick = () => showTab("out");
 $("backMsg").onclick = () => showTab("msg");
 $("go").onclick = generate;
 $("regen").onclick = renderOutput;
-$("clear").onclick = () => { $("input").value=""; items=[]; overrides={}; extra={}; meanings={}; ignoredVague=new Set(); images=[]; spellResults=[]; renderImages(); analyze(); };
+$("clear").onclick = () => { $("input").value=""; items=[]; overrides={}; extra={}; meanings={}; vagueDone={}; ignoredVague=new Set(); images=[]; spellResults=[]; renderImages(); analyze(); };
 $("copy").onclick = async () => {
   const t = $("output").textContent; if (!t) return;
   try{ await navigator.clipboard.writeText(t); }catch{ const r=document.createRange(); r.selectNodeContents($("output")); getSelection().removeAllRanges(); getSelection().addRange(r); document.execCommand("copy"); }
@@ -1393,6 +1653,17 @@ $("newRoleTag").onchange = () => { $("newTagWrap").hidden = $("newRoleTag").valu
 $("addRole").onclick = addRole;
 $("newRoleName").onkeydown = $("newTagName").onkeydown = e => { if (e.key === "Enter") addRole(); };
 $("addMarker").onclick = addMarker;
+// Enter em qualquer campo de texto confirma (mostra que salvou)
+document.addEventListener("keydown", e => {
+  const t = e.target;
+  if (e.key !== "Enter" || t.tagName !== "INPUT" || t.type !== "text") return;
+  if (t.matches("[data-vague], #newRoleName, #newTagName, #mkOpen, #mkClose")) return;   // esses têm ação própria
+  e.preventDefault(); flashSaved(t); t.blur();
+});
+$("mkTry").oninput = () => {
+  const v = $("mkTry").value;
+  $("mkTryOut").innerHTML = v ? esc(applyMarkers(v)).replace(/&quot;([^&]*)&quot;/g, `<mark style="background:var(--ok-soft);color:var(--ok);font-weight:600">"$1"</mark>`) + (markerIssues(v).length ? ` <span class="limit-note">⚠ ${esc(markerIssues(v)[0].title)}</span>` : "") : "";
+};
 $("mkOpen").oninput = $("mkClose").oninput = mkPreview;
 $("mkOpen").onkeydown = $("mkClose").onkeydown = e => { if (e.key === "Enter") addMarker(); };
 renderRoleChips(); renderAreas(); renderLevels(); mkPreview(); renderBehaviors(); renderLangs(); renderMarkers(); renderImages(); setStatus(); analyze();
