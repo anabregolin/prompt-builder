@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt Builder</title>
+<style>
+:root{
+  --bg:#f6f5f2; --card:#ffffff; --text:#1d1d1b; --muted:#6b6a65; --line:#e3e1db;
+  --accent:#c2562f; --accent-soft:#f6e3da; --warn:#9a6a00; --warn-soft:#fbf0d4; --ok:#2f7a4f; --ok-soft:#dcefe3;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#171716; --card:#21211f; --text:#ecebe6; --muted:#9e9c95; --line:#34332f;
+    --accent:#e07a52; --accent-soft:#3a2820; --warn:#e8b84a; --warn-soft:#352c16; --ok:#6cc391; --ok-soft:#1c3226;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1100px;margin:0 auto;padding:28px 16px 60px}
+h1{font-size:24px;margin:0 0 4px}
+.sub{color:var(--muted);margin:0 0 22px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media (max-width:820px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+.card h2{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 10px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+textarea{width:100%;min-height:180px;resize:vertical;border:1px solid var(--line);border-radius:8px;padding:10px;background:var(--bg);color:var(--text);font:inherit}
+input[type=text]{width:100%;border:1px solid var(--line);border-radius:6px;padding:6px 8px;background:var(--bg);color:var(--text);font:inherit;font-size:14px}
+button{border:0;border-radius:8px;padding:9px 14px;font:inherit;font-weight:600;cursor:pointer;background:var(--accent);color:#fff}
+button.ghost{background:transparent;color:var(--text);border:1px solid var(--line);font-weight:500;padding:5px 10px;font-size:13px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.cat{margin-bottom:12px}
+.cat h3{font-size:14px;margin:0 0 4px;color:var(--accent)}
+.cat ul{margin:0;padding-left:18px}
+.cat li{margin:3px 0;display:flex;gap:6px;align-items:flex-start;justify-content:space-between}
+.cat li span{flex:1}
+select{border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--muted);font-size:12px;padding:2px 4px}
+.miss{background:var(--warn-soft);border-radius:8px;padding:10px;margin-bottom:8px}
+.miss b{color:var(--warn)}
+.miss p{margin:2px 0 6px;font-size:13px;color:var(--muted)}
+.vague{background:var(--accent-soft);border-radius:8px;padding:8px 10px;margin-bottom:8px;font-size:13px}
+.good{background:var(--ok-soft);color:var(--ok);border-radius:8px;padding:10px;font-weight:600}
+pre{white-space:pre-wrap;word-wrap:break-word;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px;font:13px/1.55 var(--mono);margin:0;min-height:120px}
+.badge{font-size:11px;text-transform:none;letter-spacing:0;padding:2px 8px;border-radius:99px;background:var(--line);color:var(--muted)}
+.badge.ok{background:var(--ok-soft);color:var(--ok)}
+.badge.warn{background:var(--warn-soft);color:var(--warn)}
+.note{font-size:12px;color:var(--muted);margin-top:8px}
+label.chk{font-size:13px;display:flex;gap:6px;align-items:center}
+.empty{color:var(--muted);font-size:14px}
+.score{font-size:13px;color:var(--muted)}
+.full{grid-column:1/-1}
+</style>
+</head>
+<body>
+<main>
+  <h1>Prompt Builder</h1>
+  <p class="sub">Escreva do seu jeito, em português. A página organiza em categorias, aponta o que está faltando e monta o prompt em inglês. Tudo roda aqui no navegador, sem IA.</p>
+
+  <div class="grid">
+    <section class="card">
+      <h2>1 · Sua mensagem</h2>
+      <textarea id="input" placeholder="Ex.: Quero um e-mail para meu chefe pedindo férias em janeiro. Sou analista há 2 anos. Tom formal mas simpático, no máximo 150 palavras."></textarea>
+      <div class="row">
+        <button id="go">Organizar</button>
+        <button class="ghost" id="clear">Limpar</button>
+        <span class="score" id="score"></span>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>2 · Organizado <span class="badge">mude a categoria se errar</span></h2>
+      <div id="organized"><p class="empty">Clique em “Organizar” para ver aqui.</p></div>
+    </section>
+
+    <section class="card">
+      <h2>3 · O que está faltando</h2>
+      <div id="missing"><p class="empty">—</p></div>
+    </section>
+
+    <section class="card">
+      <h2>4 · Prompt final (inglês) <span class="badge" id="tstatus">—</span></h2>
+      <pre id="output"></pre>
+      <div class="row">
+        <button id="copy">Copiar prompt</button>
+        <label class="chk"><input type="checkbox" id="online"> Usar tradução online (MyMemory)</label>
+      </div>
+      <p class="note" id="tnote"></p>
+    </section>
+  </div>
+</main>
+
+<script>
+const CATS = {
+  goal:      {pt:"Objetivo",          en:"Goal"},
+  context:   {pt:"Contexto",          en:"Context"},
+  audience:  {pt:"Público",           en:"Audience"},
+  format:    {pt:"Formato da resposta",en:"Output format"},
+  tone:      {pt:"Tom e estilo",      en:"Tone & style"},
+  constraints:{pt:"Restrições",       en:"Constraints"},
+  examples:  {pt:"Exemplos / referências", en:"Examples & references"},
+};
+const ORDER = Object.keys(CATS);
+
+const KW = {
+  goal: ["quero","queria","preciso","precisava","gostaria","crie","criar","faca","fazer","escreva","escrever","gere","gerar","explique","explicar","ajude","ajudar","analise","analisar","resuma","resumir","traduza","monte","montar","desenvolva","liste","listar","compare","comparar","revise","revisar","corrija","corrigir","sugira","sugerir","planeje","planejar","otimize","melhore","melhorar","redija","elabore","calcule","organize","me de","me diga","objetivo","meta"],
+  context: ["sou","trabalho","estou","tenho","temos","meu","minha","meus","minhas","nosso","nossa","projeto","empresa","porque","pois","situacao","cenario","atualmente","hoje","historico","ja tentei","contexto","area","negocio","curso","faculdade"],
+  audience: ["publico","leitor","leitores","cliente","clientes","iniciante","iniciantes","leigo","leigos","criancas","alunos","equipe","time","chefe","gestor","diretoria","usuarios","seguidores","investidores","recrutador","professor","especialistas","destinado"],
+  format: ["formato","tabela","lista","bullets","topicos","paragrafo","paragrafos","json","markdown","codigo","e-mail","email","slides","passo a passo","resumo","palavras","paginas","linhas","caracteres","titulo","titulos","secoes","estrutura","csv","roteiro","post","artigo","texto"],
+  tone: ["tom","formal","informal","descontraido","profissional","simples","tecnico","amigavel","direto","objetivo e","criativo","estilo","serio","divertido","humor","empatico","persuasivo","didatico","educado","simpatico","linguagem","casual","elegante"],
+  constraints: ["nao","nunca","sem","evite","evitar","apenas","somente","so","maximo","minimo","ate","limite","prazo","obrigatorio","deve","precisa ter","nao pode","exceto","restricao","orcamento"],
+  examples: ["exemplo","exemplos","por exemplo","igual a","parecido","referencia","modelo","inspirado","como este","como esse","segue","abaixo"],
+};
+const WEIGHT = {goal:1.2, context:.8, audience:1.3, format:1.2, tone:1.3, constraints:1.1, examples:1.4};
+
+const MISSING_HELP = {
+  goal: ["O que exatamente a IA deve fazer?", "Ex.: escrever, resumir, explicar, comparar, corrigir…"],
+  context: ["Qual é a situação?", "Quem é você, para que serve, o que já foi tentado."],
+  audience: ["Para quem é o resultado?", "Ex.: meu chefe, clientes leigos, alunos de 12 anos."],
+  format: ["Como a resposta deve vir?", "Ex.: lista com tópicos, tabela, e-mail, até 200 palavras."],
+  tone: ["Qual o tom?", "Ex.: formal, direto, descontraído, técnico."],
+  constraints: ["Algum limite ou regra?", "Ex.: tamanho máximo, o que evitar, prazo."],
+  examples: ["Tem algum exemplo ou referência?", "Opcional, mas ajuda muito a acertar o estilo."],
+};
+const OPTIONAL = new Set(["examples"]);
+
+const VAGUE = {
+  "algo":"“algo” — o quê, exatamente?",
+  "alguma coisa":"“alguma coisa” — descreva o que você espera.",
+  "coisa":"“coisa” — dê o nome concreto.",
+  "coisas":"“coisas” — liste quais.",
+  "melhor":"“melhor” — melhor em quê? (mais curto, mais claro, mais vendedor…)",
+  "bom":"“bom” — o que torna bom pra você?",
+  "boa":"“boa” — o que torna boa pra você?",
+  "legal":"“legal” — que efeito você quer causar?",
+  "bonito":"“bonito” — qual estilo visual?",
+  "interessante":"“interessante” — para quem e por quê?",
+  "etc":"“etc” — a IA não adivinha o resto; liste tudo.",
+  "tipo assim":"“tipo assim” — dê o exemplo concreto.",
+  "qualquer":"“qualquer” — tem mesmo zero preferência?",
+  "varios":"“vários” — quantos?",
+  "alguns":"“alguns” — quantos?",
+  "rapido":"“rápido” — curto de ler ou de fazer? Quantas palavras?",
+  "curto":"“curto” — quantas palavras/linhas?",
+  "grande":"“grande” — quantas palavras/páginas?",
+};
+
+const norm = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+const esc = s => s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const hasWord = (text, kw) => new RegExp("(^|[^a-z0-9])"+kw.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"([^a-z0-9]|$)").test(text);
+
+// returns {cat: primary category, hits: set of every category the text touches}
+function classify(sentence){
+  const n = norm(sentence);
+  let best = "context", bestScore = 0;
+  const hits = new Set();
+  for (const c of ORDER){
+    let s = 0;
+    for (const k of KW[c]) if (hasWord(n,k)) s += 1;
+    if (s) hits.add(c);
+    s *= WEIGHT[c];
+    if (s > bestScore){ best = c; bestScore = s; }
+  }
+  const hasSize = /(^|\D)\d+\s*(palavras|linhas|paginas|caracteres|topicos|itens|slides|paragrafos)\b/.test(n);
+  if (hasSize) hits.add("format");
+  const firstWords = n.split(/\s+/).slice(0,3).join(" ");
+  if (KW.goal.some(k => hasWord(firstWords,k))) best = "goal";
+  else if (hasSize) best = "format";
+  return {cat:best, hits};
+}
+
+function cleanBullet(s){
+  s = s.trim().replace(/^[-•*\d.)\s]+/,"").replace(/^(e|e tambem|tambem|alem disso|ah|entao)\s+/i,"").replace(/[.;!]+$/,"").trim();
+  return s ? s[0].toUpperCase()+s.slice(1) : s;
+}
+
+function splitSentences(text){
+  const out = [];
+  for (const s of text.split(/(?<=[.!?;])\s+|\n+/)){
+    // split on commas only when each piece is a meaningful clause (3+ words)
+    const parts = s.split(/,\s+/);
+    if (parts.length > 1 && parts.every(p => p.trim().split(/\s+/).length >= 3)) out.push(...parts);
+    else out.push(s);
+  }
+  return out.map(cleanBullet).filter(s => s.length > 2);
+}
+
+let items = [];   // {text, cat}
+let extra = {};   // cat -> text typed in missing box
+
+function organize(){
+  const text = document.getElementById("input").value;
+  items = splitSentences(text).map(t => { const r = classify(t); return {text:t, cat:r.cat, hits:r.hits}; });
+  extra = {};
+  render();
+}
+
+function render(){
+  renderOrganized(); renderMissing(); renderOutput();
+}
+
+function grouped(){
+  const g = Object.fromEntries(ORDER.map(c=>[c,[]]));
+  items.forEach((it,i)=>g[it.cat].push({...it,i}));
+  for (const c of ORDER) if (extra[c] && extra[c].trim()) g[c].push({text:cleanBullet(extra[c]), cat:c, i:-1});
+  return g;
+}
+
+function renderOrganized(){
+  const el = document.getElementById("organized");
+  if (!items.length){ el.innerHTML = '<p class="empty">Nada para organizar ainda.</p>'; return; }
+  const g = grouped();
+  el.innerHTML = ORDER.filter(c=>g[c].length).map(c => `
+    <div class="cat"><h3>${CATS[c].pt}</h3><ul>${g[c].map(it => `
+      <li><span>${esc(it.text)}</span>${it.i>=0 ? `<select data-i="${it.i}">${ORDER.map(o=>`<option value="${o}"${o===c?" selected":""}>${CATS[o].pt}</option>`).join("")}</select>`:""}</li>`).join("")}
+    </ul></div>`).join("");
+  el.querySelectorAll("select").forEach(s => s.onchange = () => { items[+s.dataset.i].cat = s.value; render(); });
+}
+
+function renderMissing(){
+  const el = document.getElementById("missing");
+  if (!items.length){ el.innerHTML = '<p class="empty">—</p>'; document.getElementById("score").textContent=""; return; }
+  let html = "";
+  const reallyMissing = ORDER.filter(c => !covered(c, false));
+  for (const c of reallyMissing){
+    const [q,hint] = MISSING_HELP[c];
+    html += `<div class="miss"><b>${CATS[c].pt}${OPTIONAL.has(c)?" (opcional)":""}</b> — ${q}<p>${hint}</p>
+      <input type="text" data-c="${c}" placeholder="Responda aqui (opcional)" value="${esc(extra[c]||"")}"></div>`;
+  }
+  // length check
+  const all = norm(items.map(i=>i.text).join(" "));
+  if (items.some(it=>it.cat==="format") && !/\d/.test(all) && !/(curto|longo|breve|detalhad)/.test(all))
+    html += `<div class="vague">Formato sem tamanho: diga quantas palavras, linhas ou itens.</div>`;
+  // vague words
+  const found = Object.keys(VAGUE).filter(k => hasWord(all,k));
+  if (found.length) html += found.map(k=>`<div class="vague">${VAGUE[k]}</div>`).join("");
+  if (all.split(/\s+/).length < 12) html += `<div class="vague">Mensagem muito curta. Prompts melhores costumam ter contexto e detalhes.</div>`;
+  if (!html) html = '<div class="good">Completo! Nada importante faltando.</div>';
+  el.innerHTML = html;
+  el.querySelectorAll("input[data-c]").forEach(inp => {
+    inp.oninput = () => { extra[inp.dataset.c] = inp.value; renderOrganized(); scheduleOutput(); updateScore(); };
+  });
+  updateScore();
+}
+
+// a category counts as covered if a bullet sits in it or any sentence mentions it
+function covered(c, includeExtra = true){
+  if (items.some(it => it.cat === c || (it.hits && it.hits.has(c)))) return true;
+  return includeExtra && !!(extra[c] && extra[c].trim());
+}
+
+function updateScore(){
+  const req = ORDER.filter(c=>!OPTIONAL.has(c));
+  const have = req.filter(c=>covered(c)).length;
+  document.getElementById("score").textContent = items.length ? `Completo: ${have}/${req.length} categorias` : "";
+}
+
+/* ---------- translation ---------- */
+const cache = new Map();
+let translator = null, engine = "none";
+
+let triedLocal = false;
+const withTimeout = (p, ms) => Promise.race([p, new Promise((_,rej)=>setTimeout(()=>rej(new Error("timeout")), ms))]);
+async function initTranslator(){
+  if (!triedLocal){
+    triedLocal = true;
+    try{
+      if ("Translator" in self){
+        const a = await withTimeout(Translator.availability({sourceLanguage:"pt", targetLanguage:"en"}), 3000);
+        if (a === "available"){
+          translator = await withTimeout(Translator.create({sourceLanguage:"pt", targetLanguage:"en"}), 5000);
+          engine = "local"; return;
+        }
+      }
+    }catch(e){ console.warn("Local translator unavailable:", e); }
+  }
+  engine = document.getElementById("online").checked ? "online" : "none";
+}
+
+async function tr(text){
+  if (cache.has(text)) return cache.get(text);
+  let out = null;
+  try{
+    if (engine === "local") out = await translator.translate(text);
+    else if (engine === "online"){
+      const r = await fetch("https://api.mymemory.translated.net/get?langpair=pt-BR|en&q="+encodeURIComponent(text.slice(0,480)));
+      const j = await r.json();
+      if (j.responseStatus == 200) out = j.responseData.translatedText;
+    }
+  }catch(e){ console.warn(e); }
+  if (out) cache.set(text,out);
+  return out ?? text;
+}
+
+function setStatus(){
+  const b = document.getElementById("tstatus"), n = document.getElementById("tnote");
+  if (engine === "local"){ b.textContent="tradução no navegador"; b.className="badge ok"; n.textContent="Traduzido no seu próprio navegador: o texto não sai do computador."; }
+  else if (engine === "online"){ b.textContent="tradução online"; b.className="badge warn"; n.textContent="O texto é enviado ao MyMemory (serviço externo) para traduzir. Não use com dados sensíveis."; }
+  else { b.textContent="sem tradução"; b.className="badge warn"; n.textContent="Seu navegador não tem tradutor embutido (Chrome 138+ tem). Os títulos saem em inglês, mas o conteúdo fica em português. Marque a tradução online se quiser tudo em inglês."; }
+}
+
+let outTimer = null;
+function scheduleOutput(){ clearTimeout(outTimer); outTimer = setTimeout(renderOutput, 400); }
+
+let renderSeq = 0;
+async function renderOutput(){
+  const seq = ++renderSeq;
+  const out = document.getElementById("output");
+  if (!items.length){ out.textContent = ""; setStatus(); return; }
+  if (!translator) await initTranslator();
+  setStatus();
+  const badge = document.getElementById("tstatus");
+  if (engine !== "none"){ badge.textContent = "traduzindo…"; badge.className = "badge"; }
+  const g = grouped();
+  let txt = "";
+  for (const c of ORDER){
+    if (!g[c].length) continue;
+    const lines = await Promise.all(g[c].map(it => tr(it.text)));
+    txt += `## ${CATS[c].en}\n` + lines.map(l=>`- ${l}`).join("\n") + "\n\n";
+  }
+  txt += "If anything above is ambiguous or missing, ask me before answering.";
+  if (seq === renderSeq){ out.textContent = txt; setStatus(); }
+}
+
+/* ---------- events ---------- */
+document.getElementById("go").onclick = organize;
+document.getElementById("clear").onclick = () => { document.getElementById("input").value=""; items=[]; extra={}; render(); };
+document.getElementById("copy").onclick = async () => {
+  const t = document.getElementById("output").textContent; if (!t) return;
+  try{ await navigator.clipboard.writeText(t); }catch{ const r=document.createRange(); r.selectNodeContents(document.getElementById("output")); getSelection().removeAllRanges(); getSelection().addRange(r); document.execCommand("copy"); }
+  const b = document.getElementById("copy"); b.textContent="Copiado ✓"; setTimeout(()=>b.textContent="Copiar prompt",1500);
+};
+document.getElementById("online").onchange = e => {
+  if (engine !== "local") engine = e.target.checked ? "online" : "none";
+  renderOutput();
+};
+document.getElementById("input").addEventListener("keydown", e => { if (e.key==="Enter" && (e.ctrlKey||e.metaKey)) organize(); });
+setStatus();
+</script>
+</body>
+</html>
