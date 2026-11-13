@@ -12,7 +12,7 @@
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   /* uma cor por categoria */
   --c-role:#7c4dff; --c-goal:#c2562f; --c-context:#2a78b5; --c-problems:#c43d4b; --c-audience:#2f8f63;
-  --c-format:#a87700; --c-tone:#c4467f; --c-constraints:#5b6b7c; --c-examples:#178f99;
+  --vg:#7c3aed; --c-format:#a87700; --c-tone:#c4467f; --c-constraints:#5b6b7c; --c-examples:#178f99;
 }
 @media (prefers-color-scheme: dark){
   :root{
@@ -20,7 +20,7 @@
     --accent:#e07a52; --accent-soft:#3a2820; --warn:#e8b84a; --warn-soft:#352c16; --ok:#6cc391; --ok-soft:#1c3226;
     --info:#7fb0e8; --info-soft:#1b2838; --err:#f2827a; --err-soft:#3a1d1b;
     --c-role:#a98bff; --c-goal:#e07a52; --c-context:#6aaee3; --c-problems:#f07a86; --c-audience:#6cc391;
-    --c-format:#e0b54a; --c-tone:#ef86b6; --c-constraints:#9fb0c2; --c-examples:#5cc8d1;
+    --vg:#c4a1ff; --c-format:#e0b54a; --c-tone:#ef86b6; --c-constraints:#9fb0c2; --c-examples:#5cc8d1;
   }
 }
 *{box-sizing:border-box}
@@ -205,11 +205,11 @@ ul.have li{margin:2px 0}
 .hl{position:absolute;inset:0;padding:10px;border:1px solid transparent;border-radius:8px;font:inherit;font-size:16px;line-height:1.5;white-space:pre-wrap;overflow-wrap:break-word;color:transparent;overflow:hidden;pointer-events:none;scrollbar-gutter:stable}
 #input{position:relative;z-index:1;background:transparent;line-height:1.5;scrollbar-gutter:stable;display:block}
 .hl mark{color:transparent;font-weight:inherit;padding:0;border-radius:3px;background:none}
-.hl .seg{background:color-mix(in srgb,var(--sc) 16%,transparent);box-shadow:-3px 0 0 var(--sc);border-top-left-radius:0;border-bottom-left-radius:0;border-radius:3px;-webkit-box-decoration-break:slice;box-decoration-break:slice}
-.hl mark.v{background:color-mix(in srgb,var(--accent) 45%,transparent)}
-.hl mark.d{background:color-mix(in srgb,var(--ok) 35%,transparent)}
+.hl .seg{background:color-mix(in srgb,var(--sc) 28%,transparent);border-radius:3px;-webkit-box-decoration-break:slice;box-decoration-break:slice}
+.hl mark.v{text-decoration:underline dashed 2px var(--vg);text-decoration-skip-ink:none;text-underline-offset:4px}
+.hl mark.d{text-decoration:underline dotted 2px var(--ok);text-decoration-skip-ink:none;text-underline-offset:4px}
 .hl mark.q{background:color-mix(in srgb,var(--c-examples) 22%,transparent);text-decoration:underline 2px var(--c-examples);text-underline-offset:4px}
-.hl .seg.alt{background:color-mix(in srgb,var(--sc) 30%,transparent)}
+.hl .seg.alt{background:color-mix(in srgb,var(--sc) 48%,transparent)}
 .hl-legend .lg-cats{display:flex;gap:10px;flex-wrap:wrap}
 .hl-legend .lg-q{text-decoration:underline 2px var(--c-examples);text-underline-offset:3px;background:color-mix(in srgb,var(--c-examples) 22%,transparent);border-radius:3px;padding:0 2px}
 .hl-legend .lg-tip{flex-basis:100%}
@@ -249,6 +249,12 @@ button.chip:hover{background:var(--ok);color:#fff}
 /* menus */
 select.nice{appearance:none;-webkit-appearance:none;border:1px solid var(--line);border-radius:8px;background:var(--card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23888' stroke-width='1.6'/%3E%3C/svg%3E") no-repeat right 12px center;padding:7px 34px 7px 12px;font-size:14px;color:var(--text);cursor:pointer;min-width:220px}
 select.nice:hover{border-color:var(--muted)}
+.areas{display:inline-flex;gap:2px;flex-wrap:wrap;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:3px;margin:4px 0 10px}
+button.area{background:none;border:0;border-radius:7px;color:var(--muted);font-weight:500;font-size:13px;padding:5px 10px}
+button.area span{font-size:11px;opacity:.7;margin-left:2px}
+button.area:hover{color:var(--text)}
+button.area.on{color:var(--text);background:var(--card);box-shadow:0 0 0 1px var(--muted)}
+.rolepicks button.pick{padding:6px 14px;font-size:14px}
 .tab .dot{width:7px;height:7px;border-radius:50%;background:var(--ok);display:inline-block}
 .opt.maxed:not(.on){opacity:.45}
 .role-preview{border-top:1px solid var(--line);margin-top:10px;padding-top:10px;font-size:13px}
@@ -298,6 +304,7 @@ select.nice:hover{border-color:var(--muted)}
         <div class="hl-legend" id="hlLegend" hidden></div>
         <div id="markWarn"></div>
         <div class="row">
+          <button id="toOut">Ver prompt final →</button>
           <button class="ghost" id="clear">Limpar tudo</button>
           <span class="score" id="score"></span>
         </div>
@@ -371,12 +378,10 @@ select.nice:hover{border-color:var(--muted)}
         </div>
 
         <div data-rpanel="who" class="fill">
-          <p class="steps-hint"><b>1.</b> Escolha a área no menu &nbsp; <b>2.</b> Clique num papel para escolher (clique de novo para tirar)</p>
-          <div class="role-bar">
-            <select id="roleTag" class="nice" aria-label="Área"></select>
-            <span class="chosen" id="roleChosenLine"></span>
-          </div>
-          <div class="picks" id="roleChips"></div>
+          <div class="role-bar"><span class="chosen" id="roleChosenLine"></span></div>
+          <div class="areas" id="roleTag" role="tablist" aria-label="Área"></div>
+          <div class="picks rolepicks" id="roleChips"></div>
+          <p class="steps-hint">Clique num papel para escolher. Clique de novo para tirar.</p>
           <div class="addbox">
             <h4>Não achou? Adicione um papel</h4>
             <div class="addgrid">
@@ -384,7 +389,7 @@ select.nice:hover{border-color:var(--muted)}
                 <input type="text" id="newRoleName" placeholder="ex.: professora de história do ensino médio">
               </label>
               <label class="field">Tag
-                <select id="newRoleTag" class="nice"></select>
+                <span class="picks" id="newRoleTagBtns" style="margin:4px 0 0"></span><input type="hidden" id="newRoleTag">
               </label>
               <label class="field" id="newTagWrap" hidden>Nome da nova tag
                 <input type="text" id="newTagName" placeholder="ex.: Saúde">
@@ -523,7 +528,7 @@ const CATS = {
 const ORDER = Object.keys(CATS);
 const OPTIONAL = new Set(["examples","problems","role"]);
 
-const GOAL_VERBS = ["quero","queria","preciso","precisava","gostaria","quero que","gostaria que","crie","criar","faca","fazer","escreva","escrever","gere","gerar","explique","explicar","ajude","ajudar","analise","analisar","resuma","resumir","traduza","traduzir","monte","montar","desenvolva","desenvolver","liste","listar","compare","comparar","revise","revisar","corrija","corrigir","sugira","sugerir","planeje","planejar","otimize","melhore","melhorar","redija","elabore","calcule","organize","organizar","me de","me diga","adicione","adicionar","coloque","colocar","inclua","incluir","mostre","mostrar","identifique","identificar","mude","mudar","troque","trocar","remova","remover","tire","tirar","deixe","ponha","bote","implemente","implementar","arrume","arrumar","conserte","consertar","ajuste","ajustar","transforme","converta","descreva","descrever","verifique","verificar","encontre","procure","pesquise","recomende","avalie","avaliar","refaca","reescreva","atualize","separe","separar","destaque","relacione","relacionar","permita","permitir","avise","notifique","renomeie","repare","veja","olhe","padronize","poderia","poderiam","podia","seria bom","seria legal","deveria","deveriam","tem que","precisa","precisam","objetivo","meta"];
+const GOAL_VERBS = ["quero","queria","preciso","precisava","gostaria","quero que","gostaria que","crie","criar","faca","fazer","escreva","escrever","gere","gerar","explique","explicar","ajude","ajudar","analise","analisar","resuma","resumir","traduza","traduzir","monte","montar","desenvolva","desenvolver","liste","listar","compare","comparar","revise","revisar","corrija","corrigir","sugira","sugerir","planeje","planejar","otimize","melhore","melhorar","redija","elabore","calcule","organize","organizar","me de","me diga","adicione","adicionar","coloque","colocar","inclua","incluir","mostre","mostrar","identifique","identificar","mude","mudar","troque","trocar","remova","remover","tire","tirar","deixe","ponha","bote","implemente","implementar","arrume","arrumar","conserte","consertar","ajuste","ajustar","transforme","converta","descreva","descrever","verifique","verificar","encontre","procure","pesquise","recomende","avalie","avaliar","refaca","reescreva","atualize","separe","separar","destaque","relacione","relacionar","permita","permitir","avise","notifique","renomeie","repare","veja","olhe","padronize","use","usar","poderia","poderiam","podia","seria bom","seria legal","deveria","deveriam","tem que","precisa","precisam","objetivo","meta"];
 const KW = {
   role: ["aja como","atue como","voce e um","voce e uma","seja um","seja uma","finja ser","faca o papel","papel de","como se fosse um","como se fosse uma"],
   goal: GOAL_VERBS,
@@ -745,8 +750,8 @@ function splitPara(t, restore, verbAlt){
   const merged = [];
   for (const x of list){
     const n = unslang(norm(stripQuotes(x))).trim();
-    const short = n.split(/\s+/).length < 4 && !new RegExp(`^(?:${verbAlt})\\b`).test(n) && ![...classify(x).hits].some(h => h !== "context");
-    if (merged.length && (CONT.test(n) || short)) merged[merged.length-1] += ". " + x;
+    const short = x.trim().split(/\s+/).length < 4 && !new RegExp(`^(?:${verbAlt})\\b`).test(n) && ![...classify(x).hits].some(h => h !== "context");
+    if (merged.length && (CONT.test(n) || short)) merged[merged.length-1] += (/[.?!…]$/.test(merged[merged.length-1]) ? " " : ". ") + x;
     else merged.push(x);
   }
   return merged;
@@ -771,6 +776,8 @@ function classify(sentence){
   if (hits.has("problems") && !KW.goal.some(k=>hasWord(first,k))) best = "problems";
   else if (KW.goal.some(k => hasWord(first,k))) best = "goal";
   else if (hasSize) best = "format";
+  // pergunta é pedido de resposta: vai para Objetivo, a não ser que fale de outra categoria
+  if (best === "context" && /\?\s*$/.test(sentence.trim())) best = "goal";
   return {cat:best, hits};
 }
 
@@ -860,10 +867,12 @@ function renderRoleChips(){
   const tags = allTags();
   if (!tags.includes(roleTagSel)) roleTagSel = tags[0];
   const count = t => allRoles().filter(r => r.tag === t).length;
-  $("roleTag").innerHTML = tags.map(t => `<option value="${esc(t)}" ${t===roleTagSel?"selected":""}>${esc(t)} (${count(t)})</option>`).join("");
+  $("roleTag").innerHTML = tags.map(t => `<button class="area ${t===roleTagSel?"on":""}" role="tab" aria-selected="${t===roleTagSel}" data-rarea="${esc(t)}">${esc(t)} <span>${count(t)}</span></button>`).join("");
+  document.querySelectorAll("[data-rarea]").forEach(b => b.onclick = () => { roleTagSel = b.dataset.rarea; renderRoleChips(); });
   const newSel = $("newRoleTag").value;
-  $("newRoleTag").innerHTML = tags.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join("") + `<option value="__new">+ Criar nova tag…</option>`;
   $("newRoleTag").value = newSel && (tags.includes(newSel) || newSel === "__new") ? newSel : roleTagSel;
+  $("newRoleTagBtns").innerHTML = [...tags, "__new"].map(t => `<button class="pick ${$("newRoleTag").value===t?"on":""}" data-ntag="${esc(t)}">${t === "__new" ? "+ Nova tag" : esc(t)}</button>`).join("");
+  document.querySelectorAll("[data-ntag]").forEach(b => b.onclick = () => { $("newRoleTag").value = b.dataset.ntag; renderRoleChips(); if (b.dataset.ntag === "__new") $("newTagName").focus(); });
   $("newTagWrap").hidden = $("newRoleTag").value !== "__new";
   $("roleChips").innerHTML = allRoles().filter(r => r.tag === roleTagSel).map(r =>
     `<button class="pick ${role.pick===r.name?"on":""}" data-role="${esc(r.name)}">${esc(r.name)}${r.custom ? `<span class="x" data-delrole="${esc(r.name)}" title="Apagar este papel">✕</span>` : ""}</button>`).join("");
@@ -1143,12 +1152,12 @@ function renderHL(){
   const kinds = new Set(clean.map(r => r.kind)), cats = [...new Set(segs.map(g => g.cat))].sort((x,y) => ORDER.indexOf(x) - ORDER.indexOf(y));
   $("hlLegend").hidden = !kinds.size && !cats.length;
   $("hlLegend").innerHTML =
-    (cats.length ? `<span class="lg-cats">${cats.map(c => `<span><i style="background:color-mix(in srgb,var(--c-${c}) 22%,transparent);box-shadow:inset 3px 0 0 var(--c-${c})"></i>${CATS[c].pt}</span>`).join("")}</span>` : "") +
+    (cats.length ? `<span class="lg-cats">${cats.map(c => `<span><i style="background:color-mix(in srgb,var(--c-${c}) 34%,transparent)"></i>${CATS[c].pt}</span>`).join("")}</span>` : "") +
     (kinds.has("q") ? `<span><u class="lg-q">“abc”</u> citação (fica como está)</span>` : "") +
-    (kinds.has("v") ? `<span><i style="background:color-mix(in srgb,var(--accent) 45%,transparent)"></i>palavra vaga: clique nela para explicar</span>` : "") +
-    (kinds.has("d") ? `<span><i style="background:color-mix(in srgb,var(--ok) 35%,transparent)"></i>já explicada</span>` : "") +
+    (kinds.has("v") ? `<span><u style="text-decoration:underline dashed 2px var(--vg);text-underline-offset:3px">abc</u> palavra vaga: clique nela para explicar</span>` : "") +
+    (kinds.has("d") ? `<span><u style="text-decoration:underline dotted 2px var(--ok);text-underline-offset:3px">abc</u> já explicada</span>` : "") +
     (kinds.has("s") ? `<span><u style="text-decoration:underline wavy var(--err);text-underline-offset:3px">abc</u> possível erro de digitação: clique para ver sugestões</span>` : "") +
-    (cats.length ? `<span class="lg-tip">A faixa no começo de cada cor mostra onde a página dividiu o texto. Dividiu errado? Selecione o trecho e use “Novo assunto” ou “Juntar frases”.</span>` : "");
+    (cats.length ? `<span class="lg-tip">Cada assunto tem um tom: quando o tom muda, a página dividiu ali. Dividiu errado? Selecione o trecho e use “Novo assunto” ou “Juntar frases”.</span>` : "");
 }
 // leva até a palavra no texto (a cada clique, vai para a próxima vez que ela aparece)
 function goToWord(word, exact){
@@ -1749,6 +1758,7 @@ $("legend").innerHTML = ORDER.map(c=>`<dt style="color:var(--c-${c})">${CATS[c].
 $("tab-msg").onclick = () => showTab("msg");
 $("tab-out").onclick = () => showTab("out");
 $("regen2").onclick = renderOutput;
+$("toOut").onclick = () => showTab("out");
 $("go").onclick = generate;
 $("regen").onclick = renderOutput;
 $("clear").onclick = () => { $("input").value=""; items=[]; overrides={}; extra={}; meanings={}; vagueDone={}; ignoredVague=new Set(); images=[]; spellResults=[]; renderImages(); analyze(); };
@@ -1766,8 +1776,6 @@ drop.ondragleave = () => drop.classList.remove("over");
 drop.ondrop = e => { e.preventDefault(); drop.classList.remove("over"); addFiles(e.dataTransfer.files); };
 document.addEventListener("paste", e => { const f = [...(e.clipboardData?.files||[])]; if (f.length){ e.preventDefault(); addFiles(f); } });
 $("roleArea").oninput = () => { renderAreas(); roleTabTags(); changed(); };
-$("roleTag").onchange = e => { roleTagSel = e.target.value; renderRoleChips(); };
-$("newRoleTag").onchange = () => { $("newTagWrap").hidden = $("newRoleTag").value !== "__new"; if (!$("newTagWrap").hidden) $("newTagName").focus(); };
 $("addRole").onclick = addRole;
 $("newRoleName").onkeydown = $("newTagName").onkeydown = e => { if (e.key === "Enter") addRole(); };
 $("addMarker").onclick = addMarker;
