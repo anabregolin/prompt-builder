@@ -252,7 +252,6 @@ select.nice{appearance:none;-webkit-appearance:none;border:1px solid var(--line)
 select.nice:hover{border-color:var(--muted)}
 .areas{display:flex;gap:2px;flex-wrap:wrap;margin:0 0 10px;padding:0 0 8px;border-bottom:1px dashed var(--line)}
 button.area{background:none;border:0;border-radius:7px;color:var(--muted);font-weight:500;font-size:13px;padding:5px 10px}
-button.area:first-child{margin-left:-10px}
 button.area span{font-size:11px;opacity:.7;margin-left:2px}
 button.area:hover{color:var(--text)}
 button.area.on{color:var(--text);background:var(--bg);font-weight:600}
@@ -328,6 +327,8 @@ dialog.dlg::backdrop{background:rgba(0,0,0,.5);backdrop-filter:blur(2px)}
 .dlg-prev p{margin:0;font-size:14px;line-height:1.45}
 .dlg-foot{display:flex;justify-content:space-between;gap:8px;padding:14px 20px 18px;margin-top:16px;border-top:1px solid var(--line)}
 @media (max-width:700px){ .rgrid{grid-template-columns:repeat(2,1fr)} .bgrid{grid-template-columns:1fr 1fr} .btile{font-size:12.5px;padding:9px 10px} dialog.dlg{width:calc(100vw - 20px)} .areas{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none} .areas::-webkit-scrollbar{display:none} button.area{white-space:nowrap} }
+/* contorno de foco por dentro: não é cortado nas áreas com rolagem */
+button:focus-visible,a:focus-visible,[role=tab]:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
 </style>
 </head>
 <body>
