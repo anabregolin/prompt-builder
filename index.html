@@ -215,16 +215,59 @@ ul.have li{margin:2px 0}
 .hl-legend .lg-cats{display:flex;gap:10px;flex-wrap:wrap}
 .hl-legend .lg-q{text-decoration:underline 2px var(--c-examples);text-underline-offset:3px;background:color-mix(in srgb,var(--c-examples) 22%,transparent);border-radius:3px;padding:0 2px}
 .hl-legend .lg-tip{flex-basis:100%}
-.edbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:0 0 8px}
-.edhint{font-size:12px;color:var(--muted);margin-right:4px}
-.edbtn{padding:5px 10px;font-size:13px;background:var(--bg);color:var(--text);border:1px solid var(--line)}
-.edbtn:disabled{opacity:.45;cursor:default}
-.edbtn:not(:disabled):hover{border-color:var(--accent)}
+/* barra de edição estilo Word: grupos com ícone em cima e nome embaixo */
+.ribbon{display:flex;flex-wrap:wrap;align-items:stretch;border:1px solid var(--line);border-radius:10px;background:var(--bg);padding:4px 2px;margin:0 0 6px}
+.rgroup{display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:0 6px;border-right:1px solid var(--line)}
+.rgroup:last-child{border-right:0}
+.rbtns{display:flex;gap:2px}
+.rbtn{display:flex;flex-direction:column;align-items:center;gap:3px;background:transparent;color:var(--text);border:1px solid transparent;border-radius:7px;padding:6px 8px 4px;font-size:12px;font-weight:500;min-width:62px;line-height:1.15}
+.rbtn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.rbtn:hover{background:var(--card);border-color:var(--line)}
+.rbtn[aria-pressed="true"],.rbtn[aria-expanded="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.rbtn .sw{display:grid;grid-template-columns:1fr 1fr;gap:2px;width:18px;height:18px;margin:1px}
+.rbtn .sw i{border-radius:2px}
+.gname{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+.edstatus{font-size:12.5px;color:var(--muted);min-height:26px;margin:0 0 6px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.edstatus.armed{color:var(--accent)}
+.edstatus.armed b{color:var(--accent)}
+.edstatus button{padding:3px 10px;font-size:12px}
+.edstatus label{display:inline-flex;gap:5px;align-items:center;color:var(--text);cursor:pointer}
+.hl-wrap.armed{outline:2px dashed var(--accent);outline-offset:2px}
+.rmenu{position:fixed;z-index:50;background:var(--card);border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 28px rgba(0,0,0,.22);padding:6px;min-width:230px;display:grid;gap:1px}
+.rmenu[hidden]{display:none}
+.rmenu .mh{font-size:11px;color:var(--muted);padding:4px 10px 6px}
+.rmenu button{display:flex;gap:10px;align-items:center;background:transparent;color:var(--text);font-weight:500;font-size:13.5px;padding:7px 10px;border-radius:6px;text-align:left}
+.rmenu button:hover,.rmenu button:focus-visible{background:var(--bg)}
+.rmenu .dot{width:14px;height:14px;border-radius:4px;flex:none;background:color-mix(in srgb,var(--c) 40%,transparent);border:1.5px solid var(--c)}
+.rmenu hr{border:0;border-top:1px solid var(--line);margin:4px 0}
+/* contexto salvo */
+.ctxprofiles{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}
+.ctxprofiles button{display:inline-flex;gap:6px;align-items:center;background:transparent;color:var(--text);border:1px solid var(--line);border-radius:99px;padding:5px 12px;font-size:13px;font-weight:500}
+.ctxprofiles button.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent);font-weight:600}
+.ctxprofiles .live{width:8px;height:8px;border-radius:50%;background:var(--ok)}
+.ctxprofiles .off{background:var(--line)}
+.ctxhead{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 8px}
+.ctxhead input[type=text]{flex:1;min-width:160px;max-width:280px;font-weight:600}
+.switch{display:inline-flex;gap:8px;align-items:center;font-size:14px;cursor:pointer;user-select:none}
+.switch input{appearance:none;width:36px;height:20px;border-radius:99px;background:var(--line);position:relative;cursor:pointer;margin:0;transition:background .15s}
+.switch input::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .15s}
+.switch input:checked{background:var(--ok)}
+.switch input:checked::after{left:18px}
+#ctxText{min-height:180px;font-size:15px}
+.ctxnote{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:13px;background:var(--ok-soft);color:var(--text);border-radius:8px;padding:8px 12px;margin:0 0 10px}
+.ctxnote.skip{background:var(--bg);border:1px dashed var(--line);color:var(--muted)}
+.ctxnote button{padding:3px 10px;font-size:12px}
+button.tiny{padding:1px 8px;font-size:11.5px;border-radius:99px;white-space:nowrap}
+/* privacidade */
+.priv{background:var(--warn-soft)} .priv .vhead b{color:var(--warn)}
+.swaps{display:grid;grid-template-columns:auto auto 1fr auto;gap:6px 10px;align-items:center;font-size:13.5px}
+.swaps .eq{color:var(--muted)}
 .gobox{border:1px dashed var(--line);border-radius:10px;padding:22px;text-align:center;color:var(--muted)}
 .gobox p{margin:0 0 12px}
 .btnlink{display:inline-block;margin-top:8px;padding:6px 12px;border-radius:8px;background:var(--accent);color:#fff;text-decoration:none;font-size:14px}
 .trwarn ol{margin:6px 0;padding-left:20px}
 .hl mark.s{text-decoration:underline wavy var(--err);text-decoration-skip-ink:none;text-underline-offset:3px}
+.hl mark.p{text-decoration:underline double 2px var(--warn);text-decoration-skip-ink:none;text-underline-offset:3px}
 .hl mark.g{text-decoration:underline wavy var(--info);text-decoration-skip-ink:none;text-underline-offset:3px}
 .subh{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:14px 0 8px}
 .subh:first-child{margin-top:0}
@@ -284,7 +327,7 @@ button.pick.add:hover{color:var(--text);border-color:var(--muted)}
 .subtabs .tab .tag{margin-left:4px}
 .steps-hint{font-size:13px;color:var(--muted);margin:0 0 8px}
 .steps-hint b{color:var(--text)}
-@media (max-width:700px){ .edhint{display:none} .edbtn{padding:5px 8px;font-size:12px} }
+@media (max-width:700px){ .ribbon{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;padding:4px} .rgroup,.rbtns{display:contents} .gname{display:none} .rbtn{min-width:0;padding:6px 2px 4px;font-size:11px} .swaps{grid-template-columns:1fr auto} .swaps .eq{display:none} }
 @media (max-width:700px){ .areas{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none} .areas::-webkit-scrollbar{display:none} button.area{white-space:nowrap} }
 
 /* papel da IA: grade + janelas */
@@ -360,18 +403,34 @@ button:focus-visible,a:focus-visible,[role=tab]:focus-visible{outline:2px solid 
       <h2 class="box-title">Meu Texto</h2>
       <div class="tabs" role="tablist">
         <button role="tab" class="tab active" id="tab-msg" aria-selected="true" aria-controls="panel-msg">Mensagem</button>
+        <button role="tab" class="tab" id="tab-ctx" aria-selected="false" aria-controls="panel-ctx">Meu contexto <span class="tag ok" id="ctxTag"></span></button>
         <button role="tab" class="tab" id="tab-out" aria-selected="false" aria-controls="panel-out">Prompt final <span class="tag" id="staleTag" hidden></span></button>
       </div>
 
       <div id="panel-msg" role="tabpanel">
-        <div class="edbar" id="edbar" role="toolbar" aria-label="Editar o trecho selecionado">
-          <span class="edhint" id="edHint">Selecione um trecho e escolha:</span>
-          <button class="edbtn" data-ed="quote" title="Põe o trecho entre aspas: vira citação e não é alterado nem traduzido">“ ” Citação</button>
-          <button class="edbtn" data-ed="unquote" title="Tira as aspas ou o marcador em volta do trecho">Tirar aspas</button>
-          <button class="edbtn" data-ed="split" title="Começa um assunto novo no início do trecho (ou onde está o cursor)">↵ Novo assunto</button>
-          <button class="edbtn" data-ed="join" title="Junta as frases do trecho num assunto só">⤺ Juntar frases</button>
+        <div class="ribbon" id="edbar" role="toolbar" aria-label="Ferramentas de edição">
+          <div class="rgroup"><div class="rbtns">
+            <button class="rbtn" data-ed="undo" title="Desfazer a última mudança (Ctrl+Z)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg><span>Desfazer</span></button>
+            <button class="rbtn" data-ed="redo" title="Refazer (Ctrl+Y)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg><span>Refazer</span></button>
+          </div><span class="gname">Histórico</span></div>
+          <div class="rgroup"><div class="rbtns">
+            <button class="rbtn" data-ed="quote" aria-pressed="false" title="Põe o trecho entre aspas: vira citação e vai para o prompt do jeito que está, sem tradução"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h5v5c0 3-1.5 5-4.5 6"/><path d="M14 7h5v5c0 3-1.5 5-4.5 6"/></svg><span>Citação</span></button>
+            <button class="rbtn" data-ed="unquote" aria-pressed="false" title="Tira as aspas ou o marcador em volta do trecho"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h5v5c0 3-1.5 5-4.5 6"/><path d="M14 7h5v5c0 3-1.5 5-4.5 6"/><path d="M3 3l18 18"/></svg><span>Tirar aspas</span></button>
+          </div><span class="gname">Citação</span></div>
+          <div class="rgroup"><div class="rbtns">
+            <button class="rbtn" data-ed="split" aria-pressed="false" title="Começa um assunto novo onde está o cursor (ou no início do trecho)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 4v7a4 4 0 0 1-4 4H4"/><path d="m9 10-5 5 5 5"/></svg><span>Novo assunto</span></button>
+            <button class="rbtn" data-ed="join" aria-pressed="false" title="Junta as frases do trecho num assunto só"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 6 4-4 4 4"/><path d="M12 2v10.3a4 4 0 0 1-1.2 2.9L4 22"/><path d="m20 22-5-5"/></svg><span>Juntar frases</span></button>
+          </div><span class="gname">Assuntos</span></div>
+          <div class="rgroup"><div class="rbtns">
+            <button class="rbtn" data-ed="mark" aria-haspopup="menu" aria-expanded="false" aria-pressed="false" title="Diz em qual categoria o trecho entra (Objetivo, Contexto, Tom…)"><span class="sw" aria-hidden="true"><i style="background:var(--c-goal)"></i><i style="background:var(--c-context)"></i><i style="background:var(--c-tone)"></i><i style="background:var(--c-format)"></i></span><span>Categoria ▾</span></button>
+          </div><span class="gname">Marcar como</span></div>
+          <div class="rgroup"><div class="rbtns">
+            <button class="rbtn" data-ed="fake" aria-pressed="false" title="Troca o trecho (nome, telefone, e-mail…) por um dado falso no mesmo formato"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg><span>Dado falso</span></button>
+          </div><span class="gname">Privacidade</span></div>
         </div>
-        <div class="hl-wrap"><div class="hl" id="hl" aria-hidden="true"></div><textarea id="input" spellcheck="false" lang="pt-BR" placeholder="Ex.: Quero um e-mail para meu chefe pedindo férias em janeiro. Sou analista há 2 anos. Tom formal mas simpático, no máximo 150 palavras."></textarea></div>
+        <div class="rmenu" id="markMenu" role="menu" hidden></div>
+        <div class="edstatus" id="edStatus" role="status" aria-live="polite"></div>
+        <div class="hl-wrap" id="hlWrap"><div class="hl" id="hl" aria-hidden="true"></div><textarea id="input" spellcheck="false" lang="pt-BR" placeholder="Ex.: Quero um e-mail para meu chefe pedindo férias em janeiro. Sou analista há 2 anos. Tom formal mas simpático, no máximo 150 palavras."></textarea></div>
         <div class="hl-legend" id="hlLegend" hidden></div>
         <div id="markWarn"></div>
         <div class="row">
@@ -381,6 +440,24 @@ button:focus-visible,a:focus-visible,[role=tab]:focus-visible{outline:2px solid 
         </div>
       </div>
 
+      <div id="panel-ctx" role="tabpanel" hidden>
+        <p class="panel-desc" style="margin-bottom:12px">Cole aqui o que a IA deve saber sobre você em qualquer conversa: quem você é, seus valores, ferramentas que usa, como prefere as respostas. Fica salvo <b>só neste navegador</b> e entra sozinho nos próximos prompts, já dividido nas categorias.</p>
+        <div class="ctxprofiles" id="ctxProfiles"></div>
+        <div class="ctxhead">
+          <input type="text" id="ctxName" maxlength="30" aria-label="Nome deste contexto">
+          <label class="switch"><input type="checkbox" id="ctxOn"> Usar nos prompts</label>
+        </div>
+        <textarea id="ctxText" lang="pt-BR" placeholder="Ex.: Sou designer e moro em Porto Alegre. Uso Linux com Firefox. Me importo com ética e privacidade. Prefiro respostas diretas, sem enrolação, com exemplos práticos."></textarea>
+        <div id="ctxPii"></div>
+        <div class="row">
+          <button id="ctxSave">Salvar contexto</button>
+          <span class="tag" id="ctxState"></span>
+          <button class="ghost" id="ctxDel" style="margin-left:auto">Apagar este contexto</button>
+        </div>
+        <h4 class="subh" style="margin-top:18px">Como entra no prompt</h4>
+        <div id="ctxPreview"></div>
+      </div>
+
       <div id="panel-out" role="tabpanel" hidden>
         <div class="row" style="margin:0 0 10px">
           <span class="chk">Idioma do prompt:</span>
@@ -388,6 +465,7 @@ button:focus-visible,a:focus-visible,[role=tab]:focus-visible{outline:2px solid 
           <button class="pick" data-plang="pt">Português</button>
           <span class="note" style="margin:0">O prompt inteiro sai em um idioma só. Citações entre aspas ficam como você escreveu.</span>
         </div>
+        <div class="ctxnote" id="ctxNote" hidden></div>
         <div class="trwarn" id="trWarn" hidden></div>
         <div class="stale" id="staleBanner" hidden>Você mudou algo depois de gerar o prompt. <button id="regen" style="padding:4px 12px;font-size:13px">Atualizar prompt</button></div>
         <div class="gobox" id="goBox"><p>O prompt é montado a partir da aba “Mensagem” e das suas configurações.</p><button id="go">Gerar Prompt</button></div>
@@ -435,6 +513,12 @@ button:focus-visible,a:focus-visible,[role=tab]:focus-visible{outline:2px solid 
         <div class="panel-head"><h3>Ortografia e gramática</h3><span class="tag warn">recomendado</span></div>
         <p class="panel-desc">Erros de gramática comuns que o corretor não pega (como “gostaria que usar”) e palavras fora das 50 mil mais usadas do português. Pode ser só uma palavra rara ou um jeito seu de escrever: clique em “está certo” e ela não aparece mais.</p>
         <div id="spellBox" class="fill"></div>
+      </div>
+
+      <div class="panel" id="p-priv" hidden>
+        <div class="panel-head"><h3>Privacidade</h3><span class="tag warn">recomendado</span></div>
+        <p class="panel-desc">Dados que identificam você ou outras pessoas: nome, e-mail, telefone, CPF, endereço… A IA quase nunca precisa deles para ajudar. Troque por um <b>dado falso</b> (mesmo formato, a IA entende igual) ou por um marcador como [nome].</p>
+        <div id="privBox" class="fill"></div>
       </div>
 
       <div class="panel" id="p-role" hidden>
@@ -600,7 +684,7 @@ const KW = {
   problems: ["nao gostei","nao gosto","estranho","estranha","ruim","errado","errada","erro","bug","nao funciona","problema","quebrado","quebrada","feio","feia","confuso","confusa","nao entendeu","nao entende","nao aparece","travou","trava","lento","bagunca","incomoda","nao parece","parece que","bugado","bugada","bugando","bugou","bugs","esquisito","esquisita","misturado","misturada","misturando","quebrou","sumiu","sumindo","nao rola","nao da","nao consigo","nao deu","falha","falhando","travando","nao considerou","nao considera","mas apareceu","apareceu como","errou","nao mostra","nao responde","nao respondeu","nao entendo","nao sei usar","atrasado","atrasada","atrasadas","atrasados","demora","demorando","nao abre","nao carrega","cortado","cortada","caiu","cairam","caindo","piorou","piorando","despencou","diminuiu","diminuindo","reclamam","reclamando","reclamacao","reclamacoes","nao funcionou","nao deu certo","nao adiantou","nao resolveu","nao ajudou","nao ficou bom","nao ficou boa","ficou ruim","ficou estranho","ficou estranha","dificuldade","dificuldades","perdendo","nao sei como","nao entendi","nao compreendi","ficou confuso","ficou confusa","nao ficou claro","nao ficou clara"],
   audience: ["publico","leitor","leitores","cliente","clientes","iniciante","iniciantes","leigo","leigos","criancas","alunos","equipe","time","chefe","gestor","diretoria","usuarios","seguidores","investidores","recrutador","professor","especialistas","destinado"],
   format: ["formato","tabela","lista","bullets","topicos","paragrafo","paragrafos","json","markdown","codigo","e-mail","email","slides","passo a passo","resumo","palavras","paginas","linhas","caracteres","titulo","titulos","secoes","estrutura","csv","roteiro","post","artigo"],
-  tone: ["tom","formal","informal","descontraido","profissional","tecnico","amigavel","direto","criativo","estilo","serio","divertido","humor","empatico","persuasivo","didatico","educado","simpatico","linguagem","casual","elegante","leve","engracado","engracada","descontraida","tecnica","criativa","divertida","empatica","persuasiva","didatica","educada","simpatica","direta","acolhedor","acolhedora","gentil","neutro","neutra","ironico","ironica","sarcastico","motivador","motivadora","inspirador","sincero","sincera","honesto","honesta"],
+  tone: ["tom","formal","informal","descontraido","profissional","tecnico","amigavel","direto","criativo","estilo","serio","divertido","humor","empatico","persuasivo","didatico","educado","simpatico","linguagem","casual","elegante","leve","engracado","engracada","descontraida","tecnica","criativa","divertida","empatica","persuasiva","didatica","educada","simpatica","direta","acolhedor","acolhedora","gentil","neutro","neutra","ironico","ironica","sarcastico","motivador","motivadora","inspirador","sincero","sincera","honesto","honesta","diretas","diretos","objetivas","objetivos","sinceras","sinceros"],
   constraints: ["nao","nunca","sem","evite","evitar","apenas","somente","so","maximo","minimo","ate","limite","prazo","obrigatorio","deve","precisa ter","nao pode","exceto","restricao","orcamento","sempre","o mais","possivel"],
   examples: ["exemplo","exemplos","por exemplo","igual a","parecido","referencias","de referencia","como referencia","uma referencia","modelo","inspirado","como este","como esse"],
 };
@@ -779,7 +863,7 @@ function cleanBullet(s){
   s = s.trim()
     .replace(/^\s*(?:[-–—•*]+\s*|\d+[.)]\s+|\d+\s*[-–—]\s+)/,"")
     .replace(/^(e|e tambem|também|tambem|alem disso|além disso|ah|entao|então|ou)\s+/i,"")
-    .replace(/[.;!:]+$/,"").trim();
+    .replace(/[.;!:,]+$/,"").trim().replace(/[\s,]+(?:e|ou|mas)$/i, "");
   const open = (s.match(/\(/g)||[]).length, close = (s.match(/\)/g)||[]).length;   // remove parênteses sem par
   if (close > open){ let n = close-open; s = s.replace(/\)/g, m => n-- > 0 ? "" : m); }
   if (open > close){ let n = open-close; s = s.split("").reverse().join("").replace(/\(/g, m => n-- > 0 ? "" : m).split("").reverse().join(""); }
@@ -844,7 +928,7 @@ function splitPara(t, restore, verbAlt){
   const list = out.map(([x, grp, afterComma]) => [cleanBullet(restore(x)), grp, afterComma && /^\s*\p{Ll}/u.test(restore(x))]).filter(([x]) => x.replace(/[^\p{L}\p{N}]/gu,"").length > 2);
   // frases que continuam a anterior ("Mesma coisa no que falta", "Isso precisa mudar", "Pensei que...")
   // ficam junto dela, para não perder o assunto
-  const CONT = /^(mesma coisa|o mesmo|a mesma|tambem acontece|depois que|depois de|apos|porque|pois|ja que|mas|so que|isso|isto|ai|entao|talvez|ou seja|inclusive|nem|por isso|senao|alias|e ai|tipo|dai|pode ate|pode tambem|ele|ela|eles|elas|ser um|ser uma|assim|pensei|achei|imaginei|apenas|somente|so)\b/;
+  const CONT = /^(mesma coisa|o mesmo|a mesma|tambem acontece|depois que|depois de|apos|porque|pois|ja que|mas|so que|isso|isto|ai|entao|talvez|ou seja|inclusive|nem|por isso|senao|alias|e ai|tipo|dai|pode ate|pode tambem|ele|ela|eles|elas|ser um|ser uma|assim|pensei|achei|imaginei|apenas|somente|so|mesmo que|mesmo se|ainda que|desde que|contanto que|a nao ser que|exceto se)\b/;
   const merged = []; let lastGrp = null, inSeq = false;
   const isGoal = x => classify(x).cat === "goal";
   for (const [x, grp, afterComma] of list){
@@ -883,7 +967,8 @@ const OUT_RE = /^(?:(?:quero|queria|gostaria|preciso|prefiro)\s+que\s+)?(?:a|o|a
 const HOW_RE = /^(?:por favor,?\s+)?(?:me\s+)?(?:responda|responde|escreva|escreve|redija|fale|use|usa|utilize|mantenha|deixe|organize|coloque|ponha|monte|apresente|traga|mande|envie|formate|adote)\s+(?:tudo\s+|isso\s+|a resposta\s+|o texto\s+)?(?:(?:em|no|na|num|numa|com|de|como|usando|por)\s+)?(?:um\s+|uma\s+)?(formato|forma|tabela|lista|topicos|bullets|paragrafos?|markdown|json|tom|linguagem|estilo|jeito|maneira|vocabulario|palavras|frases|termos|portugues|ingles|espanhol|ordem)\b/;
 const LEN_RE = /\b(curt[oa]s?|long[oa]s?|breve|resumid[oa]|detalhad[oa]|sucint[oa]|objetiv[oa]|direto ao ponto)\b/;
 function classify(sentence){
-  const n = unslang(norm(stripQuotes(sentence)));
+  // "com exemplos práticos", "dê exemplos": é pedido de como responder, não um exemplo que você está dando
+  const n = unslang(norm(stripQuotes(sentence))).replace(/\b(com|inclua|incluir|use|usar|traga|trazer|mostre|mostrar|alguns|algumas|mais|sem|cite|citar|de(?=\s+exemplos\b))\s+(?:(?!exemplo)\S+\s+)?(exemplos?)\b/g, "$1 $2q");
   const pref = PREF_RE.test(n), nP = n.replace(PREF_RE, " ");
   let best = "context", bestScore = 0;
   const hits = new Set();
@@ -1142,12 +1227,18 @@ async function roleSentence(lang = "en"){
 /* ================= análise ao vivo ================= */
 function analyze(){
   const raw = $("input").value;
-  const text = applyMarkers(raw);
+  // trecho marcado à mão vira um tópico próprio (só na análise: o seu texto não muda)
+  pins = pins.filter(p => raw.includes(p.t));
+  let text = applyMarkers(raw);
+  for (const p of pins){ const i = text.indexOf(p.t); if (i >= 0) text = text.slice(0, i) + "\n\n" + p.t + "\n\n" + text.slice(i + p.t.length); }
   const seen = new Set();
   items = splitSentences(text).filter(t => { const k = norm(t); if (seen.has(k)) return false; seen.add(k); return true; })
-    .map(t => { const r = classify(t); return {text:t, cat: overrides[t] || r.cat, hits:r.hits}; });
+    .map(t => { const r = classify(t), pin = pins.find(p => norm(p.t).includes(norm(t)));
+      return {text:t, cat: overrides[t] || (pin && pin.cat) || r.cat, hits:r.hits, pinned: !!pin && !overrides[t]}; });
   markSteps(items);
   gramResults = grammarCheck(raw);
+  piiHits = findPII(raw);
+  renderPriv();
   renderMarkWarn(raw);
   renderOrganized(); renderImprove(); updateScore(); changed(); refreshSpell();
 }
@@ -1170,7 +1261,7 @@ function markSteps(list){
   for (const it of list){
     if (!it.seq) continue;
     if (size[it.seq] < 2){ delete it.seq; delete it.step; continue; }
-    if (!overrides[it.text]) it.cat = "goal";
+    if (!overrides[it.text] && !it.pinned) it.cat = "goal";
   }
 }
 let anaTimer = null, spellTimer = null;
@@ -1189,6 +1280,7 @@ function renderMarkWarn(raw){
 
 function grouped(){
   const g = Object.fromEntries(ORDER.map(c=>[c,[]]));
+  for (const it of savedItems()) g[it.cat].push({...it, i: -2});
   items.forEach((it,i)=>g[it.cat].push({...it,i}));
   for (const c of ORDER) if (extra[c] && extra[c].trim()) g[c].push({text:cleanBullet(extra[c]), cat:c, i:-1});
   return g;
@@ -1202,13 +1294,15 @@ function renderOrganized(){
   $("orgTitle").textContent = `Divisão: ${plural(total,"tópico","tópicos")} em ${plural(used.length,"categoria","categorias")}`;
   el.innerHTML = used.map(c => `
     <div class="cat ${c}"><h4>${CATS[c].pt}</h4><p class="desc">${CATS[c].desc}</p><ul>${g[c].map(it => `
-      <li><div class="li"><span>${it.step && c === "goal" ? `<span class="tag stepnum">passo ${it.step}</span> ` : ""}${esc(it.text)}</span>${it.i>=0 ? `<select data-i="${it.i}" aria-label="Categoria">${ORDER.map(o=>`<option value="${o}"${o===c?" selected":""}>${CATS[o].pt}</option>`).join("")}</select>`:'<span class="tag">você completou</span>'}</div></li>`).join("")}
+      <li><div class="li"><span>${it.step && c === "goal" ? `<span class="tag stepnum">passo ${it.step}</span> ` : ""}${it.pinned ? `<span class="tag info" title="Você marcou este trecho com a barra de edição">você marcou</span> ` : ""}${esc(it.text)}${it.i >= 0 && personal(it) ? (inCtx(it.text) ? ` <span class="tag ok">no seu contexto</span>` : ` <button class="ghost tiny" data-keepctx="${it.i}" title="Guarda no “Meu contexto”: entra sozinho nos próximos prompts">＋ guardar no contexto</button>`) : ""}</span>${it.i>=0 ? `<select data-i="${it.i}" aria-label="Categoria">${ORDER.map(o=>`<option value="${o}"${o===c?" selected":""}>${CATS[o].pt}</option>`).join("")}</select>` : it.i === -2 ? `<span class="tag ok" title="Vem da aba Meu contexto">contexto salvo</span>` : '<span class="tag">você completou</span>'}</div></li>`).join("")}
     </ul></div>`).join("");
+  el.querySelectorAll("[data-keepctx]").forEach(b => b.onclick = () => keepInCtx([items[+b.dataset.keepctx].text]));
   el.querySelectorAll("select").forEach(s => s.onchange = () => { const it = items[+s.dataset.i]; overrides[it.text] = s.value; it.cat = s.value; renderOrganized(); renderImprove(); updateScore(); changed(); });
 }
 
 function covered(c){
   if (extra[c] && extra[c].trim()) return true;
+  if (savedItems().some(it => it.cat === c)) return true;
   if (c === "role") return roleChosen() || items.some(it => it.cat === "role");
   if (c === "context") return items.some(it => it.cat === "context");   // só conta tópico de contexto de verdade
   return items.some(it => it.cat === c || (it.hits && it.hits.has(c)));
@@ -1311,6 +1405,7 @@ function renderHL(){
       if (v.state === "ignored") continue;
       for (const [a,b] of wordHits(raw, v.k, v.loose)) ranges.push({a, b, kind: v.state === "explained" ? "d" : "v", key: v.k});
     }
+    for (const h of piiHits) ranges.push({a: h.a, b: h.b, kind: "p", key: "p:" + h.value.toLowerCase()});
     for (const r of gramResults) ranges.push({a: r.a, b: r.b, kind: "g", key: "g:" + r.from.toLowerCase()});
     if (spellState === "done") for (const r of spellResults) for (const [a,b] of wordHits(raw, r.w)) ranges.push({a, b, kind: "s", key: r.w});
   }
@@ -1344,6 +1439,7 @@ function renderHL(){
     (kinds.has("v") ? `<span><u style="text-decoration:underline dashed 2px var(--vg);text-underline-offset:3px">abc</u> palavra vaga: clique nela para explicar</span>` : "") +
     (kinds.has("d") ? `<span><u style="text-decoration:underline dotted 2px var(--ok);text-underline-offset:3px">abc</u> já explicada</span>` : "") +
     (kinds.has("s") ? `<span><u style="text-decoration:underline wavy var(--err);text-underline-offset:3px">abc</u> possível erro de digitação: clique para ver sugestões</span>` : "") +
+    (kinds.has("p") ? `<span><u style="text-decoration:underline double 2px var(--warn);text-underline-offset:3px">abc</u> dado pessoal: clique para trocar por um falso</span>` : "") +
     (kinds.has("g") ? `<span><u style="text-decoration:underline wavy var(--info);text-underline-offset:3px">abc</u> possível erro de gramática: clique para ver</span>` : "") +
     (cats.length ? `<span class="lg-tip">Cada assunto tem um tom: quando o tom muda, a página dividiu ali. Dividiu errado? Selecione o trecho e use “Novo assunto” ou “Juntar frases”.</span>` : "");
 }
@@ -1364,25 +1460,38 @@ $("input").addEventListener("scroll", () => { $("hl").scrollTop = $("input").scr
 $("input").addEventListener("input", renderHL);
 // clicar numa palavra destacada abre a aba certa embaixo
 $("input").addEventListener("click", () => {
+  // seleção de trecho ou ferramenta da barra em uso: não é clique numa marcação
+  if ($("input").selectionStart !== $("input").selectionEnd || armed || Date.now() - lastToolAt < 400) return;
   const c = $("input").selectionStart;
   const r = hlRanges.find(r => c >= r.a && c <= r.b);
   if (!r) return;
-  showConf(r.kind === "s" || r.kind === "g" ? "p-spell" : "p-vague");
+  showConf(r.kind === "s" || r.kind === "g" ? "p-spell" : r.kind === "p" ? "p-priv" : "p-vague");
   const box = document.querySelector(`[data-vbox="${CSS.escape(r.key)}"]`);
   if (box){ box.scrollIntoView({block: "nearest"}); box.animate([{outline: "2px solid var(--accent)"}, {outline: "2px solid transparent"}], {duration: 1400}); }
 });
-/* ---- barra de edição: age sobre o trecho selecionado ---- */
-function edState(){
-  const ta = $("input"), sel = ta.selectionStart !== ta.selectionEnd && document.activeElement === ta;
-  document.querySelectorAll("[data-ed]").forEach(b => b.disabled = b.dataset.ed !== "split" ? !sel : !ta.value.trim());
-}
+/* ---- barra de edição (estilo Word): selecione e clique, ou clique e depois selecione ---- */
+const TOOL_NAME = {quote:"Citação", unquote:"Tirar aspas", split:"Novo assunto", join:"Juntar frases", fake:"Dado falso"};
+const COARSE = matchMedia("(pointer: coarse)").matches;   // celular: selecionar demora, então tem botão "Aplicar"
+let armed = null, armKeep = false, ptrDown = false, lastBlur = 0, lastApplied = "", lastToolAt = 0;
+let pins = [];   // trechos que você marcou à mão: {t, cat}
+// há um trecho selecionado agora (ou havia, logo antes do clique na barra)
+const selOk = () => { const ta = $("input"); return ta.selectionStart !== ta.selectionEnd && (document.activeElement === ta || Date.now() - lastBlur < 1500); };
+const caretOk = () => document.activeElement === $("input") || Date.now() - lastBlur < 1500;
 // troca [a,b) por txt mantendo o Ctrl+Z da caixa de texto
 function edReplace(a, b, txt, selA, selB){
   const ta = $("input");
-  ta.focus(); ta.setSelectionRange(a, b);
+  ta.focus({preventScroll: true}); ta.setSelectionRange(a, b);
   if (!document.execCommand("insertText", false, txt)){ ta.setRangeText(txt, a, b, "end"); ta.dispatchEvent(new Event("input")); }
   if (selA != null) ta.setSelectionRange(selA, selB);
-  renderHL(); edState();
+  renderHL(); edStatus();
+}
+// troca o texto inteiro mexendo só no pedaço que mudou (um Ctrl+Z desfaz)
+function setText(nv){
+  const ta = $("input"), ov = ta.value;
+  if (nv === ov) return;
+  let i = 0; while (i < ov.length && i < nv.length && ov[i] === nv[i]) i++;
+  let j = 0; while (j < ov.length - i && j < nv.length - i && ov[ov.length-1-j] === nv[nv.length-1-j]) j++;
+  edReplace(i, ov.length - j, nv.slice(i, nv.length - j), i + nv.length - j - i, i + nv.length - j - i);
 }
 const ED = {
   quote(a, b, v){
@@ -1394,7 +1503,7 @@ const ED = {
   },
   unquote(a, b, v){
     const hit = protectedRanges(v).filter(([x,y]) => x < b && y > a).sort((p,q) => q[0] - p[0]);
-    if (!hit.length){ const t = v.slice(a, b).replace(/["“”]/g, ""); if (t !== v.slice(a, b)) edReplace(a, b, t, a, a + t.length); return; }
+    if (!hit.length){ const t = v.slice(a, b).replace(/["“”]/g, ""); if (t !== v.slice(a, b)) edReplace(a, b, t, a, a + t.length); else toast("Não achei aspas nesse trecho."); return; }
     let lo = Math.min(...hit.map(h => h[0])), hi = Math.max(...hit.map(h => h[1])), seg = v.slice(lo, hi);
     for (const [x, y] of hit){
       let i = x - lo, j = y - lo;
@@ -1417,14 +1526,124 @@ const ED = {
     if (t === v.slice(a, b)) return toast("Não achei pontos ou quebras de linha no trecho para juntar.");
     edReplace(a, b, t, a, a + t.length);
   },
+  mark(a, b, v, o){ markAs(a, b, v, o.cat); },
+  fake(a, b, v){ fakeSel(a, b, v); },
 };
-document.querySelectorAll("[data-ed]").forEach(b => {
+// "Marcar como": o trecho vira um tópico próprio, na categoria escolhida
+function markAs(a, b, v, cat){
+  while (a < b && /\s/.test(v[a])) a++;
+  while (b > a && /\s/.test(v[b-1])) b--;
+  if (a === b) return;
+  const t = v.slice(a, b), nt = norm(t);
+  pins = pins.filter(p => { const np = norm(p.t); return !np.includes(nt) && !nt.includes(np); });
+  for (const k of Object.keys(overrides)) if (nt.includes(norm(k))) delete overrides[k];
+  if (cat !== "auto") pins.push({t, cat});
+  analyze();
+  toast(cat === "auto" ? "Voltou para a divisão automática." : `Marcado como ${CATS[cat].pt}.`);
+}
+const toolLabel = o => o.tool === "mark" ? (o.cat === "auto" ? "Divisão automática" : `Marcar como ${CATS[o.cat].pt}`) : TOOL_NAME[o.tool];
+// como no Word: seleção que pega só parte de uma palavra vale para a palavra inteira
+function snapWords(a, b, v){
+  const w = c => /[\p{L}\p{N}]/u.test(c || "");
+  while (a > 0 && w(v[a-1]) && w(v[a])) a--;
+  while (b < v.length && w(v[b-1]) && w(v[b])) b++;
+  return [a, b];
+}
+function runTool(o){
+  const ta = $("input");
+  let a = ta.selectionStart, b = ta.selectionEnd;
+  if (a !== b && ["quote", "mark", "fake"].includes(o.tool)) [a, b] = snapWords(a, b, ta.value);
+  lastToolAt = Date.now();
+  ED[o.tool](a, b, ta.value, o);
+  lastToolAt = Date.now();
+  lastApplied = `${ta.selectionStart}:${ta.selectionEnd}:${ta.value.length}`;
+}
+function arm(o){ armed = o; armKeep = false; closeMarkMenu(); edStatus(); }
+function disarm(){ if (!armed) return; armed = null; edStatus(); }
+// com uma ferramenta ligada: aplica quando você termina de selecionar
+function tryArmed(src){
+  if (!armed) return;
+  const ta = $("input");
+  if (document.activeElement !== ta && src !== "button") return;
+  const a = ta.selectionStart, b = ta.selectionEnd;
+  if (armed.tool === "split"){ if (src !== "pointer" && src !== "button") return; }
+  else {
+    if (a === b){ if (src === "button") toast("Selecione um trecho primeiro."); return; }
+    if (`${a}:${b}:${ta.value.length}` === lastApplied) return;
+  }
+  const o = armed;
+  runTool(o);
+  if (armKeep){ const e = ta.selectionEnd; ta.setSelectionRange(e, e); lastApplied = ""; }
+  else disarm();
+}
+let stKey = "";
+function edStatus(){
+  const st = $("edStatus"), ta = $("input");
+  document.querySelectorAll("#edbar [aria-pressed]").forEach(b => b.setAttribute("aria-pressed", String(!!armed && armed.tool === b.dataset.ed)));
+  $("hlWrap").classList.toggle("armed", !!armed);
+  st.classList.toggle("armed", !!armed);
+  if (armed){
+    const key = "armed:" + toolLabel(armed) + armKeep;
+    if (stKey === key) return; stKey = key;
+    const what = armed.tool === "split" ? "clique no texto onde começa o assunto novo" : COARSE ? "selecione o trecho e toque em Aplicar" : "selecione o trecho no texto";
+    st.innerHTML = `<span>Ferramenta <b>${toolLabel(armed)}</b> ligada: ${what}.</span>` + (COARSE ? ` <button id="edApply">Aplicar</button>` : "") +
+      ` <label title="Para usar em vários trechos seguidos"><input type="checkbox" id="edKeep"${armKeep ? " checked" : ""}> manter ligada</label> <button class="ghost" id="edCancel">${COARSE ? "Desligar" : "Desligar (Esc)"}</button>`;
+    st.querySelectorAll("button,label,input").forEach(x => x.addEventListener("mousedown", e => e.preventDefault()));
+    $("edCancel").onclick = disarm;
+    $("edKeep").onchange = e => { armKeep = e.target.checked; stKey = ""; };
+    if ($("edApply")) $("edApply").onclick = () => tryArmed("button");
+    return;
+  }
+  const sel = ta.selectionStart !== ta.selectionEnd && document.activeElement === ta;
+  const t = sel ? ta.value.slice(ta.selectionStart, ta.selectionEnd).trim().replace(/\s+/g, " ") : "";
+  const key = sel ? "sel:" + t : "idle";
+  if (stKey === key) return; stKey = key;
+  st.innerHTML = sel ? `<span>Selecionado: <b style="color:var(--text)">“${esc(t.length > 60 ? t.slice(0, 60) + "…" : t)}”</b>. Escolha uma ferramenta acima.</span>`
+                     : `<span>Selecione um trecho e clique numa ferramenta, ou clique na ferramenta primeiro e depois selecione.</span>`;
+}
+function openMarkMenu(btn){
+  const m = $("markMenu"), sel = selOk();
+  m.innerHTML = `<div class="mh">${sel ? "Marcar o trecho selecionado como:" : "Escolha a categoria. Depois selecione o trecho."}</div>` +
+    ORDER.map(c => `<button role="menuitem" data-mcat="${c}"><span class="dot" style="--c:var(--c-${c})"></span>${CATS[c].pt}</button>`).join("") +
+    `<hr><button role="menuitem" data-mcat="auto"><span class="dot" style="--c:var(--muted)"></span>Automático (a página decide)</button>`;
+  m.hidden = false;
+  const r = btn.getBoundingClientRect(), w = m.offsetWidth, h = m.offsetHeight;
+  m.style.left = Math.max(8, Math.min(r.left, innerWidth - w - 8)) + "px";
+  m.style.top = (r.bottom + 4 + h > innerHeight && r.top - h - 4 > 0 ? r.top - h - 4 : r.bottom + 4) + "px";
+  btn.setAttribute("aria-expanded", "true");
+  m.querySelectorAll("[data-mcat]").forEach(x => {
+    x.addEventListener("mousedown", e => e.preventDefault());
+    x.onclick = () => { const o = {tool: "mark", cat: x.dataset.mcat}, had = selOk(); closeMarkMenu(); if (had){ armed = null; runTool(o); edStatus(); } else arm(o); };
+  });
+}
+function closeMarkMenu(){ $("markMenu").hidden = true; document.querySelector('#edbar [data-ed="mark"]').setAttribute("aria-expanded", "false"); }
+document.querySelectorAll("#edbar [data-ed]").forEach(b => {
   b.addEventListener("mousedown", e => e.preventDefault());   // não tira a seleção da caixa de texto
-  b.onclick = () => { const ta = $("input"); ED[b.dataset.ed](ta.selectionStart, ta.selectionEnd, ta.value); };
+  b.onclick = () => {
+    const tool = b.dataset.ed, ta = $("input");
+    if (tool === "undo" || tool === "redo"){ ta.focus({preventScroll: true}); document.execCommand(tool); return; }
+    if (tool === "mark") return $("markMenu").hidden ? openMarkMenu(b) : closeMarkMenu();
+    closeMarkMenu();
+    if (armed && armed.tool === tool) return disarm();
+    if (!ta.value.trim()) return toast("Escreva algo na caixa de texto primeiro.");
+    if (tool === "split" ? caretOk() : selOk()){ armed = null; runTool({tool}); edStatus(); return; }
+    arm({tool});
+  };
 });
-["select", "keyup", "mouseup", "focus", "blur", "input"].forEach(ev => $("input").addEventListener(ev, edState));
-document.addEventListener("selectionchange", edState);
-edState();
+(() => {
+  const ta = $("input");
+  ta.addEventListener("pointerdown", () => { ptrDown = true; });
+  document.addEventListener("pointerup", () => { if (!ptrDown) return; ptrDown = false; if (armed && (!COARSE || armed.tool === "split")) setTimeout(() => tryArmed("pointer"), 60); });
+  ta.addEventListener("keyup", e => { if (armed && !COARSE && armed.tool !== "split" && (e.key === "Shift" || ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "a"))) tryArmed("key"); });
+  ta.addEventListener("blur", () => { lastBlur = Date.now(); });
+  ["focus", "blur", "input", "select", "keyup", "mouseup"].forEach(ev => ta.addEventListener(ev, edStatus));
+  document.addEventListener("selectionchange", edStatus);
+  document.addEventListener("keydown", e => { if (e.key === "Escape"){ if (!$("markMenu").hidden) closeMarkMenu(); else disarm(); } });
+  document.addEventListener("pointerdown", e => { if (!$("markMenu").hidden && !e.target.closest("#markMenu, #edbar [data-ed=mark]")) closeMarkMenu(); });
+  addEventListener("scroll", () => { if (!$("markMenu").hidden) closeMarkMenu(); }, {passive: true});
+  addEventListener("resize", () => { if (!$("markMenu").hidden) closeMarkMenu(); });
+  edStatus();
+})();
 function flashSaved(el){ el.classList.add("saved"); setTimeout(() => el.classList.remove("saved"), 1200); }
 
 let missSub = "req";   // sub-aba aberta em “O que falta”
@@ -1493,7 +1712,7 @@ function renderImprove(){
   setCount("p-miss", missReq.length);
 
   // avisos (aba própria)
-  const warns = [];
+  const warns = []; let toKeep = [];
   if (hasText){
     const all = norm(items.map(i=>i.text).join(" "));
     if (window._markIssues) warns.push(["Marcadores", `Há ${plural(window._markIssues,"problema","problemas")} com marcadores ou aspas. Veja os avisos em vermelho logo abaixo da sua mensagem.`]);
@@ -1509,6 +1728,11 @@ function renderImprove(){
       warns.push(["Parece a continuação de uma conversa", "O texto responde a algo que a IA disse antes. Envie na <b>mesma conversa</b>. Se for usar numa conversa nova, inclua um resumo do que a IA respondeu, senão ela não sabe do que você está falando."]);
     const cut = items.filter(it => /(?:^|\s)(sobre|de|do|da|dos|das|com|para|pra|em|no|na|por|pelo|pela|a|o|as|os|que|e|ou|um|uma)$/.test(it.text.toLowerCase().replace(/[\s.,;:!?…)"”]+$/,"")));
     if (cut.length) warns.push(["Frase incompleta", `${cut.length > 1 ? "Estas frases terminam" : "Esta frase termina"} no meio, e a IA vai ter que adivinhar o resto: ${cut.map(it => `<b>“…${esc(it.text.split(/\s+/).slice(-5).join(" "))}”</b>`).join(", ")}. Complete o que falta (ex.: “me explique mais sobre <i>o quê</i>?”).`]);
+    if (piiHits.length){ const types = [...new Set(piiHits.map(h => PII[h.type].label.toLowerCase()))].join(", ");
+      warns.unshift(["Dados pessoais no texto", `Achei ${plural(new Set(piiHits.map(h => h.value)).size, "dado pessoal", "dados pessoais")} (${types}). A IA não precisa deles para ajudar. Veja a aba <b>Privacidade</b> para trocar por dados falsos antes de enviar.`]); }
+    toKeep = items.filter(it => personal(it) && !inCtx(it.text));
+    if (toKeep.length) warns.push(["Guardar no seu contexto?", `${toKeep.length > 1 ? "Estas frases falam" : "Esta frase fala"} de você e ${toKeep.length > 1 ? "servem" : "serve"} para outras conversas: ${toKeep.slice(0, 3).map(it => `<b>“${esc(it.text.length > 60 ? it.text.slice(0, 60) + "…" : it.text)}”</b>`).join(", ")}${toKeep.length > 3 ? "…" : ""}. Guardando, entra${toKeep.length > 1 ? "m" : ""} sozinha${toKeep.length > 1 ? "s" : ""} nos próximos prompts.
+      <div class="picks" style="margin-top:6px"><button class="pick" data-keepall="1">Guardar no meu contexto</button></div>`]);
     if (words.length < 12) warns.push(["Mensagem curta", "Prompts melhores costumam ter contexto e detalhes."]);
     if (images.some(im=>!im.note.trim())) warns.push(["Imagem sem explicação", "Diga na aba “Imagens” o que ela mostra e por que você anexou."]);
   }
@@ -1516,6 +1740,7 @@ function renderImprove(){
     ? warns.map(([t,w]) => `<div class="box vague"><b>${t}</b><div>${w}</div></div>`).join("")
     : EMPTY("✓", "Nenhum aviso", "Nada no texto parece confundir a IA.", true);
   setCount("p-warn", warns.length);
+  $("warnBox").querySelectorAll("[data-keepall]").forEach(b => b.onclick = () => keepInCtx(toKeep.map(it => it.text)));
 
   refreshSpell();
   bindImprove();
@@ -1673,6 +1898,297 @@ function gramHTML(){
       <button class="ghost" data-gkeep="${esc(r.from.toLowerCase())}" style="margin-left:auto">está certo</button></div></div>`).join("");
 }
 
+/* ================= dados pessoais ================= */
+const PII = {
+  name:{label:"Nome", ph:"[nome]"}, email:{label:"E-mail", ph:"[e-mail]"}, phone:{label:"Telefone", ph:"[telefone]"},
+  cpf:{label:"CPF", ph:"[CPF]"}, cnpj:{label:"CNPJ", ph:"[CNPJ]"}, rg:{label:"RG", ph:"[RG]"}, cep:{label:"CEP", ph:"[CEP]"},
+  address:{label:"Endereço", ph:"[endereço]"}, card:{label:"Cartão", ph:"[cartão]"}, birth:{label:"Nascimento", ph:"[data de nascimento]"},
+  handle:{label:"Perfil (@)", ph:"[perfil]"}, plate:{label:"Placa", ph:"[placa]"}, other:{label:"Trecho", ph:"[informação pessoal]"},
+};
+// nomes mais comuns no Brasil (sem os que também são palavras comuns, como Clara, Rosa, Vitória)
+const NAMES_F = new Set("ana maria juliana mariana fernanda camila amanda bruna larissa beatriz gabriela letícia carolina patrícia aline vanessa jéssica natália rafaela luana bianca daniela débora renata tatiana priscila cláudia sandra simone adriana luciana márcia paula raquel carla cristina isabela isabel sofia helena alice laura manuela valentina lívia lara yasmin giovana eduarda lúcia rosângela sílvia silvia regina elaine michele tainá thaís thais viviane kelly andressa jaqueline carol bia gabi duda malu luiza luísa heloísa cecília melissa ingrid marina joana teresa tereza rita fátima aparecida francisca antônia nicole stephanie júlia julia lorena milena sabrina flávia mônica denise roberta karina karen tânia érica erica".split(" "));
+const NAMES_M = new Set("joão josé antônio antonio francisco carlos paulo pedro lucas luiz luís marcos gabriel rafael daniel marcelo bruno eduardo felipe rodrigo gustavo thiago tiago matheus mateus leonardo andré fernando fábio ricardo roberto sérgio diego vinícius henrique guilherme leandro alexandre márcio renato igor caio arthur artur davi bernardo heitor miguel enzo samuel murilo otávio júlio césar vitor victor alan wesley jefferson anderson douglas luciano mauro edson jorge raul rogério sandro fabrício fabiano hugo nicolas breno kauã joaquim lorenzo theo rubens wagner wellington cristiano marco".split(" "));
+const NAME_LOWER_NO = new Set(["marcos","marco","caio","césar","aparecida","marina","duda","bia","gabi","carol"]);   // em minúsculo são palavras comuns
+const PLACE_BEFORE = /(?:^|[^\p{L}])(?:s[ãa]o|santo|santa|rio|porto|vila|jardim|av\.?|avenida|rua|pra[çc]a|hospital|col[ée]gio|escola|igreja|bairro|parque|esta[çc][ãa]o|shopping|funda[çc][ãa]o|universidade|instituto|dom|padre|frei|papa|rei|rainha|pr[íi]ncipe|princesa|ilha|serra|cidade|edif[íi]cio|condom[íi]nio)\s+$/iu;
+const W = "\\p{Lu}[\\p{Ll}']+";
+const REL = "m[ãa]e|pai|filha|filho|irm[ãa]|irm[ãa]o|esposa|esposo|marido|mulher|namorada|namorado|noiva|noivo|chefe|gerente|amiga|amigo|colega|av[óô]|tia|tio|prima|primo|s[óo]cia|s[óo]cio|cliente|professora|professor|m[ée]dica|m[ée]dico|psic[óo]loga|psic[óo]logo|terapeuta|vizinha|vizinho|sogra|sogro|cunhada|cunhado|neta|neto|enteada|enteado|dentista|advogada|advogado|orientadora|orientador|coordenadora|coordenador|diretora|diretor";
+const NAME_TRIG = new RegExp(`(?:[Mm]eu nome (?:[ée]|e)|[Mm]e chamo|[Mm]e chamam de|[Pp]ode me chamar de|[Ee]u sou (?:a|o)|(?:^|[^\\p{L}])[Ss]ou (?:a|o)|[Aa]ssinado|[Aa]tt\\.?|[Aa]tenciosamente|[Aa]bra[çc]os|[Bb]eijos|(?:[Mm]inha|[Mm]eu|[Aa]|[Oo]|[Dd]a|[Dd]o|[Cc]om a|[Cc]om o)\\s+(?:${REL}))\\s*,?\\s+(${W}(?:\\s+(?:d[aeo]s?\\s+)?${W}){0,3})`, "gdu");
+const luhn = v => { const d = v.replace(/\D/g, ""); if (d.length < 13 || d.length > 19 || /^(\d)\1+$/.test(d)) return false; let s = 0; for (let i = 0; i < d.length; i++){ let n = +d[d.length-1-i]; if (i % 2){ n *= 2; if (n > 9) n -= 9; } s += n; } return s % 10 === 0; };
+const cpfOk = v => { const d = v.replace(/\D/g, ""); if (d.length !== 11 || /^(\d)\1+$/.test(d)) return false; const dv = k => { let s = 0; for (let i = 0; i < k; i++) s += +d[i] * (k + 1 - i); return s * 10 % 11 % 10; }; return dv(9) === +d[9] && dv(10) === +d[10]; };
+// [tipo, regex, grupo com o dado (0 = tudo), filtro]
+const PII_RX = [
+  ["email", /[\w.+-]+@[\w-]+(?:\.[\w-]+)+/g],
+  ["card", /(?<!\d|\d[.,])(?:\d[ -]?){12,18}\d(?!\d|[.,]\d)/g, 0, luhn],
+  ["cnpj", /(?<!\d)\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}(?!\d)/g],
+  ["cpf", /(?<!\d|\d[.,])(?:\d{3}\.\d{3}\.\d{3}-\d{2}|\d{11})(?!\d|[.,]\d)/g, 0, v => /\D/.test(v) || cpfOk(v)],
+  ["phone", /(?<![\w\d])(?:\+?55[\s-]?)?(?:\(\d{2}\)|\d{2})[\s-]?9?\d{4}[\s-]?\d{4}(?!\d)|(?<![\w\d-])9\d{4}-\d{4}(?!\d)/g, 0, v => { const d = v.replace(/\D/g, ""); return d.length >= 9 && d.length <= 13; }],
+  ["cep", /(?<!\d)\d{5}-\d{3}(?!\d)|(?<=\b[Cc][Ee][Pp]:?\s*)\d{8}(?!\d)/g],
+  ["rg", /\b(?:RG|rg|Rg)\b[\s:nº°.]*(\d[\d.\-xX]{6,13})/dg, 1],
+  ["address", /(?:[Rr]ua|[Rr]\.|[Aa]venida|[Aa]v\.?|[Tt]ravessa|[Aa]lameda|[Rr]odovia|[Ee]strada|[Pp]ra[çc]a|[Ll]argo)\s+(?:d[aeo]s?\s+\p{L}+|\p{Lu}[\p{L}.]*)(?:\s+(?:d[aeo]s?\s+)?[\p{L}.]+){0,4},?\s*(?:n[º°o.]?\s*)?\d{1,5}(?:\s*[,-]?\s*(?:apto?\.?|apartamento|bloco|casa|sala)\s*\d+\w?)*/gu],
+  ["birth", /(?:nasci|nascida|nascido|nascimento|anivers[áa]rio)[^.\n\d]{0,25}?(\d{1,2}\/\d{1,2}\/\d{2,4}|\d{1,2}\s+de\s+\p{L}+\s+de\s+\d{4})/dgiu, 1],
+  ["plate", /(?<=[Pp]laca\b[^.\n\d]{0,20})[A-Z]{3}-?\d[A-Z0-9]\d{2}\b/g],
+  ["handle", /(?<![\w.@])@[A-Za-z0-9_](?:[A-Za-z0-9_.]{1,28}[A-Za-z0-9_])?/g],
+];
+let piiHits = [];          // achados no texto da mensagem
+const piiKeep = new Set(); // "manter": não mostrar de novo (só nesta aba)
+const swaps = [];          // trocas feitas {orig, fake, type}: só nesta aba, nunca salvas
+const fakeOf = new Map();  // original -> falso (o mesmo dado vira sempre o mesmo falso)
+function findNames(text){
+  const out = [];
+  for (const m of text.matchAll(NAME_TRIG)) out.push({a: m.indices[1][0], b: m.indices[1][1], type: "name"});
+  for (const m of text.matchAll(/(?<![\p{L}\p{N}@._-])\p{L}+(?![\p{L}\p{N}])/gu)){
+    const w = m[0], lw = w.toLowerCase();
+    if (!NAMES_F.has(lw) && !NAMES_M.has(lw)) continue;
+    const cap = w[0] !== lw[0];
+    if (!cap && NAME_LOWER_NO.has(lw)) continue;
+    if (PLACE_BEFORE.test(text.slice(Math.max(0, m.index - 24), m.index))) continue;
+    let b = m.index + w.length;
+    if (cap){ const sur = new RegExp(`\\s+(?:d[aeo]s?\\s+)?${W}`, "uy"); for (let k = 0; k < 3; k++){ sur.lastIndex = b; const s = sur.exec(text); if (!s) break; b = sur.lastIndex; } }
+    // "Caio na real": no começo da frase e sem sobrenome, é a palavra comum
+    if (NAME_LOWER_NO.has(lw) && b === m.index + w.length && /(^|[.!?\n]\s*)$/.test(text.slice(0, m.index))) continue;
+    if (/^jo[ãa]o pessoa$/i.test(text.slice(m.index, b))) continue;
+    out.push({a: m.index, b, type: "name"});
+  }
+  return out;
+}
+function findPII(text, all = false){
+  const found = [];
+  PII_RX.forEach(([type, re, g = 0, ok], pri) => {
+    for (const m of text.matchAll(re)){
+      const v = m[g]; if (!v || (ok && !ok(v))) continue;
+      const a = g ? m.indices[g][0] : m.index;
+      found.push({a, b: a + v.length, type, pri});
+    }
+  });
+  for (const h of findNames(text)) found.push({...h, pri: 99});
+  found.sort((x, y) => x.pri - y.pri || x.a - y.a);
+  const keep = [];
+  for (const h of found) if (!keep.some(k => h.a < k.b && h.b > k.a)) keep.push(h);
+  const fakes = new Set(fakeOf.values());   // o que a própria página colocou não é dado pessoal
+  return keep.map(h => ({a: h.a, b: h.b, type: h.type, value: text.slice(h.a, h.b)}))
+             .filter(h => !fakes.has(h.value) && (all || !piiKeep.has(h.value.toLowerCase()))).sort((x, y) => x.a - y.a);
+}
+const FAKE_F = ["Helena Prado","Lívia Torres","Marta Siqueira","Sônia Ramos","Irene Vasconcelos","Olga Pacheco","Nara Fontes","Célia Antunes"];
+const FAKE_M = ["Otávio Reis","Rui Moreira","Tomás Vieira","Davi Paiva","Hélio Campos","Ivan Fontes","Mauro Pacheco","Saulo Ramos"];
+const hsh = s => { let h = 7; for (const c of s) h = (h * 31 + c.codePointAt(0)) >>> 0; return h; };
+// troca cada dígito mantendo o formato: (51) 99876-5432 -> (11) 91234-5678
+const refill = (orig, digits) => { const n = orig.replace(/\D/g, "").length, d = digits.slice(-n).padStart(n, "0"); let i = 0; return orig.replace(/\d/g, () => d[i++]); };
+function makeFake(type, v){
+  const k = type + ":" + v.toLowerCase();
+  if (fakeOf.has(k)) return fakeOf.get(k);
+  const used = new Set(fakeOf.values()), h = hsh(k);
+  let f;
+  if (type === "name"){
+    const parts = v.trim().split(/\s+/), first = parts[0].toLowerCase();
+    const fem = NAMES_F.has(first) || (!NAMES_M.has(first) && /a$/.test(first));
+    const list = fem ? FAKE_F : FAKE_M;
+    const usedFirst = new Set([...used].map(x => String(x).split(" ")[0]));   // duas pessoas nunca ganham o mesmo nome falso
+    for (let i = 0; i < list.length && !f; i++){
+      const c = list[(h + i) % list.length], cand = parts.length > 1 ? c : c.split(" ")[0];
+      if (!usedFirst.has(cand.split(" ")[0]) && cand.split(" ")[0].toLowerCase() !== first) f = cand;
+    }
+    f = f || (fem ? "Fulana" : "Fulano");
+  }
+  else if (type === "email") f = norm([...FAKE_F, ...FAKE_M][h % 16]).replace(/\s+/, ".") + "@example.com";
+  else if (type === "phone") f = refill(v, "5511912345678");
+  else if (type === "cpf") f = refill(v, "12345678909");
+  else if (type === "cnpj") f = refill(v, "11222333000181");
+  else if (type === "rg") f = refill(v, "1234567890");
+  else if (type === "cep") f = refill(v, "01001000");
+  else if (type === "card"){ const n = v.replace(/\D/g, "").length; f = refill(v, n === 15 ? "378282246310005" : "4111111111111111111".slice(0, n)); }
+  else if (type === "address") f = /^av/i.test(v) ? "Avenida Central, 100" : "Rua das Flores, 100";
+  else if (type === "birth") f = /\//.test(v) ? v.replace(/^\d{1,2}\/\d{1,2}/, "01/01") : v.replace(/^\d{1,2}\s+de\s+\p{L}+/u, "1º de janeiro");
+  else if (type === "handle") f = "@perfil_exemplo";
+  else if (type === "plate") f = v.replace(/-/g, "").toUpperCase() === "ABC1D23" ? "XYZ9A87" : "ABC1D23";
+  else f = PII.other.ph;
+  fakeOf.set(k, f);
+  return f;
+}
+const noteSwap = (orig, fake, type) => { if (!swaps.some(s => s.orig === orig && s.fake === fake)) swaps.push({orig, fake, type}); };
+// troca no texto todos os dados com esses valores (um só Ctrl+Z desfaz)
+function applyPII(values, mode){
+  const ta = $("input"), v0 = ta.value;
+  const hits = findPII(v0, true).filter(h => values.includes(h.value)).sort((x, y) => y.a - x.a);
+  if (!hits.length) return;
+  let v = v0;
+  for (const h of hits){
+    const rep = mode === "ph" ? PII[h.type].ph : makeFake(h.type, h.value);
+    v = v.slice(0, h.a) + rep + v.slice(h.b);
+    noteSwap(h.value, rep, h.type);
+  }
+  setText(v); analyze();
+  toast(hits.length > 1 ? `${hits.length} trechos trocados. A lista das trocas fica na aba Privacidade.` : "Trocado. A troca fica anotada na aba Privacidade.");
+}
+// "Dado falso" da barra: troca o trecho selecionado
+function fakeSel(a, b, v){
+  while (a < b && /\s/.test(v[a])) a++;
+  while (b > a && /\s/.test(v[b-1])) b--;
+  if (a === b) return;
+  const t = v.slice(a, b), hit = findPII(t, true).find(h => h.a === 0 && h.b === t.length);
+  const lw = t.toLowerCase();
+  const type = hit ? hit.type
+    : NAMES_F.has(lw) || NAMES_M.has(lw) || new RegExp(`^${W}(?:\\s+(?:d[aeo]s?\\s+)?${W})*$`, "u").test(t) ? "name"
+    : /\d/.test(t) && !/\p{L}{3,}/u.test(t) ? "digits" : "other";
+  const f = type === "digits" ? refill(t, "1234567890".repeat(4)) : makeFake(type, t);
+  edReplace(a, b, f, a + f.length, a + f.length);
+  noteSwap(t, f, type === "digits" ? "other" : type);
+  analyze();
+  toast(`Trocado por “${f}”. A troca fica anotada na aba Privacidade.`);
+}
+function renderPriv(){
+  const raw = $("input").value, groups = new Map();
+  for (const h of piiHits){ const g = groups.get(h.value) || {...h, n: 0}; g.n++; groups.set(h.value, g); }
+  const list = [...groups.values()];
+  let html = "";
+  if (!raw.trim()) html = START;
+  else if (!list.length) html = EMPTY("🔒", "Nenhum dado pessoal encontrado", "Procuro nome, e-mail, telefone, CPF, CNPJ, RG, CEP, endereço, cartão, data de nascimento, @perfil e placa de carro. Achou algo que passou? Selecione no texto e use “Dado falso” na barra.", true);
+  else {
+    if (list.length > 1) html += `<div class="row" style="margin:0 0 10px"><button id="privAll">Trocar todos por dados falsos</button><button class="ghost" id="privAllPh">Trocar todos por marcadores</button></div>`;
+    html += list.map(g => `<div class="box spell priv" data-vbox="p:${esc(g.value.toLowerCase())}">
+      <div class="vhead"><span class="tag warn">${PII[g.type].label}</span><button class="wordlink" style="color:var(--warn)" data-gopii="${g.a}" title="Mostrar no texto">${esc(g.value)} ↗</button>${g.n > 1 ? `<span class="note" style="margin:0">aparece ${g.n} vezes</span>` : ""}</div>
+      <div class="vrow"><span class="note" style="margin:0">Trocar por:</span>
+        <button class="chip" data-pfake="${esc(g.value)}" title="Dado falso, no mesmo formato">${esc(makeFake(g.type, g.value))}</button>
+        <button class="pick" data-pph="${esc(g.value)}" title="Marcador genérico">${PII[g.type].ph}</button>
+        <button class="ghost" data-pkeep="${esc(g.value)}" style="margin-left:auto" title="Não é dado pessoal, ou você quer manter">manter</button></div></div>`).join("");
+  }
+  if (swaps.length) html += `<h4 class="subh">Trocas feitas</h4><p class="note" style="margin:0 0 8px">Para você entender a resposta da IA. Fica só nesta aba e some ao recarregar: nada disso é salvo.</p>
+    <div class="swaps">${swaps.map((s, i) => `<b>${esc(s.fake)}</b><span class="eq">no lugar de</span><span>${esc(s.orig)}</span><button class="ghost tiny" data-unswap="${i}" title="Volta o dado original no texto">desfazer</button>`).join("")}</div>`;
+  const box = $("privBox"); box.innerHTML = html;
+  setCount("p-priv", list.length);
+  if ($("privAll")) $("privAll").onclick = () => applyPII(list.map(g => g.value), "fake");
+  if ($("privAllPh")) $("privAllPh").onclick = () => applyPII(list.map(g => g.value), "ph");
+  box.querySelectorAll("[data-pfake]").forEach(b => b.onclick = () => applyPII([b.dataset.pfake], "fake"));
+  box.querySelectorAll("[data-pph]").forEach(b => b.onclick = () => applyPII([b.dataset.pph], "ph"));
+  box.querySelectorAll("[data-pkeep]").forEach(b => b.onclick = () => { piiKeep.add(b.dataset.pkeep.toLowerCase()); analyze(); });
+  box.querySelectorAll("[data-gopii]").forEach(b => b.onclick = () => {
+    const h = piiHits.find(x => x.a === +b.dataset.gopii); if (!h) return;
+    const ta = $("input"); ta.focus({preventScroll: true}); ta.setSelectionRange(h.a, h.b);
+    const mk = $("hl").querySelector(`mark[data-a="${h.a}"]`);
+    if (mk){ ta.scrollTop = Math.max(0, mk.offsetTop - ta.clientHeight / 3); $("hl").scrollTop = ta.scrollTop; }
+    $("boxText").scrollIntoView({block: "start", behavior: "smooth"});
+  });
+  box.querySelectorAll("[data-unswap]").forEach(b => b.onclick = () => {
+    const s = swaps[+b.dataset.unswap]; if (!s) return;
+    const v = $("input").value;
+    if (v.includes(s.fake)) setText(v.split(s.fake).join(s.orig));
+    swaps.splice(+b.dataset.unswap, 1); analyze();
+  });
+}
+
+/* ================= meu contexto (salvo neste navegador) ================= */
+let ctx = store.get("pb.ctx", null);
+if (!ctx || !Array.isArray(ctx.profiles) || !ctx.profiles.length) ctx = {profiles: [{id: "c1", name: "Pessoal", text: "", on: true, over: {}}], sel: "c1"};
+let ctxSkip = false;          // "não usar neste prompt"
+const drafts = {};            // texto ainda não salvo de cada contexto
+const ctxStore = () => store.set("pb.ctx", ctx);
+const curProf = () => ctx.profiles.find(p => p.id === ctx.sel) || ctx.profiles[0];
+// no contexto salvo, pedido vira preferência ("Quero que você seja direta") ou fato sobre você ("Quero aprender inglês")
+function ctxCat(c, t){
+  const n = unslang(norm(t));
+  if (c !== "role" && /^(meu|minha|meus|minhas|sou|eu sou|tenho|moro|vivo|trabalho|estudo|nasci)\b/.test(n)) return "context";   // fato sobre você
+  if (c === "goal") return /^(quero que (voce|vc)|seja|sejam|responda|fale|me trate|me chame|use|evite|prefiro|gosto que|gosto de respostas|nao gosto de respostas|sempre|nunca)/.test(n) ? "constraints" : "context";
+  if (c === "problems") return "context";
+  return c;
+}
+function ctxItems(p, text = p.text){
+  if (!text || !text.trim()) return [];
+  const seen = new Set();
+  return splitSentences(applyMarkers(text)).filter(t => { const k = norm(t); if (seen.has(k)) return false; seen.add(k); return true; })
+    .map(t => ({text: t, cat: (p.over || {})[t] || ctxCat(classify(t).cat, t)}));
+}
+function savedItems(){
+  if (ctxSkip) return [];
+  const msg = new Set(items.map(it => norm(it.text)));
+  return ctx.profiles.filter(p => p.on).flatMap(p => ctxItems(p).filter(it => !msg.has(norm(it.text))).map(it => ({...it, saved: p.name})));
+}
+function inCtx(t){ const k = norm(t); return ctx.profiles.some(p => ctxItems(p).some(it => norm(it.text) === k)); }
+// frases da mensagem que falam de você e servem para outras conversas
+const PERSONAL_RE = /^(sou|eu sou|trabalho|moro|vivo|uso|utilizo|tenho|estudo|prefiro|gosto|nao gosto|me importo|nao uso|evito|sigo|acredito|como \S+,? uso|no \S+,? uso|minha (profissao|area|empresa)|meu (trabalho|cargo))\b/;
+const personal = it => ["context", "tone", "constraints"].includes(it.cat) && PERSONAL_RE.test(unslang(norm(it.text)));
+function keepInCtx(texts){
+  const p = ctx.profiles.find(q => q.on) || curProf();
+  const add = texts.filter(t => !inCtx(t));
+  if (!add.length) return toast("Já está no seu contexto.");
+  const lines = add.map(t => /[.!?…]$/.test(t) ? t : t + ".").join("\n");
+  const join = (base, extra) => (base.trim() ? base.trim() + "\n" : "") + extra;
+  p.text = join(p.text, lines);
+  if (drafts[p.id] != null) drafts[p.id] = join(drafts[p.id], lines);
+  if (p.id === curProf().id && $("ctxText").value !== p.text) $("ctxText").value = join($("ctxText").value, lines);
+  p.on = true; ctxStore(); renderCtx(); analyze();
+  toast(`Guardado em “${p.name}”. Entra sozinho nos próximos prompts.`);
+}
+let ctxShown = null;
+function renderCtx(){
+  const p = curProf();
+  $("ctxProfiles").innerHTML = ctx.profiles.map(q => `<button data-prof="${q.id}" class="${q.id === p.id ? "on" : ""}" title="${q.on ? "Entra nos prompts" : "Desligado: não entra nos prompts"}"><span class="live ${q.on ? "" : "off"}"></span>${esc(q.name || "Sem nome")}</button>`).join("") +
+    `<button data-prof="new" title="Ex.: um para assuntos pessoais, outro para o trabalho">＋ Novo contexto</button>`;
+  $("ctxProfiles").querySelectorAll("[data-prof]").forEach(b => b.onclick = () => switchProf(b.dataset.prof));
+  if (document.activeElement !== $("ctxName")) $("ctxName").value = p.name;
+  $("ctxOn").checked = p.on;
+  if (ctxShown !== p.id){ $("ctxText").value = drafts[p.id] ?? p.text; ctxShown = p.id; }
+  $("ctxDel").hidden = ctx.profiles.length === 1 && !p.text.trim();
+  renderCtxState(); renderCtxPreview(); renderCtxPii(); ctxTag();
+}
+function switchProf(id){
+  const cur = curProf(), v = $("ctxText").value;
+  if (v !== cur.text) drafts[cur.id] = v; else delete drafts[cur.id];
+  if (id === "new"){
+    id = "c" + Date.now();
+    ctx.profiles.push({id, name: "Contexto " + (ctx.profiles.length + 1), text: "", on: true, over: {}});
+  }
+  ctx.sel = id; ctxStore(); renderCtx();
+  if (!curProf().text) { $("ctxName").focus(); $("ctxName").select(); }
+}
+function renderCtxState(){
+  const p = curProf(), dirty = $("ctxText").value !== p.text;
+  $("ctxState").textContent = dirty ? "alterações não salvas" : p.text.trim() ? "salvo neste navegador" : "";
+  $("ctxState").className = "tag " + (dirty ? "warn" : "ok");
+}
+function renderCtxPreview(){
+  const p = curProf(), list = ctxItems(p, $("ctxText").value);
+  if (!list.length){ $("ctxPreview").innerHTML = EMPTY("🗂️", "Nada aqui ainda", "Cole seu contexto acima e clique em “Salvar contexto”. Aqui aparece como ele vai entrar nos prompts, já dividido."); return; }
+  const by = {}; list.forEach(it => (by[it.cat] ||= []).push(it));
+  $("ctxPreview").innerHTML = (p.on ? "" : `<p class="note" style="margin:0 0 8px">Este contexto está desligado: só entra nos prompts quando você ligar “Usar nos prompts”.</p>`) +
+    ORDER.filter(c => by[c]).map(c => `<div class="cat ${c}"><h4>${CATS[c].pt}</h4><ul>${by[c].map(it => `<li><div class="li"><span>${esc(it.text)}</span><select data-ctxt="${esc(it.text)}" aria-label="Categoria">${ORDER.map(o => `<option value="${o}"${o === c ? " selected" : ""}>${CATS[o].pt}</option>`).join("")}</select></div></li>`).join("")}</ul></div>`).join("");
+  $("ctxPreview").querySelectorAll("select").forEach(s => s.onchange = () => { (p.over ||= {})[s.dataset.ctxt] = s.value; ctxStore(); renderCtxPreview(); analyze(); });
+}
+function renderCtxPii(){
+  const hits = findPII($("ctxText").value);
+  const vals = [...new Map(hits.map(h => [h.value, h])).values()];
+  $("ctxPii").innerHTML = vals.length ? `<div class="box priv" style="margin:8px 0 0"><b>Dados pessoais neste contexto:</b> ${vals.map(h => `${esc(h.value)} <span class="note" style="margin:0">(${PII[h.type].label.toLowerCase()})</span>`).join(", ")}.
+    <p>O contexto vai em todo prompt, então vale trocar por dados falsos. A IA entende igual.</p><button class="chip" id="ctxFake">Trocar por dados falsos</button></div>` : "";
+  if ($("ctxFake")) $("ctxFake").onclick = () => {
+    const ta = $("ctxText"); let v = ta.value;
+    for (const h of findPII(v).sort((x, y) => y.a - x.a)){ const f = makeFake(h.type, h.value); v = v.slice(0, h.a) + f + v.slice(h.b); noteSwap(h.value, f, h.type); }
+    ta.value = v; renderCtxState(); renderCtxPreview(); renderCtxPii();
+    toast("Trocado. Clique em “Salvar contexto” para guardar.");
+  };
+}
+function ctxTag(){
+  const n = ctx.profiles.filter(p => p.on).reduce((s, p) => s + ctxItems(p).length, 0);
+  $("ctxTag").textContent = n ? String(n) : "";
+  $("tab-ctx").title = n ? `${plural(n, "item salvo entra", "itens salvos entram")} nos prompts` : "Salve um contexto para ele entrar sozinho nos prompts";
+}
+function saveCtx(){
+  const p = curProf();
+  p.text = $("ctxText").value.trim(); $("ctxText").value = p.text; delete drafts[p.id];
+  ctxStore(); renderCtx(); analyze();
+  toast(!p.text ? "Contexto vazio salvo." : p.on ? "Contexto salvo. Ele entra sozinho nos próximos prompts." : "Contexto salvo (desligado: ligue “Usar nos prompts” para usar).");
+}
+// aviso no Prompt final: o que veio do contexto salvo
+function renderCtxNote(){
+  const note = $("ctxNote"), on = ctx.profiles.filter(p => p.on && p.text.trim());
+  if (!on.length){ note.hidden = true; return; }
+  note.hidden = false; note.className = "ctxnote" + (ctxSkip ? " skip" : "");
+  const n = savedItems().length;
+  note.innerHTML = ctxSkip
+    ? `Seu contexto salvo não está neste prompt. <button class="ghost" id="ctxUse">Usar de novo</button>`
+    : `Inclui seu contexto salvo <b>${on.map(p => esc(p.name)).join(", ")}</b> (${plural(n, "item", "itens")}). <button class="ghost" id="ctxSkipBtn">Não usar neste prompt</button> <button class="ghost" id="ctxEdit">Editar</button>`;
+  if ($("ctxUse")) $("ctxUse").onclick = () => { ctxSkip = false; analyze(); renderOutput(); };
+  if ($("ctxSkipBtn")) $("ctxSkipBtn").onclick = () => { ctxSkip = true; analyze(); renderOutput(); };
+  if ($("ctxEdit")) $("ctxEdit").onclick = () => showTab("ctx");
+}
+
 /* ================= ortografia ================= */
 let spellWorker = null, spellState = "idle", spellSeq = 0;
 function spellHTML(){
@@ -1698,7 +2214,7 @@ function refreshSpell(){
   $("spellBox").innerHTML = spellHTML();
   document.querySelectorAll("button[data-from]").forEach(b => b.onclick = () => {
     const re = new RegExp(`(^|[^\\p{L}])${reEsc(b.dataset.from)}(?=[^\\p{L}]|$)`, "gu");
-    $("input").value = $("input").value.replace(re, (m,p) => p + b.dataset.to);
+    setText($("input").value.replace(re, (m,p) => p + b.dataset.to));
     spellResults = spellResults.filter(r => r.w !== b.dataset.from);
     analyze();
   });
@@ -1706,8 +2222,7 @@ function refreshSpell(){
     const r = gramResults.find(x => x.a === +b.dataset.gfix), ta = $("input");
     if (!r) return;
     const raw = ta.value;
-    if (raw.slice(r.a, r.b) === r.from) ta.value = raw.slice(0, r.a) + r.to + raw.slice(r.b);
-    else ta.value = raw.replace(r.from, r.to);
+    setText(raw.slice(r.a, r.b) === r.from ? raw.slice(0, r.a) + r.to + raw.slice(r.b) : raw.replace(r.from, r.to));
     analyze(); runSpell(applyMarkers(ta.value)); toast(`Trocado por “${r.to}”`);
   });
   document.querySelectorAll("button[data-gkeep]").forEach(b => b.onclick = () => {
@@ -1921,7 +2436,7 @@ function annotate(text){
 }
 function signature(){
   return JSON.stringify([$("input").value, extra, meanings, vagueDone, [...ignoredVague], images.map(i=>[i.id,i.note,i.ocr]),
-    role.pick, customRoles, role.level, $("roleArea").value, prefs, overrides, markerCfg]);
+    role.pick, customRoles, role.level, $("roleArea").value, prefs, overrides, markerCfg, pins, ctxSkip, ctx.profiles.filter(p => p.on).map(p => [p.text, p.over])]);
 }
 // mostra se o prompt final está em dia com o que você escreveu
 function changed(){
@@ -2015,7 +2530,7 @@ async function renderOutput(){
   if (/["“”]/.test(txt)) how.push(lang === "en" ? "Words in quotation marks are literal quotes from me or from the screen. Keep them as they are." : "Palavras entre aspas são citações literais, minhas ou da tela. Mantenha como estão.");
   if (how.length) txt += `## ${H.how}\n` + how.map(h=>`- ${h}`).join("\n");
   if (seq !== renderSeq) return;
-  out.textContent = txt.trim(); setStatus(); renderTokens(txt.trim()); changed();
+  out.textContent = txt.trim(); setStatus(); renderTokens(txt.trim()); changed(); renderCtxNote();
   // avisos de idioma
   const w = $("trWarn");
   if (prefs.promptLang === "en" && lang === "pt"){
@@ -2055,12 +2570,14 @@ function renderTokens(txt){
 
 /* ================= abas ================= */
 function showTab(which){
-  const out = which === "out";
-  $("panel-out").hidden = !out; $("panel-msg").hidden = out;
-  $("tab-out").classList.toggle("active", out); $("tab-msg").classList.toggle("active", !out);
-  $("tab-out").setAttribute("aria-selected", out); $("tab-msg").setAttribute("aria-selected", !out);
+  for (const k of ["msg", "ctx", "out"]){
+    const on = k === which;
+    $("panel-" + k).hidden = !on; $("tab-" + k).classList.toggle("active", on); $("tab-" + k).setAttribute("aria-selected", on);
+  }
+  if (which !== "msg"){ disarm(); closeMarkMenu(); }
+  if (which === "ctx") renderCtx();
 }
-const CONF_TABS = [["p-org","Divisão"],["p-vague","Palavras vagas"],["p-miss","O que falta"],["p-warn","Avisos"],["p-spell","Ortografia"],["p-role","Papel da IA"],["p-img","Imagens"],["p-marks","Marcadores"]];
+const CONF_TABS = [["p-org","Divisão"],["p-vague","Palavras vagas"],["p-miss","O que falta"],["p-warn","Avisos"],["p-spell","Ortografia"],["p-priv","Privacidade"],["p-role","Papel da IA"],["p-img","Imagens"],["p-marks","Marcadores"]];
 $("confTabs").innerHTML = CONF_TABS.map(([id,label],i) => `<button role="tab" class="tab ${i?"":"active"}" data-panel="${id}" aria-selected="${!i}">${label} <span class="tag warn" id="count-${id}"></span></button>`).join("");
 document.querySelectorAll("#confTabs .tab").forEach(b => b.onclick = () => showConf(b.dataset.panel));
 function showConf(id){
@@ -2075,11 +2592,25 @@ $("legend").innerHTML = ORDER.map(c=>`<dt style="color:var(--c-${c})">${CATS[c].
   `<dt>Tokens</dt><dd>Pedaços de texto que a IA conta para medir uso e limite. Em inglês, cerca de 4 letras por token. Imagens também gastam tokens. Prompts mais enxutos gastam menos.</dd>`;
 $("tab-msg").onclick = () => showTab("msg");
 $("tab-out").onclick = () => showTab("out");
+$("tab-ctx").onclick = () => showTab("ctx");
+let ctxTimer = null;
+$("ctxText").addEventListener("input", () => { renderCtxState(); clearTimeout(ctxTimer); ctxTimer = setTimeout(() => { renderCtxPreview(); renderCtxPii(); }, 300); });
+$("ctxText").addEventListener("keydown", e => { if (e.key.toLowerCase() === "s" && (e.ctrlKey || e.metaKey)){ e.preventDefault(); saveCtx(); } });
+$("ctxSave").onclick = saveCtx;
+$("ctxName").oninput = () => { curProf().name = $("ctxName").value.trim() || "Sem nome"; ctxStore(); renderCtx(); };
+$("ctxOn").onchange = () => { curProf().on = $("ctxOn").checked; ctxStore(); renderCtx(); analyze(); toast($("ctxOn").checked ? "Ligado: entra nos próximos prompts." : "Desligado: não entra nos prompts."); };
+$("ctxDel").onclick = () => {
+  const p = curProf();
+  if (p.text.trim() && !confirm(`Apagar o contexto “${p.name}”? Não dá para desfazer.`)) return;
+  ctx.profiles = ctx.profiles.filter(q => q !== p); delete drafts[p.id];
+  if (!ctx.profiles.length) ctx.profiles.push({id: "c" + Date.now(), name: "Pessoal", text: "", on: true, over: {}});
+  ctx.sel = ctx.profiles[0].id; ctxShown = null; ctxStore(); renderCtx(); analyze();
+};
 $("regen2").onclick = renderOutput;
 $("toOut").onclick = () => showTab("out");
 $("go").onclick = generate;
 $("regen").onclick = renderOutput;
-$("clear").onclick = () => { $("input").value=""; items=[]; overrides={}; extra={}; meanings={}; vagueDone={}; ignoredVague=new Set(); images=[]; spellResults=[]; renderImages(); analyze(); };
+$("clear").onclick = () => { $("input").value=""; items=[]; overrides={}; extra={}; meanings={}; vagueDone={}; ignoredVague=new Set(); images=[]; spellResults=[]; pins=[]; swaps.length=0; piiKeep.clear(); ctxSkip=false; disarm(); renderImages(); analyze(); };
 $("copy").onclick = async () => {
   const t = $("output").textContent; if (!t) return;
   try{ await navigator.clipboard.writeText(t); }catch{ const r=document.createRange(); r.selectNodeContents($("output")); getSelection().removeAllRanges(); getSelection().addRange(r); document.execCommand("copy"); }
@@ -2113,7 +2644,7 @@ $("mkTry").oninput = () => {
 };
 $("mkOpen").oninput = $("mkClose").oninput = mkPreview;
 $("mkOpen").onkeydown = $("mkClose").onkeydown = e => { if (e.key === "Enter") addMarker(); };
-renderRoleChips(); renderAreas(); renderLevels(); mkPreview(); renderBehaviors(); renderLangs(); renderMarkers(); renderImages(); setStatus(); analyze();
+renderRoleChips(); renderAreas(); renderLevels(); mkPreview(); renderBehaviors(); renderLangs(); renderMarkers(); renderImages(); setStatus(); analyze(); ctxTag();
 </script>
 </body>
 </html>
