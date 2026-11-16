@@ -61,6 +61,7 @@ label.field input{margin-top:4px;font-weight:400} .subtabs .tab{font-size:13px;p
 /* etiquetas: um único padrão para tudo */
 .tag{display:inline-block;font-size:11px;font-weight:600;line-height:18px;padding:0 8px;border-radius:99px;background:var(--line);color:var(--muted);text-transform:none;letter-spacing:0;white-space:nowrap}
 .tag.ok{background:var(--ok-soft);color:var(--ok)}
+.tag.stepnum{background:color-mix(in srgb,var(--c-goal) 22%,transparent);color:var(--text)}
 .tag.warn{background:var(--warn-soft);color:var(--warn)}
 .tag.err{background:var(--err-soft);color:var(--err)}
 .tag.info{background:var(--info-soft);color:var(--info)}
@@ -224,6 +225,10 @@ ul.have li{margin:2px 0}
 .btnlink{display:inline-block;margin-top:8px;padding:6px 12px;border-radius:8px;background:var(--accent);color:#fff;text-decoration:none;font-size:14px}
 .trwarn ol{margin:6px 0;padding-left:20px}
 .hl mark.s{text-decoration:underline wavy var(--err);text-decoration-skip-ink:none;text-underline-offset:3px}
+.hl mark.g{text-decoration:underline wavy var(--info);text-decoration-skip-ink:none;text-underline-offset:3px}
+.subh{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:14px 0 8px}
+.subh:first-child{margin-top:0}
+.gram .why{font-size:13px;color:var(--muted);margin:0 0 8px}
 .hl mark.flash{animation:flash 1.4s ease-out}
 @keyframes flash{0%,40%{background:color-mix(in srgb,var(--accent) 70%,transparent)}}
 .hl-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:6px}
@@ -427,8 +432,8 @@ button:focus-visible,a:focus-visible,[role=tab]:focus-visible{outline:2px solid 
       </div>
 
       <div class="panel" id="p-spell" hidden>
-        <div class="panel-head"><h3>Ortografia</h3><span class="tag warn">recomendado</span></div>
-        <p class="panel-desc">Palavras que não estão entre as 50 mil mais usadas do português do Brasil. Pode ser erro, ou só uma palavra rara: clique em “está certo” para ela não aparecer mais.</p>
+        <div class="panel-head"><h3>Ortografia e gramática</h3><span class="tag warn">recomendado</span></div>
+        <p class="panel-desc">Erros de gramática comuns que o corretor não pega (como “gostaria que usar”) e palavras fora das 50 mil mais usadas do português. Pode ser só uma palavra rara ou um jeito seu de escrever: clique em “está certo” e ela não aparece mais.</p>
         <div id="spellBox" class="fill"></div>
       </div>
 
@@ -587,15 +592,15 @@ const CATS = {
 const ORDER = Object.keys(CATS);
 const OPTIONAL = new Set(["examples","problems","role"]);
 
-const GOAL_VERBS = ["quero","queria","preciso","precisava","gostaria","quero que","gostaria que","crie","criar","faca","fazer","escreva","escrever","gere","gerar","explique","explicar","ajude","ajudar","analise","analisar","resuma","resumir","traduza","traduzir","monte","montar","desenvolva","desenvolver","liste","listar","compare","comparar","revise","revisar","corrija","corrigir","sugira","sugerir","planeje","planejar","otimize","melhore","melhorar","redija","elabore","calcule","organize","organizar","me de","me diga","adicione","adicionar","coloque","colocar","inclua","incluir","mostre","mostrar","identifique","identificar","mude","mudar","troque","trocar","remova","remover","tire","tirar","deixe","ponha","bote","implemente","implementar","arrume","arrumar","conserte","consertar","ajuste","ajustar","transforme","converta","descreva","descrever","verifique","verificar","encontre","procure","pesquise","recomende","avalie","avaliar","refaca","reescreva","atualize","separe","separar","destaque","relacione","relacionar","permita","permitir","avise","notifique","renomeie","repare","veja","olhe","padronize","use","usar","poderia","poderiam","podia","seria bom","seria legal","deveria","deveriam","tem que","precisa","precisam","objetivo","meta"];
+const GOAL_VERBS = ["quero","queria","preciso","precisava","gostaria","quero que","gostaria que","crie","criar","faca","fazer","escreva","escrever","gere","gerar","explique","explicar","ajude","ajudar","analise","analisar","resuma","resumir","traduza","traduzir","monte","montar","desenvolva","desenvolver","liste","listar","compare","comparar","revise","revisar","corrija","corrigir","sugira","sugerir","planeje","planejar","otimize","melhore","melhorar","redija","elabore","calcule","organize","organizar","me de","me diga","adicione","adicionar","coloque","colocar","inclua","incluir","mostre","mostrar","identifique","identificar","mude","mudar","troque","trocar","remova","remover","tire","tirar","deixe","ponha","bote","implemente","implementar","arrume","arrumar","conserte","consertar","ajuste","ajustar","transforme","converta","descreva","descrever","verifique","verificar","encontre","procure","pesquise","recomende","avalie","avaliar","refaca","reescreva","atualize","separe","separar","destaque","relacione","relacionar","permita","permitir","avise","notifique","renomeie","repare","veja","olhe","padronize","use","usar","leia","ler","escolher","classifique","classificar","defina","definir","extraia","extrair","formate","formatar","simplifique","simplificar","adapte","adaptar","reorganize","reorganizar","aponte","apontar","indique","indicar","justifique","proponha","propor","valide","validar","confira","conferir","complete","completar","prepare","preparar","envie","enviar","mande","mandar","responda","responder","ensine","ensinar","estime","estimar","escreve","cria","monta","explica","resume","traduz","corrige","revisa","poderia","poderiam","podia","seria bom","seria legal","deveria","deveriam","tem que","precisa","precisam","objetivo","meta"];
 const KW = {
   role: ["aja como","atue como","voce e um","voce e uma","seja um","seja uma","finja ser","faca o papel","papel de","como se fosse um","como se fosse uma"],
   goal: GOAL_VERBS,
   context: ["sou","trabalho","estou","tenho","temos","meu","minha","meus","minhas","nosso","nossa","projeto","empresa","porque","pois","situacao","cenario","atualmente","hoje","historico","ja tentei","contexto","area","negocio","curso","faculdade","site","app","aplicativo","sistema","ferramenta","pagina"],
-  problems: ["nao gostei","nao gosto","estranho","estranha","ruim","errado","errada","erro","bug","nao funciona","problema","quebrado","quebrada","feio","feia","confuso","confusa","nao entendeu","nao entende","nao aparece","travou","trava","lento","bagunca","incomoda","nao parece","parece que","bugado","bugada","bugando","bugou","bugs","esquisito","esquisita","misturado","misturada","misturando","quebrou","sumiu","sumindo","nao rola","nao da","nao consigo","nao deu","falha","falhando","travando","nao considerou","nao considera","mas apareceu","apareceu como","errou","nao mostra","nao responde","nao respondeu","nao entendo","nao sei usar","atrasado","atrasada","atrasadas","atrasados","demora","demorando","nao abre","nao carrega","cortado","cortada"],
+  problems: ["nao gostei","nao gosto","estranho","estranha","ruim","errado","errada","erro","bug","nao funciona","problema","quebrado","quebrada","feio","feia","confuso","confusa","nao entendeu","nao entende","nao aparece","travou","trava","lento","bagunca","incomoda","nao parece","parece que","bugado","bugada","bugando","bugou","bugs","esquisito","esquisita","misturado","misturada","misturando","quebrou","sumiu","sumindo","nao rola","nao da","nao consigo","nao deu","falha","falhando","travando","nao considerou","nao considera","mas apareceu","apareceu como","errou","nao mostra","nao responde","nao respondeu","nao entendo","nao sei usar","atrasado","atrasada","atrasadas","atrasados","demora","demorando","nao abre","nao carrega","cortado","cortada","caiu","cairam","caindo","piorou","piorando","despencou","diminuiu","diminuindo","reclamam","reclamando","reclamacao","reclamacoes","nao funcionou","nao deu certo","nao adiantou","nao resolveu","nao ajudou","nao ficou bom","nao ficou boa","ficou ruim","ficou estranho","ficou estranha","dificuldade","dificuldades","perdendo","nao sei como","nao entendi","nao compreendi","ficou confuso","ficou confusa","nao ficou claro","nao ficou clara"],
   audience: ["publico","leitor","leitores","cliente","clientes","iniciante","iniciantes","leigo","leigos","criancas","alunos","equipe","time","chefe","gestor","diretoria","usuarios","seguidores","investidores","recrutador","professor","especialistas","destinado"],
   format: ["formato","tabela","lista","bullets","topicos","paragrafo","paragrafos","json","markdown","codigo","e-mail","email","slides","passo a passo","resumo","palavras","paginas","linhas","caracteres","titulo","titulos","secoes","estrutura","csv","roteiro","post","artigo"],
-  tone: ["tom","formal","informal","descontraido","profissional","tecnico","amigavel","direto","criativo","estilo","serio","divertido","humor","empatico","persuasivo","didatico","educado","simpatico","linguagem","casual","elegante"],
+  tone: ["tom","formal","informal","descontraido","profissional","tecnico","amigavel","direto","criativo","estilo","serio","divertido","humor","empatico","persuasivo","didatico","educado","simpatico","linguagem","casual","elegante","leve","engracado","engracada","descontraida","tecnica","criativa","divertida","empatica","persuasiva","didatica","educada","simpatica","direta","acolhedor","acolhedora","gentil","neutro","neutra","ironico","ironica","sarcastico","motivador","motivadora","inspirador","sincero","sincera","honesto","honesta"],
   constraints: ["nao","nunca","sem","evite","evitar","apenas","somente","so","maximo","minimo","ate","limite","prazo","obrigatorio","deve","precisa ter","nao pode","exceto","restricao","orcamento","sempre","o mais","possivel"],
   examples: ["exemplo","exemplos","por exemplo","igual a","parecido","referencias","de referencia","como referencia","uma referencia","modelo","inspirado","como este","como esse"],
 };
@@ -666,6 +671,7 @@ let vagueDone = {};       // palavra vaga -> "explain" depois de confirmar
 let limitMsg = {};       // aviso de limite por categoria
 let images = [];           // {id, name, url, w, h, note, ocr, ocrState}
 let spellResults = [];
+let gramResults = [];      // {a, b, from, to, why, kind}
 let generatedSig = null;   // "assinatura" do que foi usado na última geração
 
 /* ================= marcadores de citação ================= */
@@ -791,18 +797,37 @@ function splitSentences(text){
 const BULLET_RE = /^\s*(?:[-–—•*]+|\d+[.)])\s+/;
 // pedaço que termina pendurado ("me explique mais sobre", "depender de") não fica sozinho
 const DANGLING = /\b(sobre|de|do|da|dos|das|com|para|pra|em|no|na|por|pelo|pela|a|o|as|os|que|e|ou|um|uma)$/;
+// sequência de passos ("Primeiro…, depois…, por fim…"): a ordem importa e vira lista numerada no prompt
+const STEP_FIRST = /^(primeiro|primeiramente|em primeiro lugar|antes de tudo|antes de mais nada|para comecar|comece|comecando|inicialmente|(passo|etapa) 1)\b/;
+const STEP_THEN = /^(e\s+)?(depois(?!\s+que\b)|em seguida|logo apos|logo depois|apos isso|feito isso|na sequencia|por fim|por ultimo|finalmente|para terminar|para finalizar)\b/;
+const STEP_NEXT = /^(e\s+)?(depois(?!\s+que\b)|em seguida|logo apos|logo depois|apos isso|feito isso|na sequencia|por fim|por ultimo|finalmente|para terminar|para finalizar|entao|(segundo|terceiro|quarto|quinto)(?=\s*[,:])|em (segundo|terceiro|quarto) lugar|no final|ao final|(passo|etapa) \d+)\b/;
+// onde cortar uma frase com vários passos: ", depois", " e por fim", "; em seguida"
+const STEP_CUT = /\s*[,;]\s*(?:e\s+)?(?=(?:depois(?!\s+que)|dps(?!\s+q)|em seguida|logo ap[oó]s|logo depois|ap[oó]s isso|feito isso|na sequ[eê]ncia|por fim|por [uú]ltimo|finalmente|para terminar|para finalizar)(?!\p{L}))|\s+e\s+(?=(?:depois(?!\s+que)|dps|em seguida|por fim|por [uú]ltimo|finalmente)(?!\p{L}))/iu;
+// tira a palavra de ordem do começo do passo (a numeração já diz a ordem)
+const STEP_STRIP = /^(?:e\s+)?(?:primeiro|primeiramente|em primeiro lugar|antes de tudo|antes de mais nada|para come[cç]ar|inicialmente|em seguida|logo ap[oó]s isso|logo depois|ap[oó]s isso|feito isso|na sequ[eê]ncia|ent[aã]o|(?:segundo|terceiro|quarto|quinto)(?=\s*[,:])|em (?:segundo|terceiro|quarto) lugar|por fim|por [uú]ltimo|finalmente|no final|ao final|para terminar|para finalizar|(?:depois|dps)(?:\s+disso)?(?!\s+(?:de|do|da|dos|das|que|q)(?!\p{L}))|(?:passo|etapa)\s+\d+)(?!\p{L})\s*[,:.\-–]?\s*/iu;
+function stepText(t){
+  const s = t.replace(STEP_STRIP, "");
+  return s.length > 2 && s !== t ? s[0].toUpperCase() + s.slice(1) : t;
+}
 function splitPara(t, restore, verbAlt){
   // cada linha de lista ("- ...", "1. ...") é uma ideia: forma um grupo próprio e nunca é cortada nas vírgulas.
   // o texto corrido do parágrafo forma outro grupo. Frases só se juntam dentro do mesmo grupo.
   const out = [];   // [texto, grupo]
-  let g = 0;
+  let g = 0, seqOn = false;
+  // "Primeiro leia, depois resuma e por fim traduza" vira três passos
+  const cutSteps = s => {
+    const head = unslang(norm(cleanBullet(restore(s))));
+    if (STEP_FIRST.test(head)) seqOn = true;
+    const parts = s.split(STEP_CUT).filter(x => x.trim());
+    return parts.length > 1 && (seqOn || parts.length >= 3) ? (seqOn = true, parts) : [s];
+  };
   for (const line of t.split(/\n+/)){
     if (!line.trim()) continue;
     const bullet = BULLET_RE.test(line);
     const grp = bullet ? "b" + (++g) : "p";
-    for (const s of line.split(/(?<=[.!?;])\s+|\s+[–—]\s+(?=[A-ZÀ-Ú])/)){
+    for (const s of line.split(/(?<=[.!?;])\s+|\s+[–—]\s+(?=[A-ZÀ-Ú])/).flatMap(cutSteps)){
       if (bullet){ out.push([s, grp]); continue; }
-      const byAnd = s.split(new RegExp(`\\s+(?:e|e também|e tambem|além disso|alem disso)\\s+(?=(?:${verbAlt})\\b)`, "i"));
+      const byAnd = s.split(new RegExp(`\\s+(?:e|e também|e tambem|além disso|alem disso)\\s+(?=(?:(?:n[aã]o|nunca)\\s+)?(?:${verbAlt})\\b)`, "i"));
       for (const part of byAnd){
         const pieces = part.split(/,\s+/);
         const startsGoal = p => new RegExp(`^(?:${verbAlt})\\b`).test(unslang(norm(p.trim())));
@@ -810,22 +835,30 @@ function splitPara(t, restore, verbAlt){
         // e nenhum fica pendurado; senão a frase perde o sentido
         const ownCat = p => { const h = classify(p.replace(/\u0000\d+\u0000/g, "")).hits; if (p.trim().split(/\s+/).length < 4) h.delete("context"); return h.size > 0; };
         const whole = p => !DANGLING.test(unslang(norm(p.replace(/[.!?…:;\s]+$/, ""))).trim());
-        if (pieces.length > 1 && pieces.every(p => (startsGoal(p) || ownCat(p)) && whole(p))) pieces.forEach(p => out.push([p, grp]));
+        if (pieces.length > 1 && pieces.every(p => (startsGoal(p) || ownCat(p)) && whole(p))) pieces.forEach((p, i) => out.push([p, grp, i > 0]));
         else out.push([part, grp]);
       }
     }
   }
-  const list = out.map(([x, grp]) => [cleanBullet(restore(x)), grp]).filter(([x]) => x.replace(/[^\p{L}\p{N}]/gu,"").length > 2);
+  // afterComma: o pedaço veio depois de uma vírgula; se voltar a juntar, volta a vírgula
+  const list = out.map(([x, grp, afterComma]) => [cleanBullet(restore(x)), grp, afterComma && /^\s*\p{Ll}/u.test(restore(x))]).filter(([x]) => x.replace(/[^\p{L}\p{N}]/gu,"").length > 2);
   // frases que continuam a anterior ("Mesma coisa no que falta", "Isso precisa mudar", "Pensei que...")
   // ficam junto dela, para não perder o assunto
   const CONT = /^(mesma coisa|o mesmo|a mesma|tambem acontece|depois que|depois de|apos|porque|pois|ja que|mas|so que|isso|isto|ai|entao|talvez|ou seja|inclusive|nem|por isso|senao|alias|e ai|tipo|dai|pode ate|pode tambem|ele|ela|eles|elas|ser um|ser uma|assim|pensei|achei|imaginei|apenas|somente|so)\b/;
-  const merged = []; let lastGrp = null;
-  for (const [x, grp] of list){
+  const merged = []; let lastGrp = null, inSeq = false;
+  const isGoal = x => classify(x).cat === "goal";
+  for (const [x, grp, afterComma] of list){
     const n = unslang(norm(stripQuotes(x))).trim();
+    if (STEP_FIRST.test(n)) inSeq = true;
+    // passo de uma sequência ("Depois, resuma") fica sozinho
+    if (STEP_NEXT.test(n) && merged.length && (inSeq || (STEP_THEN.test(n) && isGoal(merged[merged.length-1])))){ inSeq = true; merged.push(x); lastGrp = grp; continue; }
     const short = x.trim().split(/\s+/).length < 4 && !new RegExp(`^(?:${verbAlt})\\b`).test(n) && ![...classify(x).hits].some(h => h !== "context");
     // frase curta que só aponta para a anterior ("Gostaria da sua ajuda para isso")
     const pointsBack = n.split(/\s+/).length <= 8 && /\b(isso|isto|nisso|disso|nisto|disto)$/.test(n.replace(/[^a-z\s]/g, "").trim());
-    if (merged.length && grp === lastGrp && (CONT.test(n) || short || pointsBack)) merged[merged.length-1] += (/[.?!…]$/.test(merged[merged.length-1]) ? " " : ". ") + x;
+    if (merged.length && grp === lastGrp && (CONT.test(n) || short || pointsBack)){
+      const prev = merged[merged.length-1];
+      merged[merged.length-1] += afterComma && !/[.?!…]$/.test(prev) ? ", " + x[0].toLowerCase() + x.slice(1) : (/[.?!…]$/.test(prev) ? " " : ". ") + x;
+    }
     else merged.push(x);
     lastGrp = grp;
   }
@@ -842,6 +875,13 @@ const ASK_RE = /\b(me explique|explique|me explica|me ajude|me ajuda|me diga|me 
 const CRIT_RE = /\b(leve em consideracao|levar em consideracao|leve em conta|levar em conta|considere|ponto importante|e importante para mim|importante que voce|priorize|de preferencia)\b/;
 // hábito ou ferramenta que a pessoa já usa
 const HABIT_RE = /^(?:(?:como|no|na|em|para|pra)\s+\S+,?\s+)?(?:eu\s+)?(?:ja\s+)?(?:uso|utilizo|tenho|trabalho com|costumo|sigo)\b/;
+// ordem negativa ("Não use emojis", "Nunca invente dados") é restrição, não pedido
+const NEG_RE = /^(?:por favor,?\s+)?(?:nao|nunca|jamais)\s+(?:me\s+|se\s+)?(?:use|usem|utilize|coloque|ponha|invente|faca|inclua|cite|mencione|repita|escreva|mude|altere|remova|tire|traduza|resuma|crie|gere|adicione|deixe|esqueca|pule|ignore|corte|copie|exagere|enrole|responda|fale|seja|passe|ultrapasse|misture|troque|apague|mexa|toque|mande|envie|de|diga|assuma|suponha|julgue|floreie)\b/;
+// frase sobre como a resposta deve ser ("A resposta deve ter até 200 palavras", "Quero que o texto seja leve")
+const OUT_RE = /^(?:(?:quero|queria|gostaria|preciso|prefiro)\s+que\s+)?(?:a|o|as|os|sua|seu|suas|seus)\s+(?:resposta|texto|resultado|resumo|e-?mail|post|legenda|lista|mensagem|artigo|redacao|saida|explicacao|roteiro|apresentacao|codigo)s?\s+(?:deve|devem|precisa|precisam|tem que|tenha|tenham|seja|sejam|fique|fiquem|venha|venham|esteja|estejam|caiba|siga|nao passe|nao pode|nao deve|deveria|pode|possa)\b/;
+// pedido curto que só diz o jeito de responder ("Responda em tópicos", "Escreva de forma leve", "Use linguagem simples")
+const HOW_RE = /^(?:por favor,?\s+)?(?:me\s+)?(?:responda|responde|escreva|escreve|redija|fale|use|usa|utilize|mantenha|deixe|organize|coloque|ponha|monte|apresente|traga|mande|envie|formate|adote)\s+(?:tudo\s+|isso\s+|a resposta\s+|o texto\s+)?(?:(?:em|no|na|num|numa|com|de|como|usando|por)\s+)?(?:um\s+|uma\s+)?(formato|forma|tabela|lista|topicos|bullets|paragrafos?|markdown|json|tom|linguagem|estilo|jeito|maneira|vocabulario|palavras|frases|termos|portugues|ingles|espanhol|ordem)\b/;
+const LEN_RE = /\b(curt[oa]s?|long[oa]s?|breve|resumid[oa]|detalhad[oa]|sucint[oa]|objetiv[oa]|direto ao ponto)\b/;
 function classify(sentence){
   const n = unslang(norm(stripQuotes(sentence)));
   const pref = PREF_RE.test(n), nP = n.replace(PREF_RE, " ");
@@ -867,8 +907,15 @@ function classify(sentence){
   if (best === "context" && /\?\s*$/.test(sentence.trim())) best = "goal";
   if (best !== "role"){
     const ask = ASK_RE.test(n) || (/\?/.test(sentence) && best !== "problems");
+    const out = OUT_RE.exec(n), how = HOW_RE.exec(n), words = n.split(/\s+/).length;
     if (ask) best = "goal";                                   // pedido explícito manda
     else if (pref || CRIT_RE.test(n)) best = "constraints";   // preferência ou critério
+    else if (NEG_RE.test(n)) best = "constraints";            // "Não use emojis"
+    else if (out){                                            // "A resposta deve ter até 200 palavras"
+      const rest = n.slice(out[0].length), h = new Set(ORDER.filter(c => KW[c].some(k => hasWord(rest, k))));
+      best = hasSize || h.has("format") || LEN_RE.test(rest) ? "format" : h.has("tone") ? "tone" : h.has("audience") ? "audience" : h.has("constraints") ? "constraints" : "format";
+    }
+    else if (how && words <= 9) best = /^(formato|tabela|lista|topicos|bullets|paragrafos?|markdown|json|ordem)$/.test(how[1]) ? "format" : /^(portugues|ingles|espanhol)$/.test(how[1]) ? "constraints" : "tone";
     else if (best === "constraints" && HABIT_RE.test(n)) best = "context";   // "uso Firefox, sem IA"
   }
   return {cat:best, hits};
@@ -1099,8 +1146,32 @@ function analyze(){
   const seen = new Set();
   items = splitSentences(text).filter(t => { const k = norm(t); if (seen.has(k)) return false; seen.add(k); return true; })
     .map(t => { const r = classify(t); return {text:t, cat: overrides[t] || r.cat, hits:r.hits}; });
+  markSteps(items);
+  gramResults = grammarCheck(raw);
   renderMarkWarn(raw);
-  renderOrganized(); renderImprove(); updateScore(); changed(); renderHL();
+  renderOrganized(); renderImprove(); updateScore(); changed(); refreshSpell();
+}
+// ordem direta (imperativo), sem "quero/gostaria/preciso"
+const IMPER_RE = new RegExp(`^(?:${GOAL_VERBS.filter(v => !/^(quero|queria|preciso|precisava|gostaria|poderia|poderiam|podia|seria|deveria|deveriam|tem que|precisa|precisam|objetivo|meta|use|usar)/.test(v) && !/(ar|er|ir)$/.test(v)).map(reEsc).join("|")})\\b`);
+// numera os passos de cada sequência ("Primeiro…", "Depois…", "Por fim…"); passo é sempre um pedido (Objetivo)
+function markSteps(list){
+  let seq = 0, k = 0, prev = null;
+  for (const it of list){
+    const n = unslang(norm(stripQuotes(it.text))).trim();
+    if (STEP_FIRST.test(n)){ seq++; k = 1; it.seq = seq; it.step = 1; }
+    else if (k && STEP_NEXT.test(n)){ it.seq = seq; it.step = ++k; }
+    else if (!k && prev && STEP_THEN.test(n) && prev.cat === "goal" && !prev.step){ seq++; prev.seq = seq; prev.step = 1; it.seq = seq; it.step = k = 2; }
+    else if (k >= 2 && it.cat === "goal" && IMPER_RE.test(n)){ it.seq = seq; it.step = ++k; }
+    else k = 0;
+    prev = it;
+  }
+  // "sequência" de um passo só não é sequência
+  const size = {}; list.forEach(it => { if (it.seq) size[it.seq] = (size[it.seq] || 0) + 1; });
+  for (const it of list){
+    if (!it.seq) continue;
+    if (size[it.seq] < 2){ delete it.seq; delete it.step; continue; }
+    if (!overrides[it.text]) it.cat = "goal";
+  }
 }
 let anaTimer = null, spellTimer = null;
 $("input").addEventListener("input", () => {
@@ -1131,7 +1202,7 @@ function renderOrganized(){
   $("orgTitle").textContent = `Divisão: ${plural(total,"tópico","tópicos")} em ${plural(used.length,"categoria","categorias")}`;
   el.innerHTML = used.map(c => `
     <div class="cat ${c}"><h4>${CATS[c].pt}</h4><p class="desc">${CATS[c].desc}</p><ul>${g[c].map(it => `
-      <li><div class="li"><span>${esc(it.text)}</span>${it.i>=0 ? `<select data-i="${it.i}" aria-label="Categoria">${ORDER.map(o=>`<option value="${o}"${o===c?" selected":""}>${CATS[o].pt}</option>`).join("")}</select>`:'<span class="tag">você completou</span>'}</div></li>`).join("")}
+      <li><div class="li"><span>${it.step && c === "goal" ? `<span class="tag stepnum">passo ${it.step}</span> ` : ""}${esc(it.text)}</span>${it.i>=0 ? `<select data-i="${it.i}" aria-label="Categoria">${ORDER.map(o=>`<option value="${o}"${o===c?" selected":""}>${CATS[o].pt}</option>`).join("")}</select>`:'<span class="tag">você completou</span>'}</div></li>`).join("")}
     </ul></div>`).join("");
   el.querySelectorAll("select").forEach(s => s.onchange = () => { const it = items[+s.dataset.i]; overrides[it.text] = s.value; it.cat = s.value; renderOrganized(); renderImprove(); updateScore(); changed(); });
 }
@@ -1240,6 +1311,7 @@ function renderHL(){
       if (v.state === "ignored") continue;
       for (const [a,b] of wordHits(raw, v.k, v.loose)) ranges.push({a, b, kind: v.state === "explained" ? "d" : "v", key: v.k});
     }
+    for (const r of gramResults) ranges.push({a: r.a, b: r.b, kind: "g", key: "g:" + r.from.toLowerCase()});
     if (spellState === "done") for (const r of spellResults) for (const [a,b] of wordHits(raw, r.w)) ranges.push({a, b, kind: "s", key: r.w});
   }
   for (const [a,b] of protectedRanges(raw)) ranges.push({a, b, kind: "q"});
@@ -1272,6 +1344,7 @@ function renderHL(){
     (kinds.has("v") ? `<span><u style="text-decoration:underline dashed 2px var(--vg);text-underline-offset:3px">abc</u> palavra vaga: clique nela para explicar</span>` : "") +
     (kinds.has("d") ? `<span><u style="text-decoration:underline dotted 2px var(--ok);text-underline-offset:3px">abc</u> já explicada</span>` : "") +
     (kinds.has("s") ? `<span><u style="text-decoration:underline wavy var(--err);text-underline-offset:3px">abc</u> possível erro de digitação: clique para ver sugestões</span>` : "") +
+    (kinds.has("g") ? `<span><u style="text-decoration:underline wavy var(--info);text-underline-offset:3px">abc</u> possível erro de gramática: clique para ver</span>` : "") +
     (cats.length ? `<span class="lg-tip">Cada assunto tem um tom: quando o tom muda, a página dividiu ali. Dividiu errado? Selecione o trecho e use “Novo assunto” ou “Juntar frases”.</span>` : "");
 }
 // leva até a palavra no texto (a cada clique, vai para a próxima vez que ela aparece)
@@ -1294,7 +1367,7 @@ $("input").addEventListener("click", () => {
   const c = $("input").selectionStart;
   const r = hlRanges.find(r => c >= r.a && c <= r.b);
   if (!r) return;
-  showConf(r.kind === "s" ? "p-spell" : "p-vague");
+  showConf(r.kind === "s" || r.kind === "g" ? "p-spell" : "p-vague");
   const box = document.querySelector(`[data-vbox="${CSS.escape(r.key)}"]`);
   if (box){ box.scrollIntoView({block: "nearest"}); box.animate([{outline: "2px solid var(--accent)"}, {outline: "2px solid transparent"}], {duration: 1400}); }
 });
@@ -1510,10 +1583,104 @@ function updateScore(){
   $("score").textContent = items.length ? `Completo: ${have}/${req.length} categorias recomendadas` : "";
 }
 
+
+/* ================= gramática ================= */
+// erros comuns que o corretor de palavras não pega: cada palavra existe, a combinação é que está errada
+const GRAM_IGNORE = new Set(store.get("pb.gramok", []));
+const B0 = "(?<![\\p{L}\\p{N}])", B1 = "(?![\\p{L}\\p{N}])";
+const R = src => new RegExp(B0 + "(?:" + src + ")" + B1, "giu");
+const NAO = "(?:n[aã]o|n|ñ)";
+const INF = "[a-zà-ú]{2,}(?:ar|er|ir|or)";
+const NOT_INF = new Set(["qualquer","quaisquer","lugar","mulher","colher","celular","popular","similar","particular","militar","familiar","escolar","regular","solar","dolar","dólar","par","mar","bar","lar","ar","prazer","açúcar","acucar","radar","altar","pilar","hangar","bilhar","cor","flor","dor","amor","valor","maior","menor","melhor","pior","autor","senhor","favor","calor","motor","setor","interior","exterior","anterior","posterior","superior","inferior","professor","doutor","leitor","usuário"]);
+const isInf = w => !NOT_INF.has(w.toLowerCase()) && !/or$/i.test(w) || /^(p[oô]r|compor|dispor|propor|repor|supor|expor|impor|opor)$/i.test(w);
+const NUMQ = "\\d+|um|uma|dois|duas|tr[eê]s|quatro|cinco|seis|sete|oito|nove|dez|muitos|muitas|alguns|algumas|v[aá]rios|v[aá]rias|uns|umas|poucos|poucas|tantos|tantas";
+const TIME = "anos|meses|dias|semanas|horas|minutos|s[eé]culos|d[eé]cadas|tempo";
+const A_GENTE = {vamos:"vai",fomos:"foi",somos:"é",estamos:"está",temos:"tem",tivemos:"teve",fizemos:"fez",podemos:"pode",queremos:"quer",sabemos:"sabe",estávamos:"estava",estavamos:"estava",íamos:"ia",iamos:"ia",demos:"deu",dissemos:"disse",trouxemos:"trouxe",pusemos:"pôs",vimos:"viu",viemos:"veio"};
+const NOS = {vai:"vamos",foi:"fomos",tem:"temos",pode:"podemos",quer:"queremos",precisa:"precisamos","está":"estamos","tá":"estamos",faz:"fazemos",sabe:"sabemos",usa:"usamos",gosta:"gostamos",fica:"ficamos","é":"somos",acha:"achamos"};
+const GRAM = [
+  {re: R(`(gostaria|gostava|adoraria)\\s+(?:que|q)\\s+(${NAO}\\s+)?(${INF})`), fix: m => isInf(m[3]) && `${m[1]} de ${m[2] ? "não " : ""}${m[3]}`,
+   why: "Antes de verbo no infinitivo, “gostaria” pede “de”, não “que”. Com “que”, o verbo muda: “gostaria que você usasse”."},
+  {re: R(`(queria|quero|prefiro|preferia|preciso|precisava)\\s+(?:que|q)\\s+(${NAO}\\s+)?(${INF})`), fix: m => isInf(m[3]) && `${m[1]} ${m[2] ? "não " : ""}${m[3]}`,
+   why: "Antes de verbo no infinitivo não vai “que”. Com “que”, o verbo muda: “quero que você use”."},
+  {re: R(`a gente\\s+([a-zà-ú]+(?:amos|emos|imos))`), fix: m => { const w = m[1].toLowerCase(); const x = A_GENTE[w] || (/amos$/.test(w) ? w.slice(0,-4) + "a" : /[ei]mos$/.test(w) ? w.slice(0,-4) + "e" : null); return x && `a gente ${x}`; },
+   why: "“A gente” combina com o verbo como “ele”: a gente vai, a gente tem. Ou use “nós vamos”."},
+  {re: R(`agente\\s+(vai|vamos|pode|tem|quer|precisa|est[aá]|t[aá]|foi|fez|n[aã]o|j[aá]|sempre|nunca|se|s[oó]|usa|faz|sabe|acha|gosta|fica|ia|tava|tinha)`), fix: (m, raw) => !/(?:^|[^\p{L}])(o|um|esse|este|meu|seu|nosso|do|no|pelo|cada|ao|outro|novo|cada|qualquer|todo)\s*$/iu.test(raw.slice(Math.max(0, m.index - 12), m.index)) && `a gente ${m[1]}`,
+   why: "“Agente” (junto) é quem age, como em “agente de viagens”. No sentido de “nós”, é “a gente”, separado."},
+  {re: R(`n[óÓ]s\\s+(vai|foi|tem|pode|quer|precisa|est[áa]|t[áa]|faz|sabe|usa|gosta|fica|é|acha)`), fix: m => { const x = NOS[m[1].toLowerCase()] || NOS[m[1].toLowerCase().replace("a","á")]; return x && `nós ${x}`; },
+   why: "Com “nós”, o verbo termina em -mos: nós vamos, nós temos."},
+  {re: R(`fazem\\s+((?:${NUMQ})\\s+(?:${TIME}))`), fix: m => `faz ${m[1]}`, why: "Para tempo passado, “fazer” fica no singular: faz dois anos."},
+  {re: R(`faziam\\s+((?:${NUMQ})\\s+(?:${TIME}))`), fix: m => `fazia ${m[1]}`, why: "Para tempo passado, “fazer” fica no singular: fazia dois anos."},
+  {re: R(`houveram(?!\\s+de)`), fix: () => "houve", why: "No sentido de “existir” ou “acontecer”, “haver” fica no singular: houve problemas."},
+  {re: R(`haver[ãa]o(?!\\s+de)`), fix: () => "haverá", why: "No sentido de “existir”, “haver” fica no singular: haverá mudanças."},
+  {re: R(`haviam\\s+(${NUMQ})`), fix: m => `havia ${m[1]}`, why: "No sentido de “existir”, “haver” fica no singular: havia muitas pessoas."},
+  {re: R(`(existe|falta|sobrou|aconteceu)\\s+((?:muitos|muitas|v[aá]rios|v[aá]rias|alguns|algumas|dois|duas|tr[eê]s|\\d{1,3})\\s+[a-zà-ú]+s)`), fix: (m, raw) => {
+     const v = m[1].toLowerCase(), before = raw.slice(Math.max(0, m.index - 14), m.index);
+     if (v !== "existe" && !/(^|[.!?,;:\n]|\b(ainda|s[oó]|que|n[aã]o|me|te|nos|lhe|tamb[eé]m|j[aá]|agora|hoje|s[oó] que)\s*)\s*$/iu.test(before)) return null;
+     return ({existe:"existem",falta:"faltam",sobrou:"sobraram",aconteceu:"aconteceram"})[v] + " " + m[2]; },
+   why: "O verbo concorda com o que vem depois quando é plural: faltam dois dias, existem várias opções."},
+  {re: R(`(para|pra|p/)\\s+mim\\s+(${INF})`), fix: (m, raw) => isInf(m[2]) && !/(f[aá]cil|dif[ií]cil|importante|bom|boa|ruim|chato|chata|poss[ií]vel|imposs[ií]vel|complicado|complicada|melhor|pior|necess[aá]rio|normal|estranho|estranha|[oó]timo|[oó]tima|simples|cansativo|legal|interessante|tranquilo|dif[ií]ceis)[\s,]*$/i.test(raw.slice(Math.max(0, m.index - 25), m.index)) && `${m[1]} eu ${m[2]}`,
+   why: "Quando “mim” faz a ação do verbo, o certo é “eu”: para eu fazer, para eu entender."},
+  {re: R(`à\\s+(${INF})`), fix: m => isInf(m[1]) && `a ${m[1]}`, why: "Não tem crase antes de verbo: a partir, começou a chover."},
+  {re: R(`à\\s+(voc[eê]s?|ele|ela|eles|elas|mim|ti|todos|todas|algu[eé]m|ningu[eé]m|cada|quem|isso|isto|aquilo|n[oó]s)`), fix: m => `a ${m[1]}`, why: "Não tem crase antes de pronome como você, ele, mim, todos."},
+  {re: R(`ao meu ver`), fix: () => "a meu ver", why: "A expressão é “a meu ver”."},
+  {re: R(`a\\s+((?:${NUMQ})\\s+(?:${TIME}))\\s+atr[aá]s`), fix: m => `há ${m[1]}`, why: "Para tempo passado é “há”, com h: há dois anos. E o “atrás” já está dito pelo “há”."},
+  {re: R(`h[aá]\\s+((?:${NUMQ})\\s+(?:${TIME}))\\s+atr[aá]s`), fix: m => `há ${m[1]}`, why: "“Há” já indica passado: “há dois anos atrás” repete a ideia. Use só “há dois anos” ou “dois anos atrás”."},
+  {re: R(`meia\\s+(cansada|chateada|triste|confusa|perdida|preocupada|nervosa|ansiosa|estranha|complicada|dif[ií]cil|bagun[cç]ada|ruim|lenta|feia|apagada|escondida|desorganizada|pesada|parada|torta|esquisita|travada|vazia|cheia|grande|pequena|longa|curta|escura|clara|apertada|solta|quebrada)`), fix: m => `meio ${m[1]}`, why: "No sentido de “um pouco”, “meio” não muda: meio cansada, meio confusa."},
+  {re: R(`(?:estou|est[aá]|t[oô]|t[aá]|fiquei|ficou|me sinto|se sente|sentindo|passando)\\s+mau`), fix: m => m[0].replace(/mau$/i, "mal"), why: "Para estado ou saúde, é “mal” (o contrário de bem): estou mal."},
+  {re: R(`concerteza`), fix: () => "com certeza", why: "Se escreve separado: com certeza."},
+  {re: R(`derrepente`), fix: () => "de repente", why: "Se escreve separado: de repente."},
+  {re: R(`apartir`), fix: () => "a partir", why: "Se escreve separado: a partir."},
+  {re: R(`porisso`), fix: () => "por isso", why: "Se escreve separado: por isso."},
+  {re: R(`encima\\s+(d[oa]s?)`), fix: m => `em cima ${m[1]}`, why: "No sentido de “sobre”, se escreve separado: em cima da mesa."},
+  {re: R(`afim\\s+de\\s+(${INF})`), fix: m => isInf(m[1]) && `a fim de ${m[1]}`, why: "No sentido de “para”, se escreve separado: a fim de."},
+  {re: R(`nada (?:a\\s+)?haver`), fix: () => "nada a ver", why: "A expressão é “nada a ver” (de “ver”), não “haver”."},
+  {re: R(`seje`), fix: () => "seja", why: "A forma certa é “seja”."},
+  {re: R(`esteje`), fix: () => "esteja", why: "A forma certa é “esteja”."},
+  {re: R(`menas`), fix: () => "menos", why: "“Menos” não muda: menos coisas, menos pessoas."},
+  {re: R(`mais\\s+(bom|boa|bons|boas)`), fix: m => ({bom:"melhor",boa:"melhor",bons:"melhores",boas:"melhores"})[m[1].toLowerCase()], why: "O comparativo de “bom” é “melhor”."},
+  {re: R(`mais\\s+(grande|grandes)`), fix: m => m[1].toLowerCase() === "grande" ? "maior" : "maiores", why: "O comparativo de “grande” é “maior”."},
+  {re: R(`meio-dia e meio`), fix: () => "meio-dia e meia", why: "É “meio-dia e meia” (meia hora)."},
+  {re: R(`por que(?=\\s*\\?)`), fix: () => "por quê", why: "No fim da pergunta, “por quê” leva acento."},
+  {re: /(?:^|(?<=[.!?\n]\s*))(porque|pq)(?=\s[^.!?\n]*\?)/giu, fix: () => "Por que", why: "Em pergunta, “por que” é separado: Por que isso acontece?"},
+  {re: R(`(vou|vai|vamos|v[ãa]o)\\s+estar\\s+([a-zà-ú]+?)(ando|endo|indo)`), fix: m => `${m[1]} ${m[2]}${({ando:"ar",endo:"er",indo:"ir"})[m[3].toLowerCase()]}`, kind: "estilo",
+   why: "“Vou estar enviando” é mais longo e vago que “vou enviar”. Funciona, mas a forma curta é mais clara."},
+];
+const keepCase = (orig, x) => orig[0] && orig[0] !== orig[0].toLowerCase() ? x[0].toUpperCase() + x.slice(1) : x;
+function grammarCheck(raw){
+  const prot = protectedRanges(raw), out = [];
+  for (const r of GRAM){
+    r.re.lastIndex = 0; let m;
+    while ((m = r.re.exec(raw))){
+      if (!m[0]) { r.re.lastIndex++; continue; }
+      const a = m.index, b = a + m[0].length;
+      if (prot.some(([x, y]) => a < y && b > x)) continue;
+      const to = r.fix(m, raw);
+      if (!to || norm(to) === norm(m[0]) && to === m[0]) continue;
+      if (GRAM_IGNORE.has(m[0].toLowerCase())) continue;
+      out.push({a, b, from: m[0], to: keepCase(m[0], to), why: r.why, kind: r.kind || "gramática"});
+    }
+  }
+  out.sort((x, y) => x.a - y.a);
+  return out.filter((r, i) => !out.slice(0, i).some(q => r.a < q.b && r.b > q.a));
+}
+function gramHTML(){
+  const raw = $("input").value;
+  return gramResults.map(r => `<div class="box spell gram" data-vbox="g:${esc(r.from.toLowerCase())}">
+    <div class="vhead"><button class="wordlink" style="color:var(--info)" data-gogram="${r.a}" title="Mostrar no texto">${esc(r.from)} ↗</button>
+      ${r.kind !== "gramática" ? `<span class="tag">${r.kind}</span>` : ""}<span class="snip">${snippetAt(raw, r.a, r.b)}</span></div>
+    <p class="why">${r.why}</p>
+    <div class="vrow"><span class="note" style="margin:0">Trocar por:</span> <button class="chip" data-gfix="${r.a}">${esc(r.to)}</button>
+      <button class="ghost" data-gkeep="${esc(r.from.toLowerCase())}" style="margin-left:auto">está certo</button></div></div>`).join("");
+}
+
 /* ================= ortografia ================= */
 let spellWorker = null, spellState = "idle", spellSeq = 0;
 function spellHTML(){
   if (!items.length) return START;
+  const gram = gramHTML();
+  return gram ? `<h4 class="subh">Gramática</h4>${gram}<h4 class="subh">Digitação</h4>${spellOnlyHTML()}` : spellOnlyHTML();
+}
+function spellOnlyHTML(){
   if (spellState === "loading") return EMPTY("⏳", "Carregando a lista de palavras…", "Leva alguns segundos na primeira vez.");
   if (spellState === "error"){ $("input").spellcheck = true; return EMPTY("⚠️", "Não deu para carregar a lista de palavras", "Os erros continuam sublinhados em vermelho na caixa de texto pelo próprio navegador."); }
   if (spellState === "checking" || spellState === "idle") return EMPTY("🔎", "Verificando…");
@@ -1535,6 +1702,26 @@ function refreshSpell(){
     spellResults = spellResults.filter(r => r.w !== b.dataset.from);
     analyze();
   });
+  document.querySelectorAll("button[data-gfix]").forEach(b => b.onclick = () => {
+    const r = gramResults.find(x => x.a === +b.dataset.gfix), ta = $("input");
+    if (!r) return;
+    const raw = ta.value;
+    if (raw.slice(r.a, r.b) === r.from) ta.value = raw.slice(0, r.a) + r.to + raw.slice(r.b);
+    else ta.value = raw.replace(r.from, r.to);
+    analyze(); runSpell(applyMarkers(ta.value)); toast(`Trocado por “${r.to}”`);
+  });
+  document.querySelectorAll("button[data-gkeep]").forEach(b => b.onclick = () => {
+    GRAM_IGNORE.add(b.dataset.gkeep); store.set("pb.gramok", [...GRAM_IGNORE]);
+    gramResults = gramResults.filter(r => r.from.toLowerCase() !== b.dataset.gkeep);
+    refreshSpell();
+  });
+  document.querySelectorAll("#spellBox button[data-gogram]").forEach(b => b.onclick = () => {
+    const ta = $("input"), a = +b.dataset.gogram, r = gramResults.find(x => x.a === a);
+    if (!r) return;
+    ta.focus(); ta.setSelectionRange(r.a, r.b);
+    const mk = $("hl").querySelector(`mark[data-a="${a}"]`);
+    if (mk){ ta.scrollTop = Math.max(0, mk.offsetTop - ta.clientHeight / 3); $("hl").scrollTop = ta.scrollTop; }
+  });
   document.querySelectorAll("button[data-keep]").forEach(b => b.onclick = () => {
     SPELL_IGNORE.add(b.dataset.keep.toLowerCase());
     store.set("pb.spellok", [...SPELL_IGNORE]);
@@ -1542,7 +1729,7 @@ function refreshSpell(){
     refreshSpell();
   });
   document.querySelectorAll("#spellBox button[data-goword]").forEach(b => b.onclick = () => goToWord(b.dataset.goword));
-  setCount("p-spell", spellState === "done" && items.length ? spellResults.filter(r => wordHits($("input").value, r.w).length).length : 0);
+  setCount("p-spell", items.length ? gramResults.length + (spellState === "done" ? spellResults.filter(r => wordHits($("input").value, r.w).length).length : 0) : 0);
   renderHL();
 }
 function ensureSpellWorker(){
@@ -1556,8 +1743,10 @@ function ensureSpellWorker(){
       for (const line of t.split("\\n")){ const [w, n] = line.trim().split(" "); if (w && n > 3) freq.set(w, +n); }
       for (const [w, n] of freq){ const k = strip(w); if (!accentBest.has(k) || freq.get(accentBest.get(k)) < n) accentBest.set(k, w); }
     }).catch(e => postMessage({type:"error", msg:String(e)}));
+    // formas sem acento que também são certas (verbo): "analise o texto", "critica tudo", "publico amanhã"
+    const NO_ACCENT_OK = new Set(["analise","analisem","critica","critico","pratica","publica","publico","valida","valido","especifica","especifico","copia","duvido","sabia"]);
     function accentFix(w){   // possivel -> possível
-      if (w !== strip(w)) return null;
+      if (w !== strip(w) || NO_ACCENT_OK.has(w)) return null;
       const best = accentBest.get(w);
       return best && best !== w && freq.get(best) > 5 * (freq.get(w) || 0) ? best : null;
     }
@@ -1794,10 +1983,20 @@ async function renderOutput(){
   let txt = "";
   const rs = await roleSentence(lang);
   for (const c of ORDER){
-    const lines = await Promise.all(g[c].map(it => T(annotate(it.text))));
-    if (c === "role" && rs) lines.unshift(rs);
+    const plain = c === "goal" ? g[c].filter(it => !it.step) : g[c];
+    const lines = (await Promise.all(plain.map(it => T(annotate(it.text))))).map(l => `- ${l}`);
+    if (c === "role" && rs) lines.unshift(`- ${rs}`);
+    if (c === "goal"){
+      // cada sequência vira uma lista numerada, na ordem em que foi escrita
+      const seqs = [...new Set(g[c].filter(it => it.step).map(it => it.seq))];
+      for (const sq of seqs){
+        const steps = await Promise.all(g[c].filter(it => it.seq === sq).map(it => T(annotate(stepText(it.text)))));
+        lines.push(`- ${lang === "en" ? "Follow these steps, in this order:" : "Siga estes passos, nesta ordem:"}`);
+        steps.forEach((st, i) => lines.push(`  ${i + 1}. ${st}`));
+      }
+    }
     if (!lines.length) continue;
-    txt += `## ${lang === "en" ? CATS[c].en : CATS[c].pt}\n` + lines.map(l=>`- ${l}`).join("\n") + "\n\n";
+    txt += `## ${lang === "en" ? CATS[c].en : CATS[c].pt}\n` + lines.join("\n") + "\n\n";
   }
   if (images.length){
     txt += `## ${H.images}\n`;
