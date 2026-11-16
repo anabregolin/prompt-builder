@@ -773,7 +773,7 @@ function cleanBullet(s){
   s = s.trim()
     .replace(/^\s*(?:[-–—•*]+\s*|\d+[.)]\s+|\d+\s*[-–—]\s+)/,"")
     .replace(/^(e|e tambem|também|tambem|alem disso|além disso|ah|entao|então|ou)\s+/i,"")
-    .replace(/[.;!]+$/,"").trim();
+    .replace(/[.;!:]+$/,"").trim();
   const open = (s.match(/\(/g)||[]).length, close = (s.match(/\)/g)||[]).length;   // remove parênteses sem par
   if (close > open){ let n = close-open; s = s.replace(/\)/g, m => n-- > 0 ? "" : m); }
   if (open > close){ let n = open-close; s = s.split("").reverse().join("").replace(/\(/g, m => n-- > 0 ? "" : m).split("").reverse().join(""); }
@@ -788,45 +788,68 @@ function splitSentences(text){
   // cada parágrafo (separado por linha em branco) é tratado à parte: frases de parágrafos diferentes nunca se juntam
   return t.split(/\n[ \t]*\n/).flatMap(p => splitPara(p, restore, verbAlt));
 }
+const BULLET_RE = /^\s*(?:[-–—•*]+|\d+[.)])\s+/;
+// pedaço que termina pendurado ("me explique mais sobre", "depender de") não fica sozinho
+const DANGLING = /\b(sobre|de|do|da|dos|das|com|para|pra|em|no|na|por|pelo|pela|a|o|as|os|que|e|ou|um|uma)$/;
 function splitPara(t, restore, verbAlt){
-  const out = [];
-  for (const s of t.split(/(?<=[.!?;])\s+|\n+|\s+[–—]\s+(?=[A-ZÀ-Ú])/)){
-    const byAnd = s.split(new RegExp(`\\s+(?:e|e também|e tambem|além disso|alem disso)\\s+(?=(?:${verbAlt})\\b)`, "i"));
-    for (const part of byAnd){
-      const pieces = part.split(/,\s+/);
-      const startsGoal = p => new RegExp(`^(?:${verbAlt})\\b`).test(unslang(norm(p.trim())));
-      // só divide nas vírgulas quando cada pedaço tem assunto próprio (ex.: "para meu chefe, tom técnico, sem jargão");
-      // senão a frase perde o sentido ("na aba de palavras vagas, quando aperto Enter, nada acontece")
-      const ownCat = p => { const h = classify(p.replace(/\u0000\d+\u0000/g, "")).hits; if (p.trim().split(/\s+/).length < 4) h.delete("context"); return h.size > 0; };
-      if (pieces.length > 1 && pieces.every(p => startsGoal(p) || ownCat(p))) out.push(...pieces);
-      else out.push(part);
+  // cada linha de lista ("- ...", "1. ...") é uma ideia: forma um grupo próprio e nunca é cortada nas vírgulas.
+  // o texto corrido do parágrafo forma outro grupo. Frases só se juntam dentro do mesmo grupo.
+  const out = [];   // [texto, grupo]
+  let g = 0;
+  for (const line of t.split(/\n+/)){
+    if (!line.trim()) continue;
+    const bullet = BULLET_RE.test(line);
+    const grp = bullet ? "b" + (++g) : "p";
+    for (const s of line.split(/(?<=[.!?;])\s+|\s+[–—]\s+(?=[A-ZÀ-Ú])/)){
+      if (bullet){ out.push([s, grp]); continue; }
+      const byAnd = s.split(new RegExp(`\\s+(?:e|e também|e tambem|além disso|alem disso)\\s+(?=(?:${verbAlt})\\b)`, "i"));
+      for (const part of byAnd){
+        const pieces = part.split(/,\s+/);
+        const startsGoal = p => new RegExp(`^(?:${verbAlt})\\b`).test(unslang(norm(p.trim())));
+        // só divide nas vírgulas quando cada pedaço tem assunto próprio (ex.: "para meu chefe, tom técnico, sem jargão")
+        // e nenhum fica pendurado; senão a frase perde o sentido
+        const ownCat = p => { const h = classify(p.replace(/\u0000\d+\u0000/g, "")).hits; if (p.trim().split(/\s+/).length < 4) h.delete("context"); return h.size > 0; };
+        const whole = p => !DANGLING.test(unslang(norm(p.replace(/[.!?…:;\s]+$/, ""))).trim());
+        if (pieces.length > 1 && pieces.every(p => (startsGoal(p) || ownCat(p)) && whole(p))) pieces.forEach(p => out.push([p, grp]));
+        else out.push([part, grp]);
+      }
     }
   }
-  const list = out.map(restore).map(cleanBullet).filter(s => s.replace(/[^\p{L}\p{N}]/gu,"").length > 2);
-  // frases que continuam a anterior ("Mesma coisa no que falta", "Isso precisa mudar", "Depois que seleciono")
+  const list = out.map(([x, grp]) => [cleanBullet(restore(x)), grp]).filter(([x]) => x.replace(/[^\p{L}\p{N}]/gu,"").length > 2);
+  // frases que continuam a anterior ("Mesma coisa no que falta", "Isso precisa mudar", "Pensei que...")
   // ficam junto dela, para não perder o assunto
-  const CONT = /^(mesma coisa|o mesmo|a mesma|tambem acontece|depois que|depois de|apos|porque|pois|ja que|mas|so que|isso|isto|ai|entao|talvez|ou seja|inclusive|nem|por isso|senao|alias|e ai|tipo|dai|pode ate|pode tambem|ele|ela|eles|elas|ser um|ser uma|assim)\b/;
-  const merged = [];
-  for (const x of list){
+  const CONT = /^(mesma coisa|o mesmo|a mesma|tambem acontece|depois que|depois de|apos|porque|pois|ja que|mas|so que|isso|isto|ai|entao|talvez|ou seja|inclusive|nem|por isso|senao|alias|e ai|tipo|dai|pode ate|pode tambem|ele|ela|eles|elas|ser um|ser uma|assim|pensei|achei|imaginei|apenas|somente|so)\b/;
+  const merged = []; let lastGrp = null;
+  for (const [x, grp] of list){
     const n = unslang(norm(stripQuotes(x))).trim();
     const short = x.trim().split(/\s+/).length < 4 && !new RegExp(`^(?:${verbAlt})\\b`).test(n) && ![...classify(x).hits].some(h => h !== "context");
     // frase curta que só aponta para a anterior ("Gostaria da sua ajuda para isso")
     const pointsBack = n.split(/\s+/).length <= 8 && /\b(isso|isto|nisso|disso|nisto|disto)$/.test(n.replace(/[^a-z\s]/g, "").trim());
-    if (merged.length && (CONT.test(n) || short || pointsBack)) merged[merged.length-1] += (/[.?!…]$/.test(merged[merged.length-1]) ? " " : ". ") + x;
+    if (merged.length && grp === lastGrp && (CONT.test(n) || short || pointsBack)) merged[merged.length-1] += (/[.?!…]$/.test(merged[merged.length-1]) ? " " : ". ") + x;
     else merged.push(x);
+    lastGrp = grp;
   }
   return merged;
 }
 // abreviações comuns de quem digita rápido
 const SLANG = {n:"nao","ñ":"nao",nn:"nao",q:"que",oq:"o que",pq:"porque",vc:"voce",vcs:"voces",tb:"tambem",tbm:"tambem",ta:"esta",to:"estou",pra:"para",pro:"para o",msm:"mesmo",mt:"muito",mto:"muito",td:"tudo",tds:"todos",qnd:"quando",qdo:"quando",cmg:"comigo",hj:"hoje",obg:"obrigado",fds:"fim de semana",dps:"depois",agr:"agora",ngm:"ninguem",nd:"nada"};
 const unslang = n => n.replace(/(^|[^a-z0-9ñ])(ñ|[a-z]+)(?=[^a-z0-9]|$)/g, (m,p,w) => p + (SLANG[w] ?? w));
+// "não vejo problema", "não me importo": é preferência, não problema
+const PREF_RE = /\b(nao vejo problema|nao ha problema|nao tem problema|sem problema|nao me importo|nao me incomoda|tanto faz|pouco importa|aceito que|aceito usar)\b/;
+// pedido explícito em qualquer lugar da frase
+const ASK_RE = /\b(me explique|explique|me explica|me ajude|me ajuda|me diga|me diz|me mostre|me de|quero sua|quero saber|quero entender|pode me|poderia me|sugira|recomende|qual devo|qual seria|o que voce acha|o que voce recomenda)\b/;
+// critério para a resposta
+const CRIT_RE = /\b(leve em consideracao|levar em consideracao|leve em conta|levar em conta|considere|ponto importante|e importante para mim|importante que voce|priorize|de preferencia)\b/;
+// hábito ou ferramenta que a pessoa já usa
+const HABIT_RE = /^(?:(?:como|no|na|em|para|pra)\s+\S+,?\s+)?(?:eu\s+)?(?:ja\s+)?(?:uso|utilizo|tenho|trabalho com|costumo|sigo)\b/;
 function classify(sentence){
   const n = unslang(norm(stripQuotes(sentence)));
+  const pref = PREF_RE.test(n), nP = n.replace(PREF_RE, " ");
   let best = "context", bestScore = 0;
   const hits = new Set();
   for (const c of ORDER){
     let s = 0;
-    for (const k of KW[c]) if (hasWord(n,k)) s += 1;
+    for (const k of KW[c]) if (hasWord(c === "problems" ? nP : n, k)) s += 1;
     if (s) hits.add(c);
     s *= WEIGHT[c];
     if (s > bestScore){ best = c; bestScore = s; }
@@ -842,6 +865,12 @@ function classify(sentence){
   if (label && best === "goal" && !KW.goal.some(k => hasWord(unslang(norm(label[1])).split(/\s+/).slice(0,3).join(" "), k))) best = "context";
   // pergunta é pedido de resposta: vai para Objetivo, a não ser que fale de outra categoria
   if (best === "context" && /\?\s*$/.test(sentence.trim())) best = "goal";
+  if (best !== "role"){
+    const ask = ASK_RE.test(n) || (/\?/.test(sentence) && best !== "problems");
+    if (ask) best = "goal";                                   // pedido explícito manda
+    else if (pref || CRIT_RE.test(n)) best = "constraints";   // preferência ou critério
+    else if (best === "constraints" && HABIT_RE.test(n)) best = "context";   // "uso Firefox, sem IA"
+  }
   return {cat:best, hits};
 }
 
@@ -1403,6 +1432,10 @@ function renderImprove(){
     const EN_WORDS = new Set(["the","and","to","of","for","my","is","with","make","please","i","you","it","this","that","in","on","an","be","can","should","want","need","write","create","your","me","our","we","from","about","by","are","not","what","how","like","use","help","new","website","page","style","max","sections","make","some","more"]);
     if (words.length >= 4 && words.filter(w => EN_WORDS.has(w.replace(/[^a-z]/g,""))).length / words.length >= .2)
       warns.push(["Texto em inglês?", "A página entende só português. Em inglês, a divisão em categorias e os avisos podem sair errados. Escreva em português: o prompt pode sair em inglês mesmo assim."]);
+    if (/\b(respondendo|em resposta|o que (a ia|voce) (me )?(passou|disse|respondeu|sugeriu|falou)|na sua resposta|voce disse|voce sugeriu|como voce falou|sobre o que voce)\b/.test(unslang(all)))
+      warns.push(["Parece a continuação de uma conversa", "O texto responde a algo que a IA disse antes. Envie na <b>mesma conversa</b>. Se for usar numa conversa nova, inclua um resumo do que a IA respondeu, senão ela não sabe do que você está falando."]);
+    const cut = items.filter(it => /(?:^|\s)(sobre|de|do|da|dos|das|com|para|pra|em|no|na|por|pelo|pela|a|o|as|os|que|e|ou|um|uma)$/.test(it.text.toLowerCase().replace(/[\s.,;:!?…)"”]+$/,"")));
+    if (cut.length) warns.push(["Frase incompleta", `${cut.length > 1 ? "Estas frases terminam" : "Esta frase termina"} no meio, e a IA vai ter que adivinhar o resto: ${cut.map(it => `<b>“…${esc(it.text.split(/\s+/).slice(-5).join(" "))}”</b>`).join(", ")}. Complete o que falta (ex.: “me explique mais sobre <i>o quê</i>?”).`]);
     if (words.length < 12) warns.push(["Mensagem curta", "Prompts melhores costumam ter contexto e detalhes."]);
     if (images.some(im=>!im.note.trim())) warns.push(["Imagem sem explicação", "Diga na aba “Imagens” o que ela mostra e por que você anexou."]);
   }
